@@ -1,0 +1,38 @@
+{
+    "TECNI": {
+                  "emailRemitente"    : "formacionvirtualcsf",
+                  "servidorRemitente" : "gmail.com",
+                  "nombreRemitente"   : "formacionvirtualcsf@sena.edu.co",
+                  "asunto"            : "ASIGNACION FICHAS - TECNICO",
+                  "template"          : "correoInstructores.html"
+                },
+    "BILIN": {
+                  "emailRemitente"    : "formacionvirtualcsf",
+                  "servidorRemitente" : "gmail.com",
+                  "nombreRemitente"   : "formacionvirtualcsf@sena.edu.co",
+                  "asunto"            : "ASIGNACION FICHAS - BILINGUISMO",
+                  "template"          : "correoInstructores.html"
+                },
+    "TRANS": {
+                  "emailRemitente"    : "formacionvirtualcsf",
+                  "servidorRemitente" : "gmail.com",
+                  "nombreRemitente"   : "formacionvirtualcsf@sena.edu.co",
+                  "asunto"            : "ASIGNACION FICHAS - TRANSVERSALES",
+                  "template"          : "correoInstructores.html"
+                },
+    "PRODU": {
+                  "emailRemitente"    : "formacionvirtualcsf",
+                  "servidorRemitente" : "gmail.com",
+                  "nombreRemitente"   : "formacionvirtualcsf@sena.edu.co",
+                  "asunto"            : "ASIGNACION FICHAS - PRODUCTIVA ",
+                  "template"          : "correoInstructores.html"
+                },
+    "JUICI": {
+                  "emailRemitente"    : "formacionvirtualcsf",
+                  "servidorRemitente" : "gmail.com",
+                  "nombreRemitente"   : "formacionvirtualcsf@sena.edu.co",
+                  "asunto"            : "normalizar ficha  ",
+                  "template"          : "correoJuicios.html"
+                }                
+  }
+

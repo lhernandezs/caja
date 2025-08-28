@@ -1,0 +1,10 @@
+{
+    "TEC" :{
+        "Planta"    : 150,
+        "Contrato"  : 200
+    },
+    "TRA" :{
+        "Planta"    : 225,
+        "Contrato"  : 300
+    }
+}
