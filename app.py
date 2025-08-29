@@ -1,7 +1,8 @@
+import datetime
 import os
 import pandas as pd
 
-from flask import ( request, session, Flask, render_template, redirect, url_for)
+from flask import ( json, request, session, Flask, render_template, redirect, url_for)
 
 from config                 import Config
 from cargadorDatos          import CargadorDatos
@@ -22,6 +23,16 @@ os.makedirs(UPLOAD_FOLDER_DATA, exist_ok=True)
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def format_date(fecha):
+    if isinstance(fecha, datetime):
+        return fecha.strftime("%d-%m-%Y")
+    return ""
+
+def delete_file_disk(ficha):
+    file_path = os.path.join(UPLOAD_FOLDER, f"{ficha}.xlsx")
+    if os.path.isfile(file_path):
+        os.remove(file_path)
+
 @app.route("/", methods=["GET"])
 def index():
     if 'fichas' not in session:
@@ -30,11 +41,13 @@ def index():
         session['error'] = []
     if 'datos' not in session:
         session['datos'] = False
+    if 'subio_fichas' not in session:
+        session['subio_fichas'] = False        
     return render_template("index.html", variables = session)
 
 @app.route("/upload_datos", methods=["POST"])
 def upload_datos():
-    session['error'] = []
+    session.pop('error', None)
     if "datos" not in request.files:
         return redirect(url_for("index"))
     file = request.files.get('datos')
@@ -42,12 +55,12 @@ def upload_datos():
         file.save(os.path.join(UPLOAD_FOLDER_DATA, file.filename))
         session['datos'] = True
     else:
-        session['error'].append(f"el archivo elegido {file.filename} debe nombrarse 'datos.xlsx'")
+        session['error'] =f"el archivo elegido {file.filename} debe nombrarse 'datos.xlsx'"
     return redirect(url_for("index"))
 
 @app.route("/upload", methods=["POST"])
 def upload_files():
-    session['error'] = []
+    session.pop('error', None)
     if "files" not in request.files:
         return redirect(url_for("index"))
     files = request.files.getlist("files")
@@ -61,49 +74,55 @@ def upload_files():
                 else:
                     juiciosFicha = ProcesadorJuicios(UPLOAD_FOLDER, file.filename)
                 diccionario = juiciosFicha.procesar()
-                session['fichas'][diccionario['ficha']] = {
-                                    'fecha_reporte'         : diccionario['fecha_reporte'],
-                                    'ficha'                 : diccionario['ficha'],
-                                    'programa'              : diccionario['programa'],
-                                    'codigo_programa'       : diccionario['codigo_programa'],
-                                    'version_programa'      : diccionario['version_programa'],
-                                    'fecha_inicio'          : diccionario['fecha_inicio'],
-                                    'fecha_fin'             : diccionario['fecha_fin'],
-                                                           }
+                ficha = diccionario['ficha']
+                session['fichas'][ficha] = {
+                                        'fecha_reporte'    : diccionario['fecha_reporte'],
+                                        'programa'         : diccionario['programa'],
+                                        'codigo_programa'  : diccionario['codigo_programa'],
+                                        'version_programa' : diccionario['version_programa'],
+                                        'fecha_inicio'     : diccionario['fecha_inicio'],
+                                        'fecha_fin'        : diccionario['fecha_fin'],
+                                        }
+                print(f"session['fichas'] despues de subir : {session['fichas']} type : {type(session['fichas'])}")
             except Exception as e:
-                session['error'].append(e)
+                session['error'] = e
+        if len(session['fichas']) > 0:
+            session['subio_fichas'] = True
     return render_template("index.html", variables = session)
 
 @app.route("/delete_multiple", methods=["POST"])
 def delete_multiple_files():
-    selected_files = request.form.getlist("selectedFilesDeleteInput")
-    if len(selected_files) == 1 and "," in selected_files[0]:
-        selected_files = selected_files[0].split(",")
-        for filename in selected_files:
-            file_path = os.path.join(UPLOAD_FOLDER, f"{filename}.xlsx")
-            if os.path.isfile(file_path):
-                os.remove(file_path)
-            if int(filename) in session['fichas'].keys():
-                session['fichas'].pop(int(filename), None)
+    fichas = request.form.getlist("selectedFichasDelete")
+    if len(fichas) == 1 and "," in fichas[0]:
+        fichas = fichas[0].split(",")
+        for ficha in fichas:
+            delete_file_disk(ficha)
+            if ficha in session['fichas'].keys():
+                fichas = session['fichas']
+                fichas.pop(ficha, None)
+                session.pop('fichas', None)
+                session['fichas'] = fichas
     return render_template("index.html", variables = session)
 
-@app.route("/delete/<filename>", methods=["POST", "GET"])
-def delete_file(filename):
-    print(f"filename : {filename}" )
-    file_path = os.path.join(UPLOAD_FOLDER, f"{filename}.xlsx")
-    if os.path.isfile(file_path):
-        os.remove(file_path)
-    if filename in session['fichas'].keys():
-        session['fichas'].pop(int(filename), None)
+@app.route("/delete/<ficha>", methods=["POST"])
+def delete_file(ficha):
+    delete_file_disk(ficha)
+    if ficha in session['fichas'].keys():
+        fichas = session['fichas']
+        fichas.pop(ficha, None)
+        session.pop('fichas', None)
+        session['fichas'] = fichas
+    if len(session['fichas']) == 0:
+        session['subio_fichas'] = False
     return render_template("index.html", variables = session)
 
-@app.route("/dfDatos/<filename>", methods=["POST"])
-def view_datos(filename):
+@app.route("/dfDatos/<ficha>", methods=["POST"])
+def view_datos(ficha):
     columnas = ["tipo", "documento", "nombres", "apellidos", "estado", "aprobado", "porEvaluar", "noAprobado", "enTramite", "activo", \
                           "IND", "BIL", "CIE", "COM", "CUL", "DER", "EMP", "ETI", "INV", "MAT", "SST", "TIC", "PRO", "TEC" ]
     try:
         #OJO.. tener en cuenta que leerARchivo está colocando un directorio, debe mejorarse los parametros de este metodo en EntradaSalida
-        dfDatos: pd.DataFrame = Entrada().getDataFrame(UPLOAD_FOLDER, f"{filename}.xlsx", "Datos", columnas)
+        dfDatos: pd.DataFrame = Entrada().getDataFrame(UPLOAD_FOLDER, f"{ficha}.xlsx", "Datos", columnas)
         dfDatos.fillna("", inplace=True)
         # OJO.. como mejorar la presentacion del DATAFRAME
         # dfDatos['porEvaluar'] = dfDatos['porEvaluar'].round().astype(int)

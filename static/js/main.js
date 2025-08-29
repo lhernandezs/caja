@@ -2,7 +2,7 @@ document.getElementById('deleteMultipleForm').addEventListener('submit', functio
     // Encuentra todos los checkboxes seleccionados en la tabla
     const checked = Array.from(document.querySelectorAll('tbody input[name="selected_files"]:checked'))
         .map(cb => cb.closest('tr').querySelector('td:nth-child(2)').textContent.trim());
-    document.getElementById('selectedFilesDeleteInput').value = checked;          
+    document.getElementById('selectedFichasDelete').value = checked;          
 });
 
 // esto hace que si se deschequea un elemento de la lista, el checkbox de toda la lista se deschequee

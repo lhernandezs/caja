@@ -33,14 +33,18 @@
                 <div class="btn-toolbar" role="toolbar"  aria-label="Cinta de opciones">
                     <div class="btn-group me-2" role="group" aria-label="Subir archivos">
                         <form class="d-flex" method="post" enctype="multipart/form-data" action="{{ url_for('upload_files') }}">
-                            <label for="filesUpload" class="form-control btn btn-primary mb-0 me-2" style="width:auto;">Subir mas reportes</label>
-                            <input class="form-control me-2 visually-hidden" type="file" name="files" id="filesUpload" multiple required>
-                            <button class="btn btn-light" type="submit">Subir</button>
+                            <label for="filesUpload" class="form-control btn btn-primary mb-0 me-2" style="width:auto; {% if variables.subio_fichas %}pointer-events: none; opacity: 0.6;{% endif %}">
+                                Subir reportes
+                            </label>
+                            <input class="form-control me-2 visually-hidden" type="file" name="files" id="filesUpload" multiple required {% if variables.subio_fichas %}disabled{% endif %}>
+                            <button class="btn btn-light" type="submit" {% if variables.subio_fichas %}disabled{% endif %}>
+                                Procesar reportes selecionados
+                            </button>
                         </form>
                     </div>
                         <div class="btn-group ms-auto" role="group" aria-label="Borrar fichas" style="margin-left:auto;">
                             <form class="d-flex me-2" method="post" action="{{ url_for('delete_multiple_files') }}" id="deleteMultipleForm" onsubmit="return confirm('¿Está seguro de que desea eliminar los archivos seleccionados?');">
-                                <input type="hidden" name="selectedFilesDeleteInput" id="selectedFilesDeleteInput">
+                                <input type="hidden" name="selectedFichasDelete" id="selectedFichasDelete">
                                 <button class="btn btn-danger" type="submit">Eliminar</button>
                             </form>
                         <div style="width: 1rem;"></div>
@@ -52,17 +56,22 @@
         <div class="container">
             {% if variables.error %}
                 <div class="alert alert-danger" role="alert">
-                    {{ variables.error[0] }}
+                    {{ variables.error }}
                 </div>
             {% endif %}
+           {{ variables.fichas }}
             <h2>Fichas cargadas</h2>
             <table class="table table-striped">
                 <thead>
                     <tr>
                         <th><input type="checkbox" id="selectAll" title="Seleccionar todos"></th>
                         <th>Ficha</th>
-                        <th></th>
-                        <th></th>
+                        <th>Programa</th>
+                        <th>Código</th>
+                        <th>Versión</th>
+                        <th>Inicio</th>
+                        <th>Finaliza</th>
+                        <th></th>                                                                                                
                         <th></th>
                     </tr>
                 </thead>
@@ -72,17 +81,20 @@
                             <tr>
                                 <td><input type="checkbox" class="file-checkbox" name="selected_files" value="{{ archivo }}"></td>
                                 <td>{{ ficha }}</td>
+                                <td>{{ variables.fichas[ficha]['programa'] }}</td>
+                                <td>{{ variables.fichas[ficha]['codigo_programa'] }}</td>
+                                <td>{{ variables.fichas[ficha]['version_programa'] }}</td>                                                                
+                                <td>{{ variables.fichas[ficha]['fecha_inicio'] }}</td>
+                                <td>{{ variables.fichas[ficha]['fecha_fin'] }}</td>                                                                
                                 <td>
-                                    <form method="post" action="{{ url_for('delete_file', filename=ficha) }}" style="display:inline;"></form>
+                                    <form method="post" action="{{ url_for('delete_file', ficha=ficha) }}" style="display:inline;">
                                         <button type="submit" title="Eliminar" class="btn btn-outline-danger btn-sm d-flex align-items-center justify-content-center p-1">
-                                            Eliminar
+                                            Elimina
                                         </button>
                                     </form>
                                 </td>
                                 <td>
-                                </td>
-                                <td>
-                                    <form method="post" action="{{ url_for('view_datos', filename=ficha) }}" style="display:inline;">
+                                    <form method="post" action="{{ url_for('view_datos', ficha=ficha) }}" style="display:inline;">
                                         <button type="submit" title="Ver datos" class="btn btn-outline-info btn-sm d-flex align-items-center justify-content-center p-1">
                                             Ver datos
                                         </button>
@@ -92,7 +104,7 @@
                         {% endfor %}
                     {% else %}
                         <tr>
-                            <td colspan="5">No hay fichas cargadas.</td>
+                            <td colspan="9">No hay fichas cargadas.</td>
                         </tr>
                     {% endif %}
                 </tbody>
