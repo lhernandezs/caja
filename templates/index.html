@@ -19,10 +19,8 @@
                         {% endif %}
                     </span>
                     <form class="d-flex" method="post" enctype="multipart/form-data"  action="{{ url_for('upload_datos') }}">
-                        <label for="fileUpload" class="form-control btn btn-primary mb-0 me-2" style="width:auto;">
-                            buscar datos
-                        </label>
-                        <input class="form-control visually-hidden" type="file" name="datos_file" id="fileUpload" required>
+                        <label for="fileUpload" class="form-control btn btn-primary mb-0 me-2" style="width:auto;">buscar datos</label>
+                        <input class="form-control visually-hidden" type="file" name="datos" id="fileUpload" required>
                         <button class="btn btn-warning" type="submit">Subir</button>
                     </form>
                     <span style="width: 1rem; display: inline-block;"></span>
@@ -35,9 +33,7 @@
                 <div class="btn-toolbar" role="toolbar"  aria-label="Cinta de opciones">
                     <div class="btn-group me-2" role="group" aria-label="Subir archivos">
                         <form class="d-flex" method="post" enctype="multipart/form-data" action="{{ url_for('upload_files') }}">
-                            <label for="filesUpload" class="form-control btn btn-primary mb-0 me-2" style="width:auto;">
-                                Elegir mas archivos
-                            </label>
+                            <label for="filesUpload" class="form-control btn btn-primary mb-0 me-2" style="width:auto;">Subir mas reportes</label>
                             <input class="form-control me-2 visually-hidden" type="file" name="files" id="filesUpload" multiple required>
                             <button class="btn btn-light" type="submit">Subir</button>
                         </form>
@@ -77,11 +73,9 @@
                                 <td><input type="checkbox" class="file-checkbox" name="selected_files" value="{{ archivo }}"></td>
                                 <td>{{ ficha }}</td>
                                 <td>
-                                    <form method="post" action="{{ url_for('delete_file', filename=archivo) }}" style="display:inline;">
+                                    <form method="post" action="{{ url_for('delete_file', filename=ficha) }}" style="display:inline;"></form>
                                         <button type="submit" title="Eliminar" class="btn btn-outline-danger btn-sm d-flex align-items-center justify-content-center p-1">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16" style="border:none; box-shadow:none;">
-                                                <path d="M6.5 1.5v1h3v-1a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 0-.5.5zm-3 1V2a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v.5h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 10.616 16H5.384a2 2 0 0 1-1.993-1.84L2.538 2.5H2a.5.5 0 0 1 0-1H5.5zm1.354 11.354a.5.5 0 0 0 .708 0l.646-.647.646.647a.5.5 0 0 0 .708-.708l-.647-.646.647-.646a.5.5 0 0 0-.708-.708l-.646.647-.646-.647a.5.5 0 0 0-.708.708l.647.646-.647.646a.5.5 0 0 0 0 .708z"/>
-                                            </svg>
+                                            Eliminar
                                         </button>
                                     </form>
                                 </td>
@@ -90,10 +84,7 @@
                                 <td>
                                     <form method="post" action="{{ url_for('view_datos', filename=ficha) }}" style="display:inline;">
                                         <button type="submit" title="Ver datos" class="btn btn-outline-info btn-sm d-flex align-items-center justify-content-center p-1">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
-                                                <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zm-8 4.5c-3.584 0-6.534-3.013-7.468-4.5C1.466 6.013 4.416 3 8 3s6.534 3.013 7.468 4.5c-.934 1.487-3.884 4.5-7.468 4.5z"/>
-                                                <path d="M8 5.5A2.5 2.5 0 1 0 8 10a2.5 2.5 0 0 0 0-4.5zm0 1A1.5 1.5 0 1 1 8 9a1.5 1.5 0 0 1 0-3z"/>
-                                            </svg>
+                                            Ver datos
                                         </button>
                                     </form>
                                 </td>
