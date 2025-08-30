@@ -3,7 +3,7 @@ import pandas as pd
 
 from correo                   import Correo
 from modelo                   import DatosCorreoJuicios
-from entrada                        import Entrada
+from entrada                  import Entrada
 from procesadorJuiciosHelper  import columnas_df_datos
 
 class Robot:

@@ -1,8 +1,8 @@
-import datetime
 import os
 import pandas as pd
 
-from flask import ( json, request, session, Flask, render_template, redirect, url_for)
+from flask import ( request, session, Flask, render_template, redirect, url_for, jsonify)
+from flask_mail import Mail, Message
 
 from config                 import Config
 from cargadorDatos          import CargadorDatos
@@ -12,10 +12,20 @@ from entrada                import Entrada
 app = Flask(__name__)
 app.config.from_object(Config)
 app.secret_key = app.config["SECRET_KEY"]
+mail = Mail(app)
 
 UPLOAD_FOLDER       = app.config["UPLOAD_FOLDER"] 
 UPLOAD_FOLDER_DATA  = app.config["UPLOAD_FOLDER_DATA"]
 ALLOWED_EXTENSIONS  = app.config["ALLOWED_EXTENSIONS"]
+
+MAIL_SERVER         = app.config['MAIL_SERVER']
+MAIL_PORT           = app.config['MAIL_PORT']
+MAIL_USE_TLS        = app.config['MAIL_USE_TLS']
+MAIL_USE_SSL        = app.config['MAIL_USE_SSL']
+MAIL_USERNAME       = app.config['MAIL_USERNAME']
+MAIL_PASSWORD       = app.config['MAIL_PASSWORD']
+MAIL_DEFAULT_SENDER = app.config['MAIL_DEFAULT_SENDER']
+
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(UPLOAD_FOLDER_DATA, exist_ok=True)
@@ -119,7 +129,6 @@ def view_datos(ficha):
     columnas = ["tipo", "documento", "nombres", "apellidos", "estado", "aprobado", "porEvaluar", "noAprobado", "enTramite", "activo", \
                           "IND", "BIL", "CIE", "COM", "CUL", "DER", "EMP", "ETI", "INV", "MAT", "SST", "TIC", "PRO", "TEC", "color" ]
     try:
-        #OJO.. tener en cuenta que leerARchivo está colocando un directorio, debe mejorarse los parametros de este metodo en EntradaSalida
         dfDatos: pd.DataFrame = Entrada().getDataFrame(UPLOAD_FOLDER, f"{ficha}.xlsx", "Datos", columnas)
         for col in dfDatos.columns:
             dfDatos[col] = dfDatos[col].apply(
@@ -127,7 +136,26 @@ def view_datos(ficha):
             )
     except Exception as e:
         session['error'].append(f"Error: no fue posible abrir la hoja 'Datos' del archivo {e}")
-    return render_template("datos.html", dataFrame=dfDatos)
+    return render_template("datos.html", dataFrame=dfDatos, variables = session['fichas'][ficha], ficha= ficha)
+
+# Ruta para recibir los datos del formulario y enviar el correo
+@app.route('/enviar_correo', methods=["POST"])
+def enviar_correo():
+    print("paso por aqui")
+
+    destinatario = request.form['to']
+    asunto = request.form['subject']
+    mensaje_texto = request.form['body']
+
+    msg = Message(asunto, sender=MAIL_USERNAME, recipients=[destinatario])
+    msg.body = mensaje_texto
+
+    try:
+        mail.send(msg)
+        return jsonify({'message': 'Correo enviado exitosamente!'})
+    except Exception as e:
+        return jsonify({'message': f'Error al enviar el correo: {str(e)}'}), 500
+
 
 if __name__ == "__main__":
     app.run(debug=True)

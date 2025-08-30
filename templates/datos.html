@@ -5,9 +5,52 @@
         <div class="mi-contenedor-ancho">
             <div>
                 <div class="d-flex align-items-center mb-3">
-                    <h2 class="mb-0 me-3">Datos</h2>
+                    <div class="d-flex align-items-end">
+                        <div class="d-flex flex-column me-3">
+                            <h2 class="mb-0">{{ variables.programa }}</h2>
+                            <div class="d-flex align-items-center">
+                                <h6 class="mb-0">Código: {{ variables.codigo_programa }} Ver: {{ variables.version_programa }}</h6>
+                                <div style="width:80px;"></div>
+                                <h6 class="mb-0">Ficha: {{ ficha }}</h6>
+                            </div>
+                        </div>
+                        <div style="width:200px;"></div>
+                        <h6 class="mb-1">Fecha de inicio: {{ variables.fecha_inicio }}</h6>
+                        <div style="width:60px;"></div>
+                        <h6 class="mb-1">Fecha de finalización: {{ variables.fecha_fin }}</h6>
+                    </div>
                     <div class="ms-auto">
-                        <a class="btn btn-light" href="/">Inicio</a>
+                        <form id="emailForm" method="POST">
+                            <input type="email" name="to" placeholder="Destinatario" required>
+                            <input type="text" name="subject" placeholder="Asunto" required>
+                            <textarea name="body" placeholder="Mensaje" required></textarea>
+                            <button type="submit">Enviar Correo</button>
+                        </form>
+
+                        <div id="mensajeExito"></div>
+                        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+                        <script>
+                            $(document).ready(function() {
+                                $('#emailForm').submit(function(event) {
+                                    event.preventDefault(); 
+                                    var formData = $(this).serialize(); // Obtener los datos del formulario
+                                    $.ajax({
+                                        type: 'POST',
+                                        url: '/enviar_correo',
+                                        data: formData,
+                                        success: function(response) {
+                                            $('#mensajeExito').html(response.message).css('color', 'green');
+                                            $('#emailForm')[0].reset();
+                                        },
+                                        error: function(xhr, status, error) {
+                                            $('#mensajeExito').html('Error al enviar el correo: ' + error).css('color', 'red');
+                                        }
+                                    });
+                                });
+                            });
+                        </script>
+
+                        <a class="btn btn-light" href="/" style="border: 1px solid #000;">Inicio</a>
                     </div>
                 </div>
             </div>
@@ -27,8 +70,8 @@
                             {% for row in dataFrame.values %}
                                 {% if loop.index == 1 %}
                                     <tr>
-                                        <td colspan="10">Los instructores de la ficha son -> </td>
-                                        {% for cell in row %}
+                                        <td colspan="10" class="text-end"><h3>Instructores</h3></td>
+                                        {% for cell in row[:-1] %}
                                             {% if loop.index0 > 9 %}
                                                 <td>
                                                     <span style="overflow:hidden; white-space:normal; padding:0">
@@ -40,7 +83,7 @@
                                     </tr>
                                 {% else %}
                                     <tr>
-                                        {% for cell in row %}
+                                        {% for cell in row[:-1] %}
                                             {% set col_idx = loop.index0 %}
                                             {% if col_idx < 24 %}
                                                 {% set col1 = ['nombres', 'apellidos'] %}   
