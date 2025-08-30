@@ -13,49 +13,53 @@
                 <a class="btn btn-light" href="/">Inicio</a>
              </div>
         </nav>
-        <div class="container">
-             <h2>Datos</h2>
+        <div class="d-flex justify-content-center">
+            <div class="mi-contenedor-ancho">
+            <h2>Datos</h2>
             <div class="table-responsive">
                 <table class="table table-striped table-bordered table-custom">
-                    <thead>
-                        <tr>
-                            {% for col in dataFrame.columns %}
-                                <th>{{ col }}</th>
-                            {% endfor %}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for row in dataFrame.values %}
-                            <tr style="min-height:40px;"></tr>
-                                {% for cell in row %}
-                                    <td>
-                                        {% if dataFrame.columns[loop.index0] == 'nombres' or dataFrame.columns[loop.index0] == 'apellidos' or dataFrame.columns[loop.index0] == 'estado'  %}
-                                            <span style="display:inline-block; width:100px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
-                                                {% if cell is number %}
-                                                    {{ cell|int }}
-                                                {% else %}
-                                                    {{ cell }}
-                                                {% endif %}
-                                            </span>
-                                        {% else %}
-                                            {% if cell is number %}
-                                                {{ cell|int }}
-                                            {% else %}
-                                                {{ cell }}
-                                            {% endif %}
-                                        {% endif %}
-                                    </td>
-                                {% endfor %}
-                            </tr>
-                        {% else %}
-                            <tr>
-                                <td colspan="25">No hay datos disponibles.</td>
-                            </tr>
+                <thead>
+                    <tr>
+                    {% for col in dataFrame.columns %}
+                        <th>{{ col }}</th>
+                    {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in dataFrame.values %}
+                    <tr style="min-height:40px;"></tr>
+                        {% for cell in row %}
+                        <td>
+                            {% set col_idx = loop.index0 %}
+                            {% if dataFrame.columns[col_idx] == 'nombres' or dataFrame.columns[col_idx] == 'apellidos' or dataFrame.columns[col_idx] == 'estado' %}
+                                <span style="display:inline-block; width:100px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                            {% elif 10 <= col_idx <= 25 %}
+                                <span style="display:inline-block; width:25px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                                    {% if cell is number %}
+                                        {{ cell|int }}
+                                    {% else %}
+                                        {{ cell }}
+                                    {% endif %}
+                                    </span>
+                            {% else %}
+                                {% if cell is number %}
+                                    {{ cell|int }}
+                                {% else %}
+                                    {{ cell }}
+                                {% endif %}
+                            {% endif %}
+                        </td>
                         {% endfor %}
-                    </tbody>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="25">No hay datos disponibles.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
                 </table>
             </div>
-            </table>
+            </div>
         </div>
     </body>
 </html>

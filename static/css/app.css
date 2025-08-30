@@ -29,3 +29,8 @@
 .table-custom tr:nth-child(even) {
     background-color: #f2f2f2;
 }
+
+.mi-contenedor-ancho {
+    width: 95% !important; /* Usando !important para sobrescribir el estilo de Bootstrap si es necesario */
+    /* width: 90vw !important; */
+}
