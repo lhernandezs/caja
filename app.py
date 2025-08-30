@@ -23,10 +23,7 @@ os.makedirs(UPLOAD_FOLDER_DATA, exist_ok=True)
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def format_date(fecha):
-    if isinstance(fecha, datetime):
-        return fecha.strftime("%d-%m-%Y")
-    return ""
+
 
 def delete_file_disk(ficha):
     file_path = os.path.join(UPLOAD_FOLDER, f"{ficha}.xlsx")
@@ -102,6 +99,8 @@ def delete_multiple_files():
                 fichas.pop(ficha, None)
                 session.pop('fichas', None)
                 session['fichas'] = fichas
+    if len(session['fichas']) > 0:
+        session['subio_fichas'] = True                
     return render_template("index.html", variables = session)
 
 @app.route("/delete/<ficha>", methods=["POST"])

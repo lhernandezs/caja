@@ -10,16 +10,11 @@
         <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
             <div class="container-fluid">
                 <a class="navbar-brand" href="#">Reporte Procesado</a>
-                <a class="btn btn-light" href="/">Volver</a>
+                <a class="btn btn-light" href="/">Inicio</a>
              </div>
         </nav>
         <div class="container">
-            <!-- {% if error %}
-            <div class="alert alert-danger" role="alert">
-            {{ error[0] }}
-            </div>
-            {% endif %} -->
-            <h2>Reporte de Juicios Procesado</h2>
+             <h2>Datos</h2>
             <div class="table-responsive">
                 <table class="table table-striped table-bordered table-custom">
                     <thead>
@@ -31,9 +26,25 @@
                     </thead>
                     <tbody>
                         {% for row in dataFrame.values %}
-                            <tr>
+                            <tr style="min-height:40px;"></tr>
                                 {% for cell in row %}
-                                    <td>{{ cell }}</td>
+                                    <td>
+                                        {% if dataFrame.columns[loop.index0] == 'nombres' or dataFrame.columns[loop.index0] == 'apellidos' or dataFrame.columns[loop.index0] == 'estado'  %}
+                                            <span style="display:inline-block; width:100px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                                                {% if cell is number %}
+                                                    {{ cell|int }}
+                                                {% else %}
+                                                    {{ cell }}
+                                                {% endif %}
+                                            </span>
+                                        {% else %}
+                                            {% if cell is number %}
+                                                {{ cell|int }}
+                                            {% else %}
+                                                {{ cell }}
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
                                 {% endfor %}
                             </tr>
                         {% else %}

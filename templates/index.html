@@ -64,14 +64,14 @@
                 <thead>
                     <tr>
                         <th><input type="checkbox" id="selectAll" title="Seleccionar todos"></th>
-                        <th>Ficha</th>
+                        <th class="text-center">Ficha</th>
                         <th>Programa</th>
-                        <th>Código</th>
-                        <th>Versión</th>
-                        <th>Inicio</th>
-                        <th>Finaliza</th>
-                        <th></th>                                                                                                
-                        <th></th>
+                        <th class="text-center">Código</th>
+                        <th class="text-center">Versión</th>
+                        <th class="text-center">Inicio</th>
+                        <th class="text-center">Finaliza</th>
+                        <th class="text-center"></th>                                                                                                
+                        <th class="text-center"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -80,11 +80,11 @@
                             <tr>
                                 <td><input type="checkbox" class="file-checkbox" name="selected_files" value="{{ archivo }}"></td>
                                 <td>{{ ficha }}</td>
-                                <td style="width: 100px;">{{ variables.fichas[ficha]['programa'] }}</td>
-                                <td>{{ variables.fichas[ficha]['codigo_programa'] }}</td>
-                                <td>{{ variables.fichas[ficha]['version_programa'] }}</td>                                                                
-                                <td>{{ variables.fichas[ficha]['fecha_inicio'] }}</td>
-                                <td>{{ variables.fichas[ficha]['fecha_fin'] }}</td>                                                                
+                                <td style="width: 350px;">{{ variables.fichas[ficha]['programa'] }}</td>
+                                <td class="text-center">{{ variables.fichas[ficha]['codigo_programa'] }}</td>
+                                <td class="text-center">{{ variables.fichas[ficha]['version_programa'] }}</td>
+                                <td class="text-center">{{ variables.fichas[ficha]['fecha_inicio'] }}</td>
+                                <td class="text-center">{{ variables.fichas[ficha]['fecha_fin'] }}</td>
                                 <td>
                                     <form method="post" action="{{ url_for('delete_file', ficha=ficha) }}" style="display:inline;">
                                         <button type="submit" title="Eliminar" class="btn btn-outline-danger btn-sm d-flex align-items-center justify-content-center p-1">
@@ -94,7 +94,7 @@
                                 </td>
                                 <td>
                                     <form method="post" action="{{ url_for('view_datos', ficha=ficha) }}" style="display:inline;">
-                                        <button type="submit" title="Ver datos" class="btn btn-outline-info btn-sm d-flex align-items-center justify-content-center p-1">
+                                        <button type="submit" title="Ver datos" class="btn btn-outline-dark text-dark btn-sm d-flex align-items-center justify-content-center p-1">
                                             Ver datos
                                         </button>
                                     </form>

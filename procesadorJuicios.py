@@ -88,7 +88,7 @@ class ProcesadorJuicios:
         Método para armar el DataFrame de Datos.
         """        
         # En el programa de asesoria comercial el codigo de la competencia de Emprendimiento es diferente
-        if self.codigo_programa == '631101' and self.version_programa == '2':
+        if self.codigo_programa == '631101':
             competencias_no_tecnicas_ajustadas = [(k, '39811' if k == 'EMP' else v) for k, v in competencias_no_tecnicas]
         else:
             competencias_no_tecnicas_ajustadas = competencias_no_tecnicas
@@ -207,7 +207,7 @@ class ProcesadorJuicios:
 
 
 if __name__ == "__main__":
-    ficha = '2879848'        
+    ficha = '3106275'        
     try:
         procesador_jucios = ProcesadorJuicios("upload", f"Reporte de Juicios Evaluativos {ficha}.xls", None, None, None)
         procesador_jucios.procesar()

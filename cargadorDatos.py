@@ -105,7 +105,7 @@ if __name__ == "__main__":
         cargadorDatos.df_activos = None
         cargadorDatos.df_instructores = None
 
-    for ficha in fichas['agosto4']: 
+    for ficha in fichas['kebin']: 
         try:
             juiciosFicha = ProcesadorJuicios("upload", f"Reporte de Juicios Evaluativos {ficha}.xls", cargadorDatos.df_novedades, cargadorDatos.df_activos, cargadorDatos.df_instructores)
             juiciosFicha.procesar()
