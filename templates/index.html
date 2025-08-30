@@ -9,25 +9,31 @@
     <body class="bg-dark text-white"></body>
         <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
             <div class="container-fluid">
-                <a class="navbar-brand" href="#">Procesador de Reportes de Juicios</a>
-                <div class="d-flex align-items-center ms-auto">
-                    <span class="navbar-text text-white me-3">
-                        {% if variables.datos %}
-                            Está cargado un archivo de datos
-                        {% else %}
-                            <span class="text-danger">No se ha cargado un archivo de datos!!</span>
-                        {% endif %}
-                    </span>
-                    <form class="d-flex" method="post" enctype="multipart/form-data"  action="{{ url_for('upload_datos') }}">
-                        <label for="fileUpload" class="form-control btn btn-primary mb-0 me-2" style="width:auto;">buscar datos</label>
-                        <input class="form-control visually-hidden" type="file" name="datos" id="fileUpload" required>
-                        <button class="btn btn-warning" type="submit">Subir</button>
-                    </form>
-                    <span style="width: 1rem; display: inline-block;"></span>
-                    <img src="{{ url_for('static', filename='images/porcolombia.jpg') }}" alt="Por Colombia" class="img-fluid rounded me-3" style="height:40px;">
-                    <span style="width: 1rem; display: inline-block;"></span>
-                    <img src="{{ url_for('static', filename='images/spe20.jpg') }}" alt="Por Colombia" class="img-fluid rounded me-3" style="height:40px;">
-
+                <div class="row w-100 align-items-center">
+                    <div class="col-md-4 d-flex flex-column justify-content-center">
+                        <a class="navbar-brand" href="#">Procesador de Reportes de Juicios</a>
+                        <span class="navbar-text text-white" style="font-size: 0.75rem;">Ver 1.0.0</span>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-center justify-content-center">
+                        <span class="navbar-text text-white me-3">
+                            {% if variables.datos %}
+                                <b>Haz subido un archivo de datos</b>
+                            {% else %}
+                                <span class="text-danger"><b>No haz cargado un archivo de datos!!</b></span>
+                            {% endif %}
+                        </span>
+                        <form class="d-flex" method="post" enctype="multipart/form-data" action="{{ url_for('upload_datos') }}">
+                            <label for="fileUpload" class="form-control btn btn-primary mb-0 me-2" style="width:auto;">buscar datos</label>
+                            <input class="form-control visually-hidden" type="file" name="datos" id="fileUpload" required>
+                            <button class="btn btn-warning" type="submit">Subir</button>
+                        </form>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-center justify-content-end">
+                        <span style="width: 1rem; display: inline-block;"></span>
+                        <img src="{{ url_for('static', filename='images/porcolombia.jpg') }}" alt="Por Colombia" class="img-fluid rounded me-3" style="height:40px;">
+                        <span style="width: 1rem; display: inline-block;"></span>
+                        <img src="{{ url_for('static', filename='images/spe20.jpg') }}" alt="Por Colombia" class="img-fluid rounded me-3" style="height:40px;">
+                    </div>
                 </div>
             </div>
         </nav>
@@ -41,7 +47,7 @@
                             </label>
                             <input class="form-control me-2 visually-hidden" type="file" name="files" id="filesUpload" multiple required {% if variables.subio_fichas %}disabled{% endif %}>
                             <button class="btn btn-light" type="submit" {% if variables.subio_fichas %}disabled{% endif %}>
-                                Procesar reportes selecionados
+                                Cargar y procesar reportes seleccionados
                             </button>
                         </form>
                     </div>

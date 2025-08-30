@@ -1,25 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta content="text/html">
-        <style type="text/css">
-            body, table { font-family: Arial, Helvetica, sans-serif; font-size: 10pt; line-height: 1.4em; }
-            th { text-align: center; color:#fff; background-color: #000;}
-        </style>
-        <title>Fichas Complementaria Virtual</title>
+        <meta charset="utf-8">
+        <title>Gestor de Archivos</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="{{ url_for('static', filename='css/app.css') }}" rel="stylesheet">
     </head>
     <body lang=ES>
-        <div class="center">
-            {% block texto %}
-            {% endblock %}
-        </div>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+            <div class="container-fluid">
+                <div class="row w-100 align-items-center">
+                    <div class="col-md-4 d-flex flex-column justify-content-center">
+                        <a class="navbar-brand" href="#">Procesador de Reportes de Juicios</a>
+                        <span class="navbar-text text-white" style="font-size: 0.75rem;">Ver 1.0.0</span>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-center justify-content-center">
+                        <span class="navbar-text text-white me-3">
+                        </span>
+                        <form class="d-flex" method="post" enctype="multipart/form-data" action="{{ url_for('upload_datos') }}">
+                            <label for="fileUpload" class="form-control btn btn-primary mb-0 me-2" style="width:auto;">buscar datos</label>
+                            <input class="form-control visually-hidden" type="file" name="datos" id="fileUpload" required>
+                            <button class="btn btn-warning" type="submit">Subir</button>
+                        </form>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-center justify-content-end">
+                        <span style="width: 1rem; display: inline-block;"></span>
+                        <img src="{{ url_for('static', filename='images/porcolombia.jpg') }}" alt="Por Colombia" class="img-fluid rounded me-3" style="height:40px;">
+                        <span style="width: 1rem; display: inline-block;"></span>
+                        <img src="{{ url_for('static', filename='images/spe20.jpg') }}" alt="Empleo" class="img-fluid rounded me-3" style="height:40px;">
+                    </div>
+                </div>
+            </div>
+        </nav>
         <div>
-            <p>Reiteramos nuestro apoyo desde la Coordinación, por cualquier situación extraordinaria que se pueda presentar.</p>
-            <br>
-            <p>Atentamente,</p>
-            <br>
+            {% block body %}
+            {% endblock %}
         </div>
     </body>
 </html>

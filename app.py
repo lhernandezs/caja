@@ -122,10 +122,10 @@ def view_datos(ficha):
     try:
         #OJO.. tener en cuenta que leerARchivo está colocando un directorio, debe mejorarse los parametros de este metodo en EntradaSalida
         dfDatos: pd.DataFrame = Entrada().getDataFrame(UPLOAD_FOLDER, f"{ficha}.xlsx", "Datos", columnas)
-        dfDatos.fillna("", inplace=True)
-        # OJO.. como mejorar la presentacion del DATAFRAME
-        # dfDatos['porEvaluar'] = dfDatos['porEvaluar'].round().astype(int)
-        # dfDatos.style.apply(color_rows, axis=1)
+        for col in dfDatos.columns:
+            dfDatos[col] = dfDatos[col].apply(
+            lambda x: '' if x == 0 or pd.isna(x) or x == '' else (int(x) if isinstance(x, (int, float)) and not isinstance(x, bool) and float(x).is_integer() else x)
+            )
     except Exception as e:
         session['error'].append(f"Error: no fue posible abrir la hoja 'Datos' del archivo {e}")
     return render_template("datos.html", dataFrame=dfDatos)
