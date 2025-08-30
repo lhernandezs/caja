@@ -23,23 +23,34 @@
                     <tbody>
                         {% if dataFrame.empty == False %}
                             {% for row in dataFrame.values %}
-                                <tr style="min-height:20px;">
+                                {% set fila_index = loop.index %}
+                                <tr>
+                                <tr>
                                     {% for cell in row %}
                                         {% set col_idx = loop.index0 %}
-                                        {% set col1 = ['documento', 'nombres', 'apellidos', 'estado'] %}                                            
-                                        {% set col2 = ['aprobado', 'porEvaluar', 'noAprobado', 'enTramite'] %}
+                                        {% set col1 = ['nombres', 'apellidos'] %}   
+                                        {% set col2 = ['documento', 'estado'] %}                                                                                    
+                                        {% set col3 = ['aprobado', 'porEvaluar', 'noAprobado', 'enTramite'] %}
                                         {% if dataFrame.columns[col_idx] in col1 %}
-                                            {% set width = '100px' %}
+                                            {% set width = '90px' %}
                                         {% elif dataFrame.columns[col_idx] in col2 %}
+                                            {% set width = '60px' %}
+                                        {% elif dataFrame.columns[col_idx] in col3 %}
                                             {% set width = '30px' %}
                                         {% elif 10 <= col_idx <= 25 %}
-                                            {% set width = '20px' %}
+                                            {% set width = '30px' %}
                                         {% else %}
                                             {% set width = '15px' %}
                                         {% endif %}
                                         <td>
-                                            <span style="display:inline-block; width:{{ width }}; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
-                                                {{ cell }}
+                                            <!-- <span style="display:inline-block; width:{{ width }} ; overflow:hidden -->
+                                            <span style="width:{{ width }} ; overflow:hidden
+                                                {% if fila_index == 1 %} 
+                                                    ;white-space:normal ; padding:0
+                                                {% else %} 
+                                                    ; text-overflow:ellipsis ; white-space:nowrap 
+                                                {% endif %}">
+                                                    {{ cell }} 
                                             </span>
                                         </td>
                                     {% endfor %}
