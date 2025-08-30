@@ -80,7 +80,6 @@ def upload_files():
                                         'fecha_inicio'     : diccionario['fecha_inicio'],
                                         'fecha_fin'        : diccionario['fecha_fin'],
                                         }
-                print(f"session['fichas'] despues de subir : {session['fichas']} type : {type(session['fichas'])}")
             except Exception as e:
                 session['error'] = e
         if len(session['fichas']) > 0:
@@ -100,7 +99,7 @@ def delete_multiple_files():
                 session.pop('fichas', None)
                 session['fichas'] = fichas
     if len(session['fichas']) > 0:
-        session['subio_fichas'] = True                
+        session['subio_fichas'] = False                
     return render_template("index.html", variables = session)
 
 @app.route("/delete/<ficha>", methods=["POST"])

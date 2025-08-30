@@ -1,44 +1,4 @@
-{% extends "base.html" %}
-
-{% block body %}
-    <div class="d-flex justify-content-center">
-        <div class="mi-contenedor-ancho">
-            <div>
-                <div class="d-flex align-items-center mb-3">
-                    <h2 class="mb-0 me-3">Datos</h2>
-                    <div class="ms-auto">
-                        <a class="btn btn-light" href="/">Inicio</a>
-                    </div>
-                </div>
-            </div>
-            <div class="table-responsive">
-                <table class="table table-striped table-bordered table-custom">
-                    <thead>
-                        <tr>
-                            {% for col in dataFrame.columns %}
-                                {% if col != 'color' %}
-                                    <th>{{ col }}</th>
-                                {% endif %}
-                            {% endfor %}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% if dataFrame.empty == False %}
-                            {% for row in dataFrame.values %}
-                                {% if loop.index == 1 %}
-                                    <tr>
-                                        <td colspan="10">Los instructores de la ficha son -> </td>
-                                        {% for cell in row %}
-                                            {% if loop.index0 > 9 %}
-                                                <td>
-                                                    <span style="overflow:hidden; white-space:normal; padding:0">
-                                                        {{ cell}}
-                                                    </span>
-                                                </td>
-                                            {% endif %}
-                                        {% endfor %}
-                                    </tr>
-                                {% else %}
+                                    <!-- {% else %}
                                     <tr>
                                         {% for cell in row %}
                                             {% set col_idx = loop.index0 %}
@@ -70,19 +30,7 @@
                                                         {{ cell }} 
                                                     </span>
                                                 </td>
+                                                {% endif %}
                                             {% endif %}
                                         {% endfor %}
-                                    </tr>
-                                {% endif %}
-                            {% endfor %}
-                        {% else %}
-                            <tr>
-                                <td colspan="25">No hay datos disponibles.</td>
-                            </tr>
-                        {% endif %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-{% endblock %}
+                                    </tr> -->
