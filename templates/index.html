@@ -59,7 +59,6 @@
                     {{ variables.error }}
                 </div>
             {% endif %}
-           {{ variables.fichas }}
             <h2>Fichas cargadas</h2>
             <table class="table table-striped">
                 <thead>
@@ -81,7 +80,7 @@
                             <tr>
                                 <td><input type="checkbox" class="file-checkbox" name="selected_files" value="{{ archivo }}"></td>
                                 <td>{{ ficha }}</td>
-                                <td>{{ variables.fichas[ficha]['programa'] }}</td>
+                                <td style="width: 100px;">{{ variables.fichas[ficha]['programa'] }}</td>
                                 <td>{{ variables.fichas[ficha]['codigo_programa'] }}</td>
                                 <td>{{ variables.fichas[ficha]['version_programa'] }}</td>                                                                
                                 <td>{{ variables.fichas[ficha]['fecha_inicio'] }}</td>
