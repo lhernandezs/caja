@@ -16,7 +16,9 @@
                     <thead>
                         <tr>
                             {% for col in dataFrame.columns %}
-                                <th>{{ col }}</th>
+                                {% if col != 'color' %}
+                                    <th>{{ col }}</th>
+                                {% endif %}
                             {% endfor %}
                         </tr>
                     </thead>
@@ -28,31 +30,40 @@
                                 <tr>
                                     {% for cell in row %}
                                         {% set col_idx = loop.index0 %}
-                                        {% set col1 = ['nombres', 'apellidos'] %}   
-                                        {% set col2 = ['documento', 'estado'] %}                                                                                    
-                                        {% set col3 = ['aprobado', 'porEvaluar', 'noAprobado', 'enTramite'] %}
-                                        {% if dataFrame.columns[col_idx] in col1 %}
-                                            {% set width = '90px' %}
-                                        {% elif dataFrame.columns[col_idx] in col2 %}
-                                            {% set width = '60px' %}
-                                        {% elif dataFrame.columns[col_idx] in col3 %}
-                                            {% set width = '30px' %}
-                                        {% elif 10 <= col_idx <= 25 %}
-                                            {% set width = '30px' %}
-                                        {% else %}
-                                            {% set width = '15px' %}
-                                        {% endif %}
-                                        <td>
-                                            <!-- <span style="display:inline-block; width:{{ width }} ; overflow:hidden -->
-                                            <span style="width:{{ width }} ; overflow:hidden
-                                                {% if fila_index == 1 %} 
-                                                    ;white-space:normal ; padding:0
-                                                {% else %} 
-                                                    ; text-overflow:ellipsis ; white-space:nowrap 
-                                                {% endif %}">
+                                        {% if col_idx < 24 %}
+                                            {% set col1 = ['nombres', 'apellidos'] %}   
+                                            {% set col2 = ['documento', 'estado'] %}                                                                                    
+                                            {% set col3 = ['aprobado', 'porEvaluar', 'noAprobado', 'enTramite'] %}
+                                            {% if dataFrame.columns[col_idx] in col1 %}
+                                                {% set width = '90px' %}
+                                            {% elif dataFrame.columns[col_idx] in col2 %}
+                                                {% set width = '60px' %}
+                                            {% elif dataFrame.columns[col_idx] in col3 %}
+                                                {% set width = '30px' %}
+                                            {% elif 10 <= col_idx <= 25 %}
+                                                {% set width = '30px' %}
+                                            {% else %}
+                                                {% set width = '15px' %}
+                                            {% endif %}
+                                            <td
+                                                {% if dataFrame.columns[col_idx] == 'color' %}
+                                                    style="background-color: {{ cell }};"
+                                                {% else %}
+                                                    {% if 'color' in dataFrame.columns %}
+                                                        style="background-color: {{ row[dataFrame.columns.get_loc('color')] }};"
+                                                    {% endif %}
+                                                {% endif %}
+                                            >
+                                                <span style="width:{{ width }}; overflow:hidden
+                                                    {% if fila_index == 1 %} 
+                                                        ;white-space:normal; padding:0
+                                                    {% else %} 
+                                                        ;text-overflow:ellipsis; white-space:nowrap 
+                                                    {% endif %}">
                                                     {{ cell }} 
-                                            </span>
-                                        </td>
+                                                </span>
+                                            </td>
+                                        {% endif %}
                                     {% endfor %}
                                 </tr>
                             {% endfor %}

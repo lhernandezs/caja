@@ -108,7 +108,7 @@ class ProcesadorJuicios:
         self.df_datos.drop_duplicates(inplace=True)
         nuevas_columnas = { "aprobado": None, "porEvaluar": None, "noAprobado": None, "enTramite": None, "activo": None, "orden": None, \
                             "IND": None, "BIL": None, "CIE": None, "COM": None, "CUL": None, "DER": None, "EMP": None, \
-                            "ETI": None, "INV": None, "MAT": None, "SST": None, "TIC": None, "PRO": None, "TEC": None }
+                            "ETI": None, "INV": None, "MAT": None, "SST": None, "TIC": None, "PRO": None, "TEC": None, "color": None, }
         self.df_datos = self.df_datos.assign( **nuevas_columnas ) 
 
         # 3. recorremos el dataframe df_datos y asignamos los valores de las nuevas columnas
@@ -139,6 +139,15 @@ class ProcesadorJuicios:
                         contadorTodas += contador 
             
                 self.df_datos.loc[i, "TEC"] = len(df_por_evaluar) - contadorTodas
+
+        # Asignar el color a cada fila usando la función color_rows
+        for idx, row in self.df_datos.iterrows():
+            color_value = color_rows(row)[0]
+            if isinstance(color_value, str) and color_value.startswith("background-color: "):
+                color_value = color_value.replace("background-color: ", "")
+            self.df_datos.at[idx, "color"] = color_value
+        # # Ocultar la columna 'color' en el DataFrame de salida
+        # self.df_datos = self.df_datos.loc[:, self.df_datos.columns != "color"]
 
         # 4. creamos un dataframe con los nombres de los instructores de cada competencia
         instructores = pd.DataFrame([np.nan] * len(self.df_datos.columns)).transpose()
