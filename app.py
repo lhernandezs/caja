@@ -1,15 +1,22 @@
 import os
+import numpy as np
 import pandas as pd
 
 from flask import ( request, session, Flask, render_template, redirect, url_for, jsonify)
 from flask_mail import Mail, Message
 
-from config                 import Config
-from cargadorDatos          import CargadorDatos
-from procesadorJuicios      import ProcesadorJuicios
-from entrada                import Entrada
+from config                     import Config
+from cargadorDatos              import CargadorDatos
+from procesadorJuicios          import ProcesadorJuicios
+from entrada                    import Entrada
 
-app = Flask(__name__)
+from correo                     import Correo
+from modelo                     import DatosCorreoJuicios
+from procesadorJuiciosHelper    import columnas_df_datos
+
+from config                     import TEMPLATES_FOLDER
+
+app = Flask(__name__, template_folder=TEMPLATES_FOLDER)
 app.config.from_object(Config)
 app.secret_key = app.config["SECRET_KEY"]
 mail = Mail(app)
@@ -18,22 +25,11 @@ UPLOAD_FOLDER       = app.config["UPLOAD_FOLDER"]
 UPLOAD_FOLDER_DATA  = app.config["UPLOAD_FOLDER_DATA"]
 ALLOWED_EXTENSIONS  = app.config["ALLOWED_EXTENSIONS"]
 
-MAIL_SERVER         = app.config['MAIL_SERVER']
-MAIL_PORT           = app.config['MAIL_PORT']
-MAIL_USE_TLS        = app.config['MAIL_USE_TLS']
-MAIL_USE_SSL        = app.config['MAIL_USE_SSL']
-MAIL_USERNAME       = app.config['MAIL_USERNAME']
-MAIL_PASSWORD       = app.config['MAIL_PASSWORD']
-MAIL_DEFAULT_SENDER = app.config['MAIL_DEFAULT_SENDER']
-
-
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(UPLOAD_FOLDER_DATA, exist_ok=True)
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-
 
 def delete_file_disk(ficha):
     file_path = os.path.join(UPLOAD_FOLDER, f"{ficha}.xlsx")
@@ -139,23 +135,61 @@ def view_datos(ficha):
     return render_template("datos.html", dataFrame=dfDatos, variables = session['fichas'][ficha], ficha= ficha)
 
 # Ruta para recibir los datos del formulario y enviar el correo
-@app.route('/enviar_correo', methods=["POST"])
-def enviar_correo():
-    print("paso por aqui")
+@app.route('/send_mail', methods=["POST"])
+def send_mail():
 
-    destinatario = request.form['to']
-    asunto = request.form['subject']
-    mensaje_texto = request.form['body']
+    form_data = request.form.to_dict(flat=True)
+    ficha = form_data['ficha']
+    to = form_data['to']
+    subject = form_data['subject']
+    body = form_data['body']
 
-    msg = Message(asunto, sender=MAIL_USERNAME, recipients=[destinatario])
-    msg.body = mensaje_texto
+    print(f"form_data: {form_data}")
+
+    df_datos : pd.DataFrame = Entrada().getDataFrame("upload", f"{ficha}.xlsx", "Datos", columnas_df_datos)
+
+    # activos con juicios por evaluar
+    df_activos   = df_datos[(df_datos['activo']            == "ACTIVO") & 
+                            (df_datos['porEvaluar'].values > 1)].reset_index()   
+    # hay que desertarlos
+    df_aDesertar = df_datos[(df_datos['estado']   == "EN FORMACION") &
+                            (df_datos['activo']   != "ACTIVO") & 
+                            (df_datos['enTramite'].isin([np.nan])) ].reset_index()
+
+    instructores    = [df_datos.iloc[0, 23]]
+    datosActivos    = []
+    datosADesertar  = []
+
+    for index, row in df_activos.iterrows():
+        for col in range(11,24):
+            if (df_activos.iloc[index, col + 1] > 0) & (df_datos.columns[col] != "PRO"):
+                nombres =   f"{df_activos.iloc[index, 3]} {df_activos.iloc[index, 4]}"
+                competencia = df_datos.columns[col]
+                rapsPorEvaluar = int(df_activos.iloc[index, col + 1])
+                instructor = df_datos.iloc[0, col],
+                datosActivos.append([nombres, competencia, rapsPorEvaluar, instructor[0],])
+                if not instructor[0] in instructores:
+                    instructores.append(instructor[0])
+
+    for index,row in df_aDesertar.iterrows():
+        nombres =   f"{df_aDesertar.iloc[index, 3]} {df_aDesertar.iloc[index, 4]}"                
+        rapsPorEvaluar = int(df_aDesertar.iloc[index, 7])
+        datosADesertar.append([ nombres, rapsPorEvaluar])
+
+    datosCorreo = DatosCorreoJuicios(
+                                ficha                   = ficha,
+                                instructores            = instructores,
+                                activos                 = datosActivos,
+                                desertores              = datosADesertar
+                                    )
+    
+    correo = Correo('JUICI','lhernandezs', 'sena.edu.co', 'LeonardoSENA', datosCorreo)   # destino correo Leonardo            
 
     try:
-        mail.send(msg)
+        correo.send_email(ficha = ficha)
         return jsonify({'message': 'Correo enviado exitosamente!'})
     except Exception as e:
         return jsonify({'message': f'Error al enviar el correo: {str(e)}'}), 500
-
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base_correos.html" %}
 
 {% block texto %}
 <p>
@@ -11,7 +11,7 @@
 <br>
 <p>Cordial saludo, esperamos se encuentren muy bien,</p><br>
 
-<p>Teniendo en cuenta que el Procedimiento de Ejecución de la Formación establece que TODOS los Juicios de la Etapa Lectiva de los Aprendices ACTIVOS deben estar evaluados al finalizar dicha etapa, el 19 de agosto de 2025, nos preocupa profundamente el incumplimiento de esta normativa.
+<p>Teniendo en cuenta que el Procedimiento de Ejecución de la Formación establece que TODOS los Juicios de la Etapa Lectiva de los Aprendices ACTIVOS deben estar evaluados al finalizar dicha etapa, nos preocupa profundamente el incumplimiento de esta normativa.
 </p>
 
 {% if datosCorreo.activos or datosCorreo.desertores %}
@@ -60,7 +60,7 @@
             </table>
         </div>
     {% endif %}
-    <p>Favor enviar su respuesta al correo de la coordinacion de formación virtual formacionvirtualcsf@sena.edu.co con copia a jcaror@sena.edu.co y lhernandezs@sena.edu.co antes del 21 de agosto de 2025 a las 5:00 p.m.</p>
+    <p>Favor enviar su respuesta al correo de la coordinacion de formación virtual lo antes posible.</p>
 {% else %}
     <p>Queremos informar que la ficha {{ datosCorreo.ficha }} se encuentra NORMALIZADA, es decir los aprendices que pasaron a Etapa Productiva solo tienen el Jucio POR EVALUAr que corresponde a la Etapa Práctica. Agradecemos su colaboración, desde la Coordinación seguiremos sumando esfuerzos para mejorar la calidad de la formación del SENA y seguier</p>
 {% endif %}

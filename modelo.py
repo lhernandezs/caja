@@ -45,16 +45,16 @@ class TopeAprendices(BaseModel):
     tope                        : int
 
 class Juicio(BaseModel):
-    tipo                      : str
+    tipo                        : str
     documento	                : str
-    nombre                    : str  	
+    nombre                      : str  	
     apellidos	                : str
-    estado	                  : str
-    competencia	              : str
+    estado	                    : str
+    competencia	                : str
     resultado	                : str
     juicio		                : str
     fecha	                    : str
-    funcionario	              : str
+    funcionario	                : str
 
 class DatosCorreoJuicios(BaseModel):
     ficha                         : int

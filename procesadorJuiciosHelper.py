@@ -33,7 +33,7 @@ ancho_columnas = {'datos' :     [('A',  6), ('B', 15), ('C', 21), ('D', 21), ('E
                                  ('K', 30),]}
 
 columnas_df_datos = ["tipo", "documento", "nombres", "apellidos", "estado", "aprobado", "porEvaluar", "noAprobado",	"enTramite", "activo",	\
-                     "IND",	"BIL",	"CIE",	"COM",	"CUL",	"DER",	"EMP",	"ETI",	"INV",	"MAT",	"SST",	"TIC",	"PRO",	"TEC"]
+                     "IND",	"BIL",	"CIE",	"COM",	"CUL",	"DER",	"EMP",	"ETI",	"INV",	"MAT",	"SST",	"TIC",	"PRO",	"TEC", "color"]
 
 def numeroDeOrden(estado: str, porEvaluar: int) -> int:
     """
