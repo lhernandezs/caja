@@ -25,7 +25,6 @@ class Correo:
                                                                             instructores = ['instructor1', 'instructor2'], 
                                                                             activos = ['activo1', 'activo2'], 
                                                                             desertores = ['desertor1', 'desertor2'])):
-        
         with open(os.path.join(JSON_FOLDER, 'sercorreo.json'), 'r') as conex:
             arc = json.load(conex)
         self._sender_username           = arc[tipo]["emailRemitente"] 
@@ -68,6 +67,7 @@ class Correo:
 
     # metodo que envia el email
     def send_email(self):
+
         self.build_email()
         remitente       = self._sender_username + "@" + self._sender_domain
         destinatario    = self._destination_username + "@" + self._destination_domain

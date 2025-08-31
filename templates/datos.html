@@ -21,16 +21,21 @@
                     </div>
                     <div class="ms-auto">
                         <form id="emailForm" method="POST">
-                            # OJO: hay que revisar que el valor por default de estos destinarios sean los nombres de los instructores
+                            <!-- OJO: hay que revisar que el valor por default de estos destinarios sean los nombres de los instructores -->
                             <input type="email" name="to" placeholder="Destinatario" value="lhernandezs@sena.edu.co" required>
                             <input type="text" name="subject" placeholder="Asunto" value="normalizar ficha {{ ficha }}" required>
                             <input type="hidden" name="ficha" value="{{ ficha }}">
-                            <textarea name="body" placeholder="Mensaje" value="Cordial saludo. Solicitamos su valiosa colaboracion 'normalizando" la fichanormalizar ficha {{ ficha }} del programa {{ variables.codigo_programa }}  cuya fecha de fue el {{ variables.fecha_inicio }}. Quedamos atentos a cualquier inquietud." required></textarea>
+                            <textarea name="body" placeholder="Mensaje" required>
+                                Cordial saludo,
+
+                                Solicitamos su valiosa colaboración normalizando la ficha {{ ficha }} del programa {{ variables.codigo_programa }} de fecha el {{ variables.fecha_inicio }}. 
+
+                                Quedamos atentos a cualquier inquietud.
+                            </textarea>
                             <button type="submit">Enviar Correo</button>
                         </form>
 
                         <div id="mensajeExito"></div>
-                        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
                         <script>
                             $(document).ready(function() {
                                 $('#emailForm').submit(function(event) {

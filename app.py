@@ -141,12 +141,14 @@ def send_mail():
     form_data = request.form.to_dict(flat=True)
     ficha = form_data['ficha']
     to = form_data['to']
-    subject = form_data['subject']
-    body = form_data['body']
+    # subject = form_data['subject'] # por ahor no sirven para nada
+    # body = form_data['body'] # por ahor no sirven para nada
+
+    destination_username, destination_domain = to.split('@')
 
     print(f"form_data: {form_data}")
 
-    df_datos : pd.DataFrame = Entrada().getDataFrame("upload", f"{ficha}.xlsx", "Datos", columnas_df_datos)
+    df_datos : pd.DataFrame = Entrada().getDataFrame(UPLOAD_FOLDER, f"{ficha}.xlsx", "Datos", columnas_df_datos)
 
     # activos con juicios por evaluar
     df_activos   = df_datos[(df_datos['activo']            == "ACTIVO") & 
@@ -182,11 +184,11 @@ def send_mail():
                                 activos                 = datosActivos,
                                 desertores              = datosADesertar
                                     )
-    
-    correo = Correo('JUICI','lhernandezs', 'sena.edu.co', 'LeonardoSENA', datosCorreo)   # destino correo Leonardo            
+   
+    correo = Correo('JUICI', destination_username, destination_domain, destination_username, datosCorreo)   # destino correo Leonardo            
 
     try:
-        correo.send_email(ficha = ficha)
+        correo.send_email()
         return jsonify({'message': 'Correo enviado exitosamente!'})
     except Exception as e:
         return jsonify({'message': f'Error al enviar el correo: {str(e)}'}), 500
