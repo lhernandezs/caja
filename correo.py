@@ -27,11 +27,20 @@ class Correo:
                                                                             desertores = ['desertor1', 'desertor2'])):
         with open(os.path.join(JSON_FOLDER, 'sercorreo.json'), 'r') as conex:
             arc = json.load(conex)
-        self._sender_username           = arc[tipo]["emailRemitente"] 
-        self._sender_domain             = arc[tipo]["servidorRemitente"] 
-        self._sender_display_name       = arc[tipo]["nombreRemitente"] 
-        self._subject                   = arc[tipo]["asunto"] 
-        self._template                  = arc[tipo]["template"]
+
+        try:
+            self._sender_username           = arc[tipo]["emailRemitente"] 
+            self._sender_domain             = arc[tipo]["servidorRemitente"] 
+            self._sender_display_name       = arc[tipo]["nombreRemitente"] 
+            self._subject                   = arc[tipo]["asunto"] 
+            self._template                  = arc[tipo]["template"]
+        except KeyError:
+            self._sender_username           = "formacionvirtualcsf"
+            self._sender_domain             = "gmail.com"
+            self._sender_display_name       = "formacionvirtualcsf@sena.edu.co"
+            self._subject                   = "normalizar ficha  " 
+            self._template                  = None
+
 
         self._destination_username      = destination_username
         self._destination_domain        = destination_domain
@@ -49,7 +58,10 @@ class Correo:
         self._email_message["Subject"] = f"{self._subject} {self._datosCorreo.ficha}"
         self._email_message["From"]    = Address(username=self._sender_username, domain=self._sender_domain, display_name=self._sender_display_name)
         self._email_message["To"]      = Address(username=self._destination_username, domain=self._destination_domain, display_name=self._destination_display_name)
-        html_data: str                 = self.render_html()
+        if self._template:
+            html_data: str                 = self.render_html()
+        else:
+            html_data = "mensaje de la pagina"
         self._email_message.add_alternative(html_data, subtype="html")
         filename = f"{self._datosCorreo.ficha}.xlsx"
 

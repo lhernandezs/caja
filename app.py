@@ -183,7 +183,8 @@ def send_mail():
                                 desertores              = datosADesertar
                                     )
    
-    correo = Correo('JUICI', destination_username, destination_domain, destination_username, datosCorreo)   # destino correo Leonardo            
+    # correo = Correo('JUICI', destination_username, destination_domain, destination_username, datosCorreo)   # destino correo Leonardo            
+    correo = Correo('NONE', destination_username, destination_domain, destination_username, datosCorreo)   # destino correo Leonardo            
 
     try:
         correo.send_email()
