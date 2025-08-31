@@ -146,8 +146,6 @@ def send_mail():
 
     destination_username, destination_domain = to.split('@')
 
-    print(f"form_data: {form_data}")
-
     df_datos : pd.DataFrame = Entrada().getDataFrame(UPLOAD_FOLDER, f"{ficha}.xlsx", "Datos", columnas_df_datos)
 
     # activos con juicios por evaluar

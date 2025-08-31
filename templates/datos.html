@@ -9,33 +9,52 @@
                         <div class="d-flex flex-column me-3">
                             <h2 class="mb-0">{{ variables.programa }}</h2>
                             <div class="d-flex align-items-center">
-                                <h6 class="mb-0">Código: {{ variables.codigo_programa }} Ver: {{ variables.version_programa }}</h6>
-                                <div style="width:80px;"></div>
-                                <h6 class="mb-0">Ficha: {{ ficha }}</h6>
+                                <span class="mb-0" style="font-size: 0.75rem;">Cod: {{ variables.codigo_programa }} Ver: {{ variables.version_programa }}</span>
+                                <div style="width:60px;"></div>
+                                <span class="mb-0" style="font-size: 0.75rem;">Ficha: {{ ficha }}</span>
+                                <div style="width:60px;"></div>
+                                <span class="mb-0" style="font-size: 0.75rem;">Inicio: {{ variables.fecha_inicio }}</span>
+                                <div style="width:40px;"></div>
+                                <span class="mb-0" style="font-size: 0.75rem;">Finaliza: {{ variables.fecha_fin }}</span>
                             </div>
+                            <div style="height:2.5em;"></div>
                         </div>
-                        <div style="width:200px;"></div>
-                        <h6 class="mb-1">Fecha de inicio: {{ variables.fecha_inicio }}</h6>
                         <div style="width:60px;"></div>
-                        <h6 class="mb-1">Fecha de finalización: {{ variables.fecha_fin }}</h6>
-                    </div>
-                    <div class="ms-auto">
                         <form id="emailForm" method="POST">
-                            <!-- OJO: hay que revisar que el valor por default de estos destinarios sean los nombres de los instructores -->
-                            <input type="email" name="to" placeholder="Destinatario" value="lhernandezs@sena.edu.co" required>
-                            <input type="text" name="subject" placeholder="Asunto" value="normalizar ficha {{ ficha }}" required>
-                            <input type="hidden" name="ficha" value="{{ ficha }}">
-                            <textarea name="body" placeholder="Mensaje" required>
-                                Cordial saludo,
-
-                                Solicitamos su valiosa colaboración normalizando la ficha {{ ficha }} del programa {{ variables.codigo_programa }} de fecha el {{ variables.fecha_inicio }}. 
-
-                                Quedamos atentos a cualquier inquietud.
-                            </textarea>
-                            <button type="submit">Enviar Correo</button>
+                            <div class="d-flex">
+                                <div style="flex:1; min-width:70px;">
+                                    <div>
+                                        <label for="to" class="form-label" style="font-size: 0.75rem">Destinatario</label>
+                                    </div>
+                                    <div>
+                                        <label for="subject" class="form-label" style="font-size: 0.75rem;">Asunto</label>
+                                    </div>
+                                </diV>
+                                <div style="flex:1; min-width:200px;">
+                                    <div class="mb-2">
+                                        <input type="email" id="to" name="to" class="form-control mb-2" style="font-size: 0.75rem;" placeholder="Destinatario" value="lhernandezs@sena.edu.co"  required>
+                                    </div>
+                                    <div class="mb-2">
+                                        <input type="text" id="subject" name="subject" class="form-control mb-2" style="font-size: 0.75rem;" placeholder="Asunto" value="normalizar ficha {{ ficha }}" required>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div style="flex:1; min-width:500px; margin-left:10px;">
+                                        <textarea name="body" class="form-control mb-2" placeholder="Mensaje" required rows="3" style="font-size: 0.75rem;">Cordial saludo, Solicitamos su valiosa colaboración normalizando la ficha {{ ficha }} del programa {{ variables.programa }} de fecha el {{ variables.fecha_inicio }}.Quedamos atentos a cualquier inquietud.
+                                        </textarea>
+                                    </div>
+                                    <div id="mensaje" class="mt-2" style="font-size: 0.75rem;"></div> 
+                                </div>
+                                <div style="width:20px;"></div>
+                                <div style="flex:1; min-width:120px;">
+                                    <input type="hidden" name="ficha" value="{{ ficha }}">
+                                    <div class="mb-2 d-flex flex-column align-items-end">
+                                        <button type="submit" class="btn btn-success mb-2" style="font-size: 0.85rem; width: 100%;">Enviar Correo</button>
+                                        <a class="btn btn-light mb-2" href="/" style="border: 1px solid #000; width: 100%; font-size: 0.85rem;">Inicio</a>
+                                    </div>
+                                </div>
+                            </div>
                         </form>
-
-                        <div id="mensajeExito"></div>
                         <script>
                             $(document).ready(function() {
                                 $('#emailForm').submit(function(event) {
@@ -46,18 +65,17 @@
                                         url: '/send_mail',
                                         data: formData,
                                         success: function(response) {
-                                            $('#mensajeExito').html(response.message).css('color', 'green');
+                                            $('#mensaje').html(response.message).css('color', 'green');
                                             $('#emailForm')[0].reset();
                                         },
                                         error: function(xhr, status, error) {
-                                            $('#mensajeExito').html('Error al enviar el correo: ' + error).css('color', 'red');
+                                            $('#mensaje').html('Error al enviar el correo: ' + error).css('color', 'red');
                                         }
                                     });
                                 });
                             });
                         </script>
 
-                        <a class="btn btn-light" href="/" style="border: 1px solid #000;">Inicio</a>
                     </div>
                 </div>
             </div>
