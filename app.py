@@ -104,7 +104,7 @@ def delete_multiple_files():
                 fichas.pop(ficha, None)
                 session.pop('fichas', None)
                 session['fichas'] = fichas
-    if len(session['fichas']) > 0:
+    if len(session['fichas']) == 0:
         session['subio_fichas'] = False                
     return render_template("index.html", variables = session)
 

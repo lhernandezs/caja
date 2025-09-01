@@ -1,5 +1,6 @@
 {
     "black-formatter.args": [
         "--line-length 150"
-    ]
+    ],
+    "python.terminal.activateEnvironment": true
 }

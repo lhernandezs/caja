@@ -9,20 +9,20 @@
                         <div class="d-flex flex-column me-3">
                             <h2 class="mb-0">{{ variables.programa }}</h2>
                             <div class="d-flex align-items-center">
-                                <span class="mb-0" style="font-size: 0.75rem;">Cod: {{ variables.codigo_programa }} Ver: {{ variables.version_programa }}</span>
-                                <div style="width:60px;"></div>
-                                <span class="mb-0" style="font-size: 0.75rem;">Ficha: {{ ficha }}</span>
-                                <div style="width:60px;"></div>
-                                <span class="mb-0" style="font-size: 0.75rem;">Inicio: {{ variables.fecha_inicio }}</span>
-                                <div style="width:40px;"></div>
-                                <span class="mb-0" style="font-size: 0.75rem;">Finaliza: {{ variables.fecha_fin }}</span>
+                                <span class="mb-0" style="font-size: 0.75rem;"><b>Cod: </b>{{ variables.codigo_programa }} Ver: {{ variables.version_programa }}</span>
+                                <div style="width:0.55rem;"></div>
+                                <span class="mb-0" style="font-size: 0.75rem;"><b>Ficha: </b>{{ ficha }}</span>
+                                <div style="width:0.55rem;"></div>
+                                <span class="mb-0" style="font-size: 0.75rem;"><b>Inicio: </b>{{ variables.fecha_inicio }}</span>
+                                <div style="width:0.45rem;"></div>
+                                <span class="mb-0" style="font-size: 0.75rem;"><b>Finaliza: </b>{{ variables.fecha_fin }}</span>
                             </div>
                             <div style="height:2.5em;"></div>
                         </div>
                         <div style="width:60px;"></div>
                         <form id="emailForm" method="POST">
                             <div class="d-flex">
-                                <div style="flex:1; min-width:70px;">
+                                <div style="flex:1; min-width:3rem;">
                                     <div>
                                         <label for="to" class="form-label" style="font-size: 0.75rem">Destinatario</label>
                                     </div>
@@ -30,7 +30,7 @@
                                         <label for="subject" class="form-label" style="font-size: 0.75rem;">Asunto</label>
                                     </div>
                                 </diV>
-                                <div style="flex:1; min-width:200px;">
+                                <div style="flex:1; min-width:15rem">
                                     <div class="mb-2">
                                         <input type="email" id="to" name="to" class="form-control mb-2" style="font-size: 0.75rem;" placeholder="Destinatario" value="lhernandezs@sena.edu.co"  required>
                                     </div>
@@ -39,14 +39,14 @@
                                     </div>
                                 </div>
                                 <div>
-                                    <div style="flex:1; min-width:500px; margin-left:10px;">
-                                        <textarea name="body" class="form-control mb-2" placeholder="Mensaje" required rows="3" style="font-size: 0.75rem;">Cordial saludo, Solicitamos su valiosa colaboración normalizando la ficha {{ ficha }} del programa {{ variables.programa }} de fecha el {{ variables.fecha_inicio }}.Quedamos atentos a cualquier inquietud.
+                                    <div style="flex:1; min-width:40rem; margin-left:10px;">
+                                        <textarea name="body" class="form-control mb-2" placeholder="Mensaje" required rows="4" style="font-size: 0.75rem;">Cordial saludo, Solicitamos su valiosa colaboración normalizando la ficha {{ ficha }} del programa {{ variables.programa }} de fecha el {{ variables.fecha_inicio }}.Quedamos atentos a cualquier inquietud.
                                         </textarea>
                                     </div>
                                     <div id="mensaje" class="mt-2" style="font-size: 0.75rem;"></div> 
                                 </div>
                                 <div style="width:20px;"></div>
-                                <div style="flex:1; min-width:120px;">
+                                <div style="flex:1; min-width:10rem;">
                                     <input type="hidden" name="ficha" value="{{ ficha }}">
                                     <div class="mb-2 d-flex flex-column align-items-end">
                                         <button type="submit" class="btn btn-success mb-2" style="font-size: 0.85rem; width: 100%;">Enviar Correo</button>
