@@ -4,7 +4,7 @@ import pandas   as pd
 from correo                   import Correo
 from modelo                   import DatosCorreoJuicios
 from entrada                  import Entrada
-from analizador               import Analizador
+from filtosHelper               import Analizador
 from procesadorJuiciosHelper  import columnas_df_datos
 from config                   import Config
 
