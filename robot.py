@@ -4,20 +4,20 @@ import pandas   as pd
 from correo                   import Correo
 from modelo                   import DatosCorreoJuicios
 from entrada                  import Entrada
-from filtosHelper               import Analizador
-from procesadorJuiciosHelper  import columnas_df_datos
-from config                   import Config
+from filtosHelper             import FiltrosHelper
+from app                      import UPLOAD_FOLDER
+from config                   import ESTADOS, COLUMNAS_DATOS, PORCENTAJE_RAPS_POR_NORMALIZAR
 
 class Robot:
 
     def sendCorreosJuicios(self, fichas):
         for ficha in fichas: 
-            df_datos : pd.DataFrame = Entrada().getDataFrame(Config.UPLOAD_FOLDER, f"{ficha}.xlsx", "Datos", columnas_df_datos)
-            analizador = Analizador()
-            resultados = analizador.procesar(df_datos)
-            instructores = resultados['instructores']
-            datos_activos = resultados['datos_activos']
-            datos_a_desertar = resultados['datos_a_desertar']
+            df_datos : pd.DataFrame = Entrada().getDataFrame(UPLOAD_FOLDER, f"{ficha}.xlsx", "Datos", list(COLUMNAS_DATOS.values()))
+            analizador      = FiltrosHelper()
+            resultados      = analizador.procesar(df_datos)
+            instructores    = resultados['instructores']
+            datos_activos   = resultados['datos_activos']
+            datos_a_desertar= resultados['datos_a_desertar']
 
             datos_correo_juicios = DatosCorreoJuicios(
                                         ficha                   = ficha,
@@ -81,7 +81,7 @@ if __name__ == '__main__':
                                     '3019786', '3059847', '3041909', '3064539', '3069983', '3069982', '3167877', '3167875', '3167876',
                                   ],       
                 'prueba2':        [
-                                    '2879694'
+                                    '3106275'
                                   ],                           
              }    
     

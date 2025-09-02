@@ -1,45 +1,15 @@
 import numpy as np
 import pandas as pd
-from openpyxl.styles import Font
-from openpyxl.styles import Alignment
-from openpyxl.worksheet.worksheet import Worksheet
-from dateutil.relativedelta import relativedelta
-from datetime import datetime
 
-competencias_no_tecnicas = [
-    ("IND", "36182"), 
-    ("BIL", "37714"), 
-    ("CIE", "37801"), 
-    ("COM", "37802"), 
-    ("CUL", "37800"), 
-    ("DER", "38558"),
-    ("EMP", "38561"), 
-    ("ETI", "36180"), 
-    ("INV", "38199"), 
-    ("MAT", "38560"), 
-    ("SST", "37799"), 
-    ("TIC", "37371"), 
-    ("PRO", "2 - R"),
-]
+from openpyxl.styles                import Font
+from openpyxl.styles                import Alignment
+from openpyxl.worksheet.worksheet   import Worksheet
+from dateutil.relativedelta         import relativedelta
+from datetime                       import datetime
 
-ancho_columnas = {'datos' :     [('A',  6), ('B', 15), ('C', 21), ('D', 21), ('E', 16), 
-                                 ('F', 12), ('G', 12), ('H', 12), ('I', 15), ('J', 12),
-                                 ('K',  6), ('L',  6), ('M',  6), ('N',  6), ('O',  6), 
-                                 ('P',  6), ('Q',  6), ('R',  6), ('S',  6), ('T',  6), 
-                                 ('U',  6), ('V',  6), ('W',  6), ('X',  6),],
-                  'novedades':  [('A', 16), ('B', 42), ('C', 12), ('D', 30),],
-                  'hoja':       [('A',  6), ('B', 15), ('C', 21), ('D', 21), ('E', 16), 
-                                 ('F', 40), ('G', 40), ('H', 12), ('I',  0), ('J', 16),
-                                 ('K', 30),]}
-
-columnas_df_datos = ["tipo", "documento", "nombres", "apellidos", "estado", "aprobado", "porEvaluar", "noAprobado",	"enTramite", "activo",	\
-                     "IND",	"BIL",	"CIE",	"COM",	"CUL",	"DER",	"EMP",	"ETI",	"INV",	"MAT",	"SST",	"TIC",	"PRO",	"TEC", "color"]
+from config                         import competencias_no_tecnicas, competencias_programas_especiales
 
 def numeroDeOrden(estado: str, porEvaluar: int) -> int:
-    """
-    Metodo para definir la columna de ordenación
-    :return: Número de Orden.
-    """
     if estado == 'EN FORMACION':
         return 1000 + porEvaluar
     elif estado == 'CANCELADO':
@@ -49,11 +19,7 @@ def numeroDeOrden(estado: str, porEvaluar: int) -> int:
     else:
         return 4000 + porEvaluar
 
-def color_rows(row):
-    """
-    Metodo para colorear las filas en el DataFrame.
-    return: color elegido por la cantidad de celdas del row
-    """
+def color_rows(row) -> list:
     if row["estado"] == "EN FORMACION": 
         if row["porEvaluar"] in [0, 1]:
             color = ['background-color: PaleGreen']
@@ -73,22 +39,17 @@ def color_rows(row):
         color = ['background-color: LightGray']
     return color * len(row) 
 
-
-
-def ajustarFormatoCeldas(hoja: Worksheet, rango: int, ancho_columnas: list):
-    """
-    Metodo para ajustar el formato de las celdas.
-    """
+def ajustarFormatoCeldas(hoja: Worksheet, ancho_columnas: list):
     font = Font(name='Arial', size=8)
     for row in hoja.iter_rows():
         for cell in row:
             cell.font = font
-        for i in range(rango):
+        for i in range(len(ancho_columnas)):
             row[i].alignment = Alignment(horizontal='center')      
     for col, width in ancho_columnas:
         hoja.column_dimensions[col].width = width
 
-def getInstructorEnReporte(df_hoja: pd.DataFrame, competencia, competencias_no_tecnicas_ajustadas):
+def getInstructorEnReporte(df_hoja: pd.DataFrame, competencia, competencias_no_tecnicas_ajustadas) -> str:
     if competencia == 'TEC':
         codigos_competencias_trasversales = [x[1] for x in competencias_no_tecnicas_ajustadas]
         df_instructores_competencia_tecnica = df_hoja[(~df_hoja["competencia"].str.slice(0,5).isin(codigos_competencias_trasversales))]
@@ -106,10 +67,6 @@ def getInstructorEnReporte(df_hoja: pd.DataFrame, competencia, competencias_no_t
 
 
 def calcular_raps_tecnicos(fecha_inicio: datetime, fecha_fin: datetime, df_hoja: pd.DataFrame, competencias_no_tecnicas_ajustadas) -> int:
-    """
-    Calcula la cantidad de RAPs técnicos que debería llevar la ficha.
-    :return: Número de RAPs técnicos esperados.
-    """
     if fecha_fin is None or fecha_inicio is None:
         return 0
     meses_etapa_lectiva = 21 if ((fecha_fin.year - fecha_inicio.year) * 12 + (fecha_fin.month - fecha_inicio.month)) > 21 else 9
@@ -125,3 +82,13 @@ def calcular_raps_tecnicos(fecha_inicio: datetime, fecha_fin: datetime, df_hoja:
     total_raps_tecnicos = df_competencias_raps.shape[0] - total_raps_no_tecnicos
     print(f"M Lectiva {meses_etapa_lectiva}, M desde inicio {meses_desde_inicio}, % avance {porcentaje_avance}, Raps NoT {total_raps_no_tecnicos}, Raps T {total_raps_tecnicos}")
     return int(total_raps_tecnicos * porcentaje_avance)
+
+def getCompetenciasNoTecnicas(programa: str) -> list:
+    competencias = competencias_no_tecnicas
+    if programa in competencias_programas_especiales:
+        for competencia, codigo in competencias_programas_especiales[programa]:
+            competencias[competencia] = codigo
+    return list(competencias.items())
+
+if __name__ == "__main__":
+    print(getCompetenciasNoTecnicas('631101'))
