@@ -4,61 +4,36 @@ import pandas   as pd
 from correo                   import Correo
 from modelo                   import DatosCorreoJuicios
 from entrada                  import Entrada
+from analizador               import Analizador
 from procesadorJuiciosHelper  import columnas_df_datos
 from config                   import Config
 
 class Robot:
-    def __init__(self):
-        pass
 
     def sendCorreosJuicios(self, fichas):
         for ficha in fichas: 
-            Config.UPLOAD_FOLDER
             df_datos : pd.DataFrame = Entrada().getDataFrame(Config.UPLOAD_FOLDER, f"{ficha}.xlsx", "Datos", columnas_df_datos)
-
-            # activos con juicios por evaluar
-            df_activos   = df_datos[(df_datos['activo']            == "ACTIVO") & 
-                                    (df_datos['porEvaluar'].values > 1)].reset_index()   
-            # hay que desertarlos
-            df_aDesertar = df_datos[(df_datos['estado']   == "EN FORMACION") &
-                                    (df_datos['activo']   != "ACTIVO") & 
-                                    (df_datos['enTramite'].isin([np.nan])) ].reset_index()
-
-            instructores    = [df_datos.iloc[0, 23]]
-            datosActivos    = []
-            datosADesertar  = []
-
-            for index, row in df_activos.iterrows():
-                for col in range(11,24):
-                    if (df_activos.iloc[index, col + 1] > 0) & (df_datos.columns[col] != "PRO"):
-                        nombres =   f"{df_activos.iloc[index, 3]} {df_activos.iloc[index, 4]}"
-                        competencia = df_datos.columns[col]
-                        rapsPorEvaluar = int(df_activos.iloc[index, col + 1])
-                        instructor = df_datos.iloc[0, col],
-                        datosActivos.append([nombres, competencia, rapsPorEvaluar, instructor[0],])
-                        if not instructor[0] in instructores:
-                            instructores.append(instructor[0])
-
-            for index,row in df_aDesertar.iterrows():
-                nombres =   f"{df_aDesertar.iloc[index, 3]} {df_aDesertar.iloc[index, 4]}"                
-                rapsPorEvaluar = int(df_aDesertar.iloc[index, 7])
-                datosADesertar.append([ nombres, rapsPorEvaluar])
+            analizador = Analizador()
+            resultados = analizador.procesar(df_datos)
+            instructores = resultados['instructores']
+            datos_activos = resultados['datos_activos']
+            datos_a_desertar = resultados['datos_a_desertar']
 
             datos_correo_juicios = DatosCorreoJuicios(
                                         ficha                   = ficha,
                                         instructores            = instructores,
-                                        activos                 = datosActivos,
-                                        desertores              = datosADesertar
-                                            )
+                                        activos                 = datos_activos,
+                                        desertores              = datos_a_desertar
+                                        )
             
-            # correo = Correo('JUICI','lhernandezs', 'sena.edu.co', 'LeonardoSENA', datos_correo_juicios)   # destino correo Leonardo            
-            correo = Correo('JUICI','leo66', 'hotmail.com', 'Leonardo HS', datos_correo_juicios)   # destino correo Leonardo       
+            correo = Correo('lhernandezs', 'sena.edu.co', 'LeonardoSENA', datos_correo_juicios, 0)   # destino correo Leonardo            
+            # correo = Correo('leo66', 'hotmail.com', 'Leonardo HS', datos_correo_juicios)   # destino correo Leonardo       
 
             try:
                 correo.send_email()
-                print({'message': f'Correo enviado exitosamente! {ficha}'})
+                print(f'Correo enviado exitosamente! {ficha}')
             except Exception as e:
-                print({'message': f'Error al enviar el correo {ficha}: {str(e)} '}), 500
+                print(f'Error al enviar el correo {ficha}: {str(e)}')
 
 if __name__ == '__main__':
     fichas = {'agosto'          : [
@@ -105,10 +80,10 @@ if __name__ == '__main__':
                                     '2879845', '2879846', '2879847', '2879848', '2879849', '3106275', '3013169', '2989236', '3041902', '3059562',
                                     '3019786', '3059847', '3041909', '3064539', '3069983', '3069982', '3167877', '3167875', '3167876',
                                   ],       
-                'agosto4':        [
-                                    '3106275'
+                'prueba2':        [
+                                    '2879694'
                                   ],                           
              }    
     
     robot = Robot()
-    robot.sendCorreosJuicios(fichas['agosto4'])
+    robot.sendCorreosJuicios(fichas['prueba2'])

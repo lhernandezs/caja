@@ -2,8 +2,8 @@ import os
 import numpy as np
 import pandas as pd
 
-from flask import ( request, session, Flask, render_template, redirect, url_for, jsonify)
-from flask_mail import Mail, Message
+from flask      import ( request, session, Flask, render_template, redirect, url_for, jsonify)
+from jinja2     import Environment, select_autoescape, FileSystemLoader
 
 from config                     import Config
 from cargadorDatos              import CargadorDatos
@@ -14,12 +14,11 @@ from correo                     import Correo
 from modelo                     import DatosCorreoJuicios
 from procesadorJuiciosHelper    import columnas_df_datos
 
-from config                     import TEMPLATES_FOLDER
+from config                     import TEMPLATES_FOLDER, TEMPLATES
 
 app = Flask(__name__, template_folder=TEMPLATES_FOLDER)
 app.config.from_object(Config)
 app.secret_key = app.config["SECRET_KEY"]
-mail = Mail(app)
 
 UPLOAD_FOLDER       = app.config["UPLOAD_FOLDER"] 
 UPLOAD_FOLDER_DATA  = app.config["UPLOAD_FOLDER_DATA"]
@@ -120,71 +119,47 @@ def delete_file(ficha):
         session['subio_fichas'] = False
     return render_template("index.html", variables = session)
 
-@app.route("/dfDatos/<ficha>", methods=["POST"])
+@app.route("/datos/<ficha>", methods=["POST"])
 def view_datos(ficha):
     columnas = ["tipo", "documento", "nombres", "apellidos", "estado", "aprobado", "porEvaluar", "noAprobado", "enTramite", "activo", \
                           "IND", "BIL", "CIE", "COM", "CUL", "DER", "EMP", "ETI", "INV", "MAT", "SST", "TIC", "PRO", "TEC", "color" ]
     try:
-        dfDatos: pd.DataFrame = Entrada().getDataFrame(UPLOAD_FOLDER, f"{ficha}.xlsx", "Datos", columnas)
-        for col in dfDatos.columns:
-            dfDatos[col] = dfDatos[col].apply(
-            lambda x: '' if x == 0 or pd.isna(x) or x == '' else (int(x) if isinstance(x, (int, float)) and not isinstance(x, bool) and float(x).is_integer() else x)
-            )
+        df_datos: pd.DataFrame = Entrada().getDataFrame(UPLOAD_FOLDER, f"{ficha}.xlsx", "Datos", columnas)
+        for col in df_datos.columns:
+            df_datos[col] = df_datos[col].apply(
+            lambda x: '' if x == 0 or pd.isna(x) or x == '' else (int(x) if isinstance(x, (int, float)) and not isinstance(x, bool) and float(x).is_integer() else x))
+
+
+        print("paso por aqui")
+
     except Exception as e:
-        session['error'].append(f"Error: no fue posible abrir la hoja 'Datos' del archivo {e}")
-    return render_template("datos.html", dataFrame=dfDatos, variables = session['fichas'][ficha], ficha= ficha)
+        if 'error' not in session:
+            session['error'] = f"Error: no fue posible abrir la hoja 'Datos' del archivo {e}"
+        else: 
+            session['error'].append(f"Error: no fue posible abrir la hoja 'Datos' del archivo {e}")
+    return render_template("datos.html", dataFrame=df_datos, variables = session['fichas'][ficha], ficha= ficha)
 
 # Ruta para recibir los datos del formulario y enviar el correo
+@app.route('/mail', methods=["POST"])
+def mail():
+    form_data = request.form.to_dict(flat=True)
+    variables = form_data['variables']
+    ficha = form_data['ficha']
+    body = form_data['body']
+
+    return render_template("correo.html", variables = variables, ficha = ficha, body = body)    
+
 @app.route('/send_mail', methods=["POST"])
 def send_mail():
 
     form_data = request.form.to_dict(flat=True)
-    ficha = form_data['ficha']
-    to = form_data['to']
-    # subject = form_data['subject'] # por ahor no sirven para nada
-    # body = form_data['body'] # por ahor no sirven para nada
+    datos_correo = form_data['datos_correo']
+    print(datos_correo)
 
-    destination_username, destination_domain = to.split('@')
+    destination_username, destination_domain = "lhernandezs@sena.edu.co".split('@')
 
-    df_datos : pd.DataFrame = Entrada().getDataFrame(UPLOAD_FOLDER, f"{ficha}.xlsx", "Datos", columnas_df_datos)
-
-    # activos con juicios por evaluar
-    df_activos   = df_datos[(df_datos['activo']            == "ACTIVO") & 
-                            (df_datos['porEvaluar'].values > 1)].reset_index()   
-    # hay que desertarlos
-    df_aDesertar = df_datos[(df_datos['estado']   == "EN FORMACION") &
-                            (df_datos['activo']   != "ACTIVO") & 
-                            (df_datos['enTramite'].isin([np.nan])) ].reset_index()
-
-    instructores    = [df_datos.iloc[0, 23]]
-    datosActivos    = []
-    datosADesertar  = []
-
-    for index, row in df_activos.iterrows():
-        for col in range(11,24):
-            if (df_activos.iloc[index, col + 1] > 0) & (df_datos.columns[col] != "PRO"):
-                nombres =   f"{df_activos.iloc[index, 3]} {df_activos.iloc[index, 4]}"
-                competencia = df_datos.columns[col]
-                rapsPorEvaluar = int(df_activos.iloc[index, col + 1])
-                instructor = df_datos.iloc[0, col],
-                datosActivos.append([nombres, competencia, rapsPorEvaluar, instructor[0],])
-                if not instructor[0] in instructores:
-                    instructores.append(instructor[0])
-
-    for index,row in df_aDesertar.iterrows():
-        nombres =   f"{df_aDesertar.iloc[index, 3]} {df_aDesertar.iloc[index, 4]}"                
-        rapsPorEvaluar = int(df_aDesertar.iloc[index, 7])
-        datosADesertar.append([ nombres, rapsPorEvaluar])
-
-    datosCorreo = DatosCorreoJuicios(
-                                ficha                   = ficha,
-                                instructores            = instructores,
-                                activos                 = datosActivos,
-                                desertores              = datosADesertar
-                                    )
-   
     # correo = Correo('JUICI', destination_username, destination_domain, destination_username, datosCorreo)   # destino correo Leonardo            
-    correo = Correo('NONE', destination_username, destination_domain, destination_username, datosCorreo)   # destino correo Leonardo            
+    correo = Correo('NONE', destination_username, destination_domain, destination_username, datos_correo)   # destino correo Leonardo            
 
     try:
         correo.send_email()
