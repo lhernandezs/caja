@@ -1,9 +1,24 @@
+import numpy as np
 import pandas as pd
 
 from dateutil.relativedelta         import relativedelta
 from datetime                       import datetime
 
-from config                         import competencias_no_tecnicas, competencias_programas_especiales
+from config                         import competencias_no_tecnicas, competencias_programas_especiales, PORCENTAJE_LIMITE_RAP, COLUMNAS_DATOS
+
+def getLimite_rap_para_normalizar(df_datos: pd.DataFrame) -> int:
+    col_aprobado        = next(key for key, value in COLUMNAS_DATOS.items() if value == "aprobado")
+    col_por_evaluar     = next(key for key, value in COLUMNAS_DATOS.items() if value == "porEvaluar")
+    col_no_aprobado     = next(key for key, value in COLUMNAS_DATOS.items() if value == "noAprobado")    
+    fila = 4
+    raps_aprobados      = pd.to_numeric(df_datos.iloc[fila, col_aprobado], errors='coerce')
+    raps_por_evaluar    = pd.to_numeric(df_datos.iloc[fila, col_por_evaluar], errors='coerce')
+    raps_no_aprobados   = pd.to_numeric(df_datos.iloc[fila, col_no_aprobado], errors='coerce')
+    raps_aprobados      = raps_aprobados if pd.notnull(raps_aprobados) else 0
+    raps_por_evaluar    = raps_por_evaluar if pd.notnull(raps_por_evaluar) else 0
+    raps_no_aprobados   = raps_no_aprobados if pd.notnull(raps_no_aprobados) else 0
+    total_raps          = raps_aprobados + raps_por_evaluar + raps_no_aprobados
+    return int(total_raps * PORCENTAJE_LIMITE_RAP)
 
 def numeroDeOrden(estado: str, porEvaluar: int) -> int:
     if estado == 'EN FORMACION':
@@ -58,4 +73,4 @@ def getCompetenciasNoTecnicas(programa: str, version: str) -> list:
     return list(competencias.items())
 
 if __name__ == "__main__":
-    print(getCompetenciasNoTecnicas('631101'))
+    print(getCompetenciasNoTecnicas('631101', '2'))

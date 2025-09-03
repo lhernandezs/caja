@@ -1,32 +1,55 @@
 
 import os
-import numpy as np
+import openpyxl
 import pandas as pd
 
 from openpyxl.styles                import Font
 from openpyxl.styles                import Alignment
 from openpyxl.worksheet.worksheet   import Worksheet
 
-from config                         import ancho_columnas
+from config                         import ancho_columnas, ESTADOS
+from procesadorJuiciosHelper        import getLimite_rap_para_normalizar
 
-def color_rows(row) -> list:
-    if row["estado"] == "EN FORMACION": 
-        if row["porEvaluar"] in [0, 1]:
+
+
+def color_rows(row, limite_rap_para_normalizar: int) -> list:
+    if   row["estado"] == ESTADOS['induccion']:
+        color = ['background-color: IndianRed']
+    elif row["estado"] == ESTADOS['en_formacion']: 
+        por_evaluar        = pd.to_numeric(row['porEvaluar'], errors='coerce')
+        juicios_productiva = pd.to_numeric(row["PRO"], errors='coerce')
+        se_tramita_novedad = isinstance(row['enTramite'], str) and row['enTramite'].strip() != ""
+        if   por_evaluar == 1 and juicios_productiva == 1:
             color = ['background-color: PaleGreen']
-        elif row["porEvaluar"] in range(2, 16):
-            if row["enTramite"] == None:
-                color = ['background-color: LightYellow']
-            else:
-                color = ['background-color: Yellow']                    
+        elif por_evaluar == 1 and juicios_productiva != 1:
+            color = ['background-color: Yellow']
+        elif por_evaluar in [n for n in range(2, limite_rap_para_normalizar + 1)]:
+            color = ['background-color: PaleGoldenrod']
+        elif se_tramita_novedad:
+            color = ['background-color: DarkSalmon']                    
+        elif por_evaluar >= limite_rap_para_normalizar and not se_tramita_novedad:
+            color = ['background-color: Red']
         else:
-            if row["enTramite"] == None:
-                color = ['background-color: Red']
-            else:
-                color = ['background-color: DarkSalmon']
-    elif row["estado"] is np.nan:
-        color = ['background-color: Lavender']
+            color = ['background-color: FireBrick']
+    elif row["estado"] == ESTADOS['trasladado']:
+        color = ['background-color: Violet']   
+    elif row["estado"] == ESTADOS['aplazado']:
+        color = ['background-color: Magenta']
+    elif row["estado"] == ESTADOS['condicionado']:
+        color = ['background-color: DarkViolet']
+    elif row["estado"] == ESTADOS['por_certificar']:
+        color = ['background-color: Lime']
+    elif row["estado"] == ESTADOS['certificado']:
+        color = ['background-color: ForestGreen']
+    elif row["estado"] == ESTADOS['retiro_voluntario']:
+        color = ['background-color: Aqua']
+    elif row["estado"] == ESTADOS['cancelado']:
+        color = ['background-color: SteelBlue']
+    elif row["estado"] == ESTADOS['reintegrado']:
+        color = ['background-color: DeepSkyBlue']
     else:
-        color = ['background-color: LightGray']
+        color = ['background-color: Brown']
+    print(color)        
     return color * len(row) 
 
 def ajustarFormatoCeldas(hoja: Worksheet, ancho_columnas: list):
@@ -43,7 +66,8 @@ def write_process_file(folder: str, ficha: str, df_datos: pd.DataFrame, df_noved
     nuevo_nombre = f"{ficha}.xlsx"
     try:
         with pd.ExcelWriter(os.path.join(folder, nuevo_nombre), engine="openpyxl") as writer:
-            df_datos.sort_values(by="orden").style.apply(color_rows, axis=1).to_excel(writer, sheet_name="Datos", index=False)  
+            limite_rap_para_normalizar = getLimite_rap_para_normalizar(df_datos)
+            df_datos.sort_values(by="orden").style.apply(lambda row: color_rows(row, limite_rap_para_normalizar), axis=1).to_excel(writer, sheet_name="Datos", index=False)  
             workbook = writer.book
             worksheet = workbook['Datos']
             worksheet.delete_cols(26)
@@ -53,7 +77,10 @@ def write_process_file(folder: str, ficha: str, df_datos: pd.DataFrame, df_noved
             row_dimension_2 = worksheet.row_dimensions[2]
             row_dimension_2.height = 60
             row_dimension_3 = worksheet.row_dimensions[3]
-            row_dimension_3.height = 60 
+            # Coloca la fila 3 en color beige claro
+            for cell in worksheet[3]:
+                cell.fill = openpyxl.styles.PatternFill(start_color="FFF5E1", end_color="FFF5E1", fill_type="solid")
+            row_dimension_3.height = 45 
             for cell in worksheet[2]:
                 cell.alignment = Alignment(wrap_text=True, horizontal='center', vertical='center')                   
             for cell in worksheet[3]:

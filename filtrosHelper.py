@@ -1,14 +1,16 @@
 import numpy as np
 import pandas as pd
 
-from app        import UPLOAD_FOLDER
-from entradaHelper    import Entrada
-from config     import ESTADOS, COLUMNAS_DATOS, PORCENTAJE_LIMITE_RAP
+from app                     import UPLOAD_FOLDER
+from entradaHelper           import Entrada
+from config                  import ESTADOS, COLUMNAS_DATOS
+
+from procesadorJuiciosHelper import getLimite_rap_para_normalizar
 
 class FiltrosHelper():
     def procesar(self, df_datos: pd.DataFrame) -> dict:
 
-        limite_rap_para_normalizar = int(np.ceil((df_datos.at[2, "aprobado"] + df_datos.at[2,"porEvaluar"] + df_datos.at[2,"noAprobado"]) * PORCENTAJE_LIMITE_RAP ))
+        limite_rap_para_normalizar = getLimite_rap_para_normalizar(df_datos)
         columna_tecnico            = next((k for k, v in COLUMNAS_DATOS.items() if v == "TEC"), None)
         columna_productiva         = next((k for k, v in COLUMNAS_DATOS.items() if v == "PRO"), None) -1
 
@@ -75,7 +77,7 @@ class FiltrosHelper():
             'df_en_tramite'         : df_en_tramite,            
             'df_para_productiva'    : df_para_productiva,
             'df_error_productiva'   : df_error_productiva,
-            'df_para_normalizar'     : df_para_normalizar,            
+            'df_para_normalizar'    : df_para_normalizar,            
             'df_para_desertar'      : df_para_desertar,
             'instructores'          : instructores,
             'para_normalizar'       : para_normalizar,

@@ -4,7 +4,7 @@ import pandas as pd
 
 from entradaHelper              import getDataFrame
 from salidaHelper               import write_process_file, color_rows
-from procesadorJuiciosHelper    import getCompetenciasNoTecnicas, numeroDeOrden, getInstructorEnReporte
+from procesadorJuiciosHelper    import getCompetenciasNoTecnicas, numeroDeOrden, getInstructorEnReporte, getLimite_rap_para_normalizar
 from config                     import COLUMNAS_DATOS, COLUMNAS_HOJA
 
 class ProcesadorJuicios:
@@ -75,7 +75,7 @@ class ProcesadorJuicios:
 
         # Asignar el color a cada fila usando la función color_rows
         for index, row in self.df_datos.iterrows():
-            color_value = color_rows(row)[0]
+            color_value = color_rows(row, getLimite_rap_para_normalizar(self.df_datos))[0]
             if isinstance(color_value, str) and color_value.startswith("background-color: "):
                 color_value = color_value.replace("background-color: ", "")
             self.df_datos.at[index, "color"] = color_value
@@ -101,7 +101,9 @@ class ProcesadorJuicios:
                     # Escoge el row que tenga la fecha mayor en la columna 'fecha'
                     fecha_max = df_filtrado['fecha'].max()
                     fecha_row = df_filtrado[df_filtrado['fecha'] == fecha_max].iloc[0]['fecha']
-                    df_fechas[competencia] = fecha_row
+                    # Divide la fecha y la hora por un salto de línea si es un string con espacio
+                    fecha_str = fecha_row.strftime("%d-%m\n%Y\n%H:%M")
+                    df_fechas[competencia] = fecha_str
             df_instructores[competencia] = instructor
 
         self.df_datos = pd.concat([self.df_datos.iloc[:0], df_instructores, self.df_datos.iloc[0:]], ignore_index=True)
