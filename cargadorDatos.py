@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 
-from entrada import Entrada
+from entradaHelper import getDataFrame
 
 class CargadorDatos:
     def __init__(self, folder: str, file: str):
@@ -21,9 +21,9 @@ class CargadorDatos:
             raise FileNotFoundError(f"Error: No se encontró el archivo {os.path.join(self.folder, self.file)}")
         else:
             try:
-                self.df_novedades       = Entrada().getDataFrame(self.folder, self.file, "novedades",   ["DOCUMENTO", "NOMBRE", "FICHA", "NOVEDAD"])
-                self.df_activos         = Entrada().getDataFrame(self.folder, self.file, "activos",     ["DOCUMENTO", "NOMBRE", "FICHA", "INSTRUCTOR"])
-                self.df_instructores    = Entrada().getDataFrame(self.folder, self.file, "instructores",["INSTRUCTOR", "FICHA", "COMPETENCIA"])
+                self.df_novedades       = getDataFrame(self.folder, self.file, "novedades",   ["DOCUMENTO", "NOMBRE", "FICHA", "NOVEDAD"])
+                self.df_activos         = getDataFrame(self.folder, self.file, "activos",     ["DOCUMENTO", "NOMBRE", "FICHA", "INSTRUCTOR"])
+                self.df_instructores    = getDataFrame(self.folder, self.file, "instructores",["INSTRUCTOR", "FICHA", "COMPETENCIA"])
             except Exception as e:
                 raise e
 

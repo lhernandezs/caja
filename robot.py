@@ -3,10 +3,10 @@ import pandas   as pd
 
 from correo                   import Correo
 from modelo                   import DatosCorreoJuicios
-from entrada                  import Entrada
-from filtosHelper             import FiltrosHelper
+from entradaHelper            import Entrada
+from filtrosHelper            import FiltrosHelper
 from app                      import UPLOAD_FOLDER
-from config                   import ESTADOS, COLUMNAS_DATOS, PORCENTAJE_RAPS_POR_NORMALIZAR
+from config                   import COLUMNAS_DATOS
 
 class Robot:
 

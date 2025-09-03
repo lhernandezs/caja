@@ -1,9 +1,5 @@
-import numpy as np
 import pandas as pd
 
-from openpyxl.styles                import Font
-from openpyxl.styles                import Alignment
-from openpyxl.worksheet.worksheet   import Worksheet
 from dateutil.relativedelta         import relativedelta
 from datetime                       import datetime
 
@@ -19,36 +15,6 @@ def numeroDeOrden(estado: str, porEvaluar: int) -> int:
     else:
         return 4000 + porEvaluar
 
-def color_rows(row) -> list:
-    if row["estado"] == "EN FORMACION": 
-        if row["porEvaluar"] in [0, 1]:
-            color = ['background-color: PaleGreen']
-        elif row["porEvaluar"] in range(2, 16):
-            if row["enTramite"] == None:
-                color = ['background-color: LightYellow']
-            else:
-                color = ['background-color: Yellow']                    
-        else:
-            if row["enTramite"] == None:
-                color = ['background-color: Red']
-            else:
-                color = ['background-color: DarkSalmon']
-    elif row["estado"] is np.nan:
-        color = ['background-color: Lavender']
-    else:
-        color = ['background-color: LightGray']
-    return color * len(row) 
-
-def ajustarFormatoCeldas(hoja: Worksheet, ancho_columnas: list):
-    font = Font(name='Arial', size=8)
-    for row in hoja.iter_rows():
-        for cell in row:
-            cell.font = font
-        for i in range(len(ancho_columnas)):
-            row[i].alignment = Alignment(horizontal='center')      
-    for col, width in ancho_columnas:
-        hoja.column_dimensions[col].width = width
-
 def getInstructorEnReporte(df_hoja: pd.DataFrame, competencia, competencias_no_tecnicas_ajustadas) -> str:
     if competencia == 'TEC':
         codigos_competencias_trasversales = [x[1] for x in competencias_no_tecnicas_ajustadas]
@@ -63,7 +29,7 @@ def getInstructorEnReporte(df_hoja: pd.DataFrame, competencia, competencias_no_t
     else: 
         indice_fecha_maxima = df_instructores_competencia['fecha'].idxmax()
         nombre = df_instructores_competencia.loc[indice_fecha_maxima]['funcionario'].split('-')[1]
-    return f"R:{' '.join([w.capitalize() for w in nombre.strip().split()])}"
+    return f"{' '.join([w.capitalize() for w in nombre.strip().split()])}"
 
 
 def calcular_raps_tecnicos(fecha_inicio: datetime, fecha_fin: datetime, df_hoja: pd.DataFrame, competencias_no_tecnicas_ajustadas) -> int:
@@ -83,10 +49,11 @@ def calcular_raps_tecnicos(fecha_inicio: datetime, fecha_fin: datetime, df_hoja:
     print(f"M Lectiva {meses_etapa_lectiva}, M desde inicio {meses_desde_inicio}, % avance {porcentaje_avance}, Raps NoT {total_raps_no_tecnicos}, Raps T {total_raps_tecnicos}")
     return int(total_raps_tecnicos * porcentaje_avance)
 
-def getCompetenciasNoTecnicas(programa: str) -> list:
+def getCompetenciasNoTecnicas(programa: str, version: str) -> list:
     competencias = competencias_no_tecnicas
-    if programa in competencias_programas_especiales:
-        for competencia, codigo in competencias_programas_especiales[programa]:
+    clave = f"{programa}, {version}"
+    if clave in competencias_programas_especiales:
+        for competencia, codigo in competencias_programas_especiales[clave]:
             competencias[competencia] = codigo
     return list(competencias.items())
 

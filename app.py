@@ -8,7 +8,7 @@ from jinja2     import Environment, select_autoescape, FileSystemLoader
 from config                     import Config
 from cargadorDatos              import CargadorDatos
 from procesadorJuicios          import ProcesadorJuicios
-from entrada                    import Entrada
+from entradaHelper              import getDataFrame
 
 from correo                     import Correo
 from modelo                     import DatosCorreoJuicios
@@ -124,7 +124,7 @@ def view_datos(ficha):
     columnas = ["tipo", "documento", "nombres", "apellidos", "estado", "aprobado", "porEvaluar", "noAprobado", "enTramite", "activo", \
                           "IND", "BIL", "CIE", "COM", "CUL", "DER", "EMP", "ETI", "INV", "MAT", "SST", "TIC", "PRO", "TEC", "color" ]
     try:
-        df_datos: pd.DataFrame = Entrada().getDataFrame(UPLOAD_FOLDER, f"{ficha}.xlsx", "Datos", columnas)
+        df_datos: pd.DataFrame = getDataFrame(UPLOAD_FOLDER, f"{ficha}.xlsx", "Datos", columnas)
         for col in df_datos.columns:
             df_datos[col] = df_datos[col].apply(
             lambda x: '' if x == 0 or pd.isna(x) or x == '' else (int(x) if isinstance(x, (int, float)) and not isinstance(x, bool) and float(x).is_integer() else x))

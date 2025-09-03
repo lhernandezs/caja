@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 from app        import UPLOAD_FOLDER
-from entrada    import Entrada
+from entradaHelper    import Entrada
 from config     import ESTADOS, COLUMNAS_DATOS, PORCENTAJE_LIMITE_RAP
 
 class FiltrosHelper():

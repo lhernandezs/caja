@@ -83,9 +83,9 @@ competencias_no_tecnicas = {
             "TIC": "37371",
             "PRO": "2 - R",
         }
-
+#la clave es codigo del programa ", " version
 competencias_programas_especiales = {
-            '631101' : [('EMP', '39811'), ],
+            '631101, 2' : [('EMP', '39811'), ],
         }
 
 ancho_columnas = {'datos' :     [('A',  6), ('B', 15), ('C', 21), ('D', 21), ('E', 16), 
