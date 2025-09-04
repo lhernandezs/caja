@@ -1,9 +1,7 @@
 import os
-import numpy as np
 import pandas as pd
 
 from flask      import ( request, session, Flask, render_template, redirect, url_for, jsonify)
-from jinja2     import Environment, select_autoescape, FileSystemLoader
 
 from config                     import Config
 from cargadorDatos              import CargadorDatos
@@ -11,10 +9,8 @@ from procesadorJuicios          import ProcesadorJuicios
 from entradaHelper              import getDataFrame
 
 from correo                     import Correo
-from modelo                     import DatosCorreoJuicios
-from procesadorJuiciosHelper    import columnas_df_datos
 
-from config                     import TEMPLATES_FOLDER, TEMPLATES
+from config                     import TEMPLATES_FOLDER
 
 app = Flask(__name__, template_folder=TEMPLATES_FOLDER)
 app.config.from_object(Config)

@@ -13,6 +13,20 @@ TEMPLATES               = ['correoJuicios.html']
 
 PORCENTAJE_LIMITE_RAP = 0.25
 
+ARCHIVO_DE_DATOS    = "datos.xlsx"
+HOJA_DATOS          = "datos"
+HOJA_NOVEDADES      = "novedades"
+HOJA_ACTIVOS        = "activos"
+HOJA_INSTRUCTORES   = "instructor"
+HOJA_HOJA           = "hoja"
+EXTENSION_EXCEL_365 = "xlsx"
+FONT_DATOS          = "Arial"
+SIZE_FONT_DATOS     = 9
+SIZE_FONT_TITULO    = 20
+TITULO              = "Reporte de Juicios"
+TITULO_INSTRUCTORES = "Instructor por compentencia"
+TITULO_ULTIMA_FECHA = "Fecha de registro del último RAP"
+
 ESTADOS = { 
             "induccion"         : "INDUCCION",
             "en_formacion"      : "EN FORMACION",
@@ -68,6 +82,26 @@ COLUMNAS_DATOS = {
             25: "color",
         }
 
+COLUMNAS_NOVEDADES = {
+    1: "documento",
+    2: "nombre",
+    3: "ficha",
+    4: "novedad",
+}
+
+COLUMNAS_ACTIVOS = {
+    1: "documento",
+    2: "nombre",
+    3: "ficha",
+    4: "instructor",
+}
+
+COLUMNAS_INSTRUCTOR = {
+    1: "INSTRUCTOR",
+    2: "FICHA",
+    3: "COMPETENCIA",
+}
+
 competencias_no_tecnicas = {
             "IND": "36182",
             "BIL": "37714",
@@ -83,6 +117,7 @@ competencias_no_tecnicas = {
             "TIC": "37371",
             "PRO": "2 - R",
         }
+
 #la clave es codigo del programa ", " version
 competencias_programas_especiales = {
             '631101, 2' : [('EMP', '39811'), ],
@@ -97,6 +132,18 @@ ancho_columnas = {'datos' :     [('A',  6), ('B', 15), ('C', 21), ('D', 21), ('E
                   'hoja':       [('A',  6), ('B', 15), ('C', 21), ('D', 21), ('E', 16), 
                                  ('F', 40), ('G', 40), ('H', 12), ('I',  0), ('J', 16),
                                  ('K', 30),]}
+
+ESTADO_COLORES = {
+    'induccion': "IndianRed",
+    'trasladado': "Violet",
+    'aplazado': "Magenta",
+    'condicionado': "DarkViolet",
+    'por_certificar': "Lime",
+    'certificado': "ForestGreen",
+    'retiro_voluntario': "Aqua",
+    'cancelado': "SteelBlue",
+    'reintegrado': "DeepSkyBlue"
+}
 
 class Config:
     SECRET_KEY          = "PorColombia2025"
