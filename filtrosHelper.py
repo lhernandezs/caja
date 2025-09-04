@@ -2,15 +2,15 @@ import numpy as np
 import pandas as pd
 
 from app                     import UPLOAD_FOLDER
-from config                  import ESTADOS, COLUMNAS_DATOS
+from config                  import ESTADOS, HOJAS
 from procesadorJuiciosHelper import getLimite_rap_para_normalizar
 
 class FiltrosHelper():
     def procesar(self, df_datos: pd.DataFrame) -> dict:
-
+        columnas_datos = HOJAS['datos']['columnas']
         limite_rap_para_normalizar = getLimite_rap_para_normalizar(df_datos)
-        columna_tecnico            = next((k for k, v in COLUMNAS_DATOS.items() if v == "TEC"), None)
-        columna_productiva         = next((k for k, v in COLUMNAS_DATOS.items() if v == "PRO"), None) -1
+        columna_tecnico            = next((k for k, v in columnas_datos.items() if v == "TEC"), None)
+        columna_productiva         = next((k for k, v in columnas_datos.items() if v == "PRO"), None) -1
 
         df_estados = {f"df_{key}": df_datos[df_datos['estado'] == ESTADOS[key][0]].reset_index(drop=True) for key in ESTADOS.keys()}
 
@@ -82,12 +82,12 @@ class FiltrosHelper():
             'para_desertar'         : para_desertar,
         }
 
-from config import EXTENSION_EXCEL_365, HOJA_DATOS
+from config import EXTENSION_EXCEL_365
 from entradaHelper import getDataFrame
 if __name__ == "__main__":
     ficha = '3106275'
     try:
-        df_datos: pd.DataFrame = getDataFrame(UPLOAD_FOLDER, f"{ficha}.{EXTENSION_EXCEL_365}", HOJA_DATOS, list(COLUMNAS_DATOS.values()))        
+        df_datos: pd.DataFrame = getDataFrame(UPLOAD_FOLDER, f"{ficha}.{EXTENSION_EXCEL_365}", 'datos')        
         FiltrosHelper = FiltrosHelper()
         resultados = FiltrosHelper.procesar(df_datos)
         var = 'para_desertar'

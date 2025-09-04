@@ -3,12 +3,13 @@ import pandas as pd
 from dateutil.relativedelta         import relativedelta
 from datetime                       import datetime
 
-from config                         import competencias_no_tecnicas, competencias_programas_especiales, PORCENTAJE_LIMITE_RAP, COLUMNAS_DATOS
+from config                         import competencias_no_tecnicas, competencias_programas_especiales, PORCENTAJE_LIMITE_RAP, HOJAS
 
 def getLimite_rap_para_normalizar(df_datos: pd.DataFrame) -> int:
-    col_aprobado        = next(key for key, value in COLUMNAS_DATOS.items() if value == "aprobado")
-    col_por_evaluar     = next(key for key, value in COLUMNAS_DATOS.items() if value == "porEvaluar")
-    col_no_aprobado     = next(key for key, value in COLUMNAS_DATOS.items() if value == "noAprobado")    
+    columnas_datos      = HOJAS['datos']['columnas']
+    col_aprobado        = columnas_datos.index("aprobado")
+    col_por_evaluar     = columnas_datos.index("porEvaluar")
+    col_no_aprobado     = columnas_datos.index("noAprobado")    
     fila = 4
     raps_aprobados      = pd.to_numeric(df_datos.iloc[fila, col_aprobado], errors='coerce')
     raps_por_evaluar    = pd.to_numeric(df_datos.iloc[fila, col_por_evaluar], errors='coerce')

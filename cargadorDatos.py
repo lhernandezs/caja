@@ -1,10 +1,7 @@
 import os
-import pandas as pd
 
 from entradaHelper      import getDataFrame
-from config             import Config
-from config             import HOJA_NOVEDADES, HOJA_ACTIVOS, HOJA_INSTRUCTORES, COLUMNAS_NOVEDADES, COLUMNAS_ACTIVOS, COLUMNAS_INSTRUCTOR, ARCHIVO_DE_DATOS
-
+from config             import Config, ARCHIVO_DE_DATOS
 
 class CargadorDatos:
     def getDatos(self) -> dict:
@@ -15,15 +12,11 @@ class CargadorDatos:
             raise FileNotFoundError(f"Error: No se encontró el archivo {os.path.join(Config.UPLOAD_FOLDER_DATA, ARCHIVO_DE_DATOS)}")
         else:
             try:
-                df_novedades = getDataFrame(Config.UPLOAD_FOLDER_DATA, ARCHIVO_DE_DATOS, HOJA_NOVEDADES, list(COLUMNAS_NOVEDADES.values())).drop_duplicates()
-                df_activos = getDataFrame(Config.UPLOAD_FOLDER_DATA, ARCHIVO_DE_DATOS, HOJA_ACTIVOS, list(COLUMNAS_ACTIVOS.values())).drop_duplicates()
-                df_instructores = getDataFrame(Config.UPLOAD_FOLDER_DATA, ARCHIVO_DE_DATOS, HOJA_INSTRUCTORES, list(COLUMNAS_INSTRUCTOR.values())).drop_duplicates()
+                df_novedades    = getDataFrame(Config.UPLOAD_FOLDER_DATA, ARCHIVO_DE_DATOS, 'novedades').drop_duplicates()
+                df_activos      = getDataFrame(Config.UPLOAD_FOLDER_DATA, ARCHIVO_DE_DATOS, 'activos').drop_duplicates()
+                df_instructores = getDataFrame(Config.UPLOAD_FOLDER_DATA, ARCHIVO_DE_DATOS, 'instructores').drop_duplicates()
             except Exception as e:
                 raise e
-
-            print(df_novedades.columns.tolist())
-            print(df_activos.columns.tolist())
-
             try:
                 df_novedades = df_novedades.astype({"documento": "int"})
             except ValueError as e:

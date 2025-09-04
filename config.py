@@ -11,18 +11,14 @@ SENDER_DISPLAY_NAME     = "formacionvirtualcsf@sena.edu.co"
 SUBJECT                 = "normalizar ficha  "
 TEMPLATES               = ['correoJuicios.html']
 
-PORCENTAJE_LIMITE_RAP = 0.25
+PORCENTAJE_LIMITE_RAP   = 0.25
 
-ARCHIVO_DE_DATOS    = "datos.xlsx"
-HOJA_DATOS          = "datos"
-HOJA_NOVEDADES      = "novedades"
-HOJA_ACTIVOS        = "activos"
-HOJA_INSTRUCTORES   = "instructor"
-HOJA_HOJA           = "hoja"
-EXTENSION_EXCEL_365 = "xlsx"
-FONT_DATOS          = "Arial"
-SIZE_FONT_DATOS     = 9
-SIZE_FONT_TITULO    = 20
+ARCHIVO_DE_DATOS        = "datos.xlsx"
+EXTENSION_EXCEL_365     = "xlsx"
+FONT_DATOS              = "Arial"
+SIZE_FONT_DATOS         = 9
+SIZE_FONT_TITULO        = 20
+
 TITULO              = "Reporte de Juicios"
 TITULO_INSTRUCTORES = "Instructor por compentencia"
 TITULO_ULTIMA_FECHA = "Fecha de registro del último RAP"
@@ -40,67 +36,32 @@ ESTADOS = {
             "reintegrado"       : ("REINTEGRADO",       "DeepSkyBlue"),
 }
 
-COLUMNAS_HOJA = {
-            1: "tipo",
-            2: "documento",
-            3: "nombres",
-            4: "apellidos",
-            5: "estado",
-            6: "competencia",
-            7: "resultado",
-            8: "juicio",
-            9: "vacio",
-            10: "fecha",
-            11: "funcionario",
-}
 
-COLUMNAS_DATOS = {
-    0: 'tipo',
-    1: 'documento',
-    2: 'nombres',
-    3: 'apellidos',
-    4: 'estado',
-    5: 'aprobado',
-    6: 'porEvaluar',
-    7: 'noAprobado',
-    8: 'enTramite',
-    9: 'activo',
-    10: 'IND',
-    11: 'BIL',
-    12: 'CIE',
-    13: 'COM',
-    14: 'CUL',
-    15: 'DER',
-    16: 'EMP',
-    17: 'ETI',
-    18: 'INV',
-    19: 'MAT',
-    20: 'SST',
-    21: 'TIC',
-    22: 'PRO',
-    23: 'TEC',
-    24: 'color',
-    25: 'orden',
-    }
+COLUMNAS_HOJA           = ["tipo", "documento", "nombres", "apellidos", "estado", "competencia", "resultado", "juicio", "vacio", "fecha", "funcionario"]
+COLUMNAS_DATOS          = ['tipo', 'documento', 'nombres', 'apellidos', 'estado', 'aprobado', 'porEvaluar', 'noAprobado', 'enTramite', 'activo', 
+                           'IND', 'BIL', 'CIE', 'COM', 'CUL', 'DER', 'EMP', 'ETI', 'INV', 'MAT', 'SST', 'TIC', 'PRO', 'TEC', 'color', 'orden']
+COLUMNAS_NOVEDADES      = ["documento", "nombre", "ficha", "novedad"]
+COLUMNAS_ACTIVOS        = ["documento", "nombre", "ficha", "instructor"]
+COLUMNAS_INSTRUCTORES   = ["instructor", "ficha", "competencia"]
 
-COLUMNAS_NOVEDADES = {
-    1: "documento",
-    2: "nombre",
-    3: "ficha",
-    4: "novedad",
-}
+ANCHOS_HOJA             = [('A',  6), ('B', 15), ('C', 21), ('D', 21), ('E', 16), 
+                           ('F', 40), ('G', 40), ('H', 12), ('I',  0), ('J', 16),
+                           ('K', 30),]
+ANCHOS_DATOS            = [('A',  6), ('B', 15), ('C', 21), ('D', 21), ('E', 16), 
+                           ('F', 12), ('G', 12), ('H', 12), ('I', 15), ('J', 12),
+                           ('K',  6), ('L',  6), ('M',  6), ('N',  6), ('O',  6), 
+                           ('P',  6), ('Q',  6), ('R',  6), ('S',  6), ('T',  6), 
+                           ('U',  6), ('V',  6), ('W',  6), ('X',  6),]
+ANCHOS_NOVEDADES        = [('A', 16), ('B', 42), ('C', 12), ('D', 30),]
+ANCHOS_ACTIVOS          = [('A', 16), ('B', 42), ('C', 12), ('D', 30),]
+ANCHOS_INSTRUCTORES     = [('A', 30), ('B', 12), ('C', 12),]
 
-COLUMNAS_ACTIVOS = {
-    1: "documento",
-    2: "nombre",
-    3: "ficha",
-    4: "instructor",
-}
-
-COLUMNAS_INSTRUCTOR = {
-    1: "instructor",
-    2: "ficha",
-    3: "competencia",
+HOJAS = {
+    'Hoja'          : {'columnas': COLUMNAS_HOJA          , 'ancho_columnas' : ANCHOS_HOJA},
+    'datos'         : {'columnas': COLUMNAS_DATOS         , 'ancho_columnas' : ANCHOS_DATOS},
+    'novedades'     : {'columnas': COLUMNAS_NOVEDADES     , 'ancho_columnas' : ANCHOS_NOVEDADES},
+    'activos'       : {'columnas': COLUMNAS_ACTIVOS       , 'ancho_columnas' : ANCHOS_ACTIVOS},
+    'instructores'  : {'columnas': COLUMNAS_INSTRUCTORES  , 'ancho_columnas' : ANCHOS_INSTRUCTORES}, 
 }
 
 competencias_no_tecnicas = {
@@ -123,18 +84,6 @@ competencias_no_tecnicas = {
 competencias_programas_especiales = {
             '631101, 2' : [('EMP', '39811'), ],
         }
-
-ancho_columnas = {'datos' :     [('A',  6), ('B', 15), ('C', 21), ('D', 21), ('E', 16), 
-                                 ('F', 12), ('G', 12), ('H', 12), ('I', 15), ('J', 12),
-                                 ('K',  6), ('L',  6), ('M',  6), ('N',  6), ('O',  6), 
-                                 ('P',  6), ('Q',  6), ('R',  6), ('S',  6), ('T',  6), 
-                                 ('U',  6), ('V',  6), ('W',  6), ('X',  6),],
-                  'novedades':  [('A', 16), ('B', 42), ('C', 12), ('D', 30),],
-                  'hoja':       [('A',  6), ('B', 15), ('C', 21), ('D', 21), ('E', 16), 
-                                 ('F', 40), ('G', 40), ('H', 12), ('I',  0), ('J', 16),
-                                 ('K', 30),]}
-
-
 
 class Config:
     SECRET_KEY          = "PorColombia2025"

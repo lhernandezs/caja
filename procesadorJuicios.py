@@ -5,7 +5,7 @@ import pandas as pd
 from entradaHelper              import getDataFrame
 from salidaHelper               import write_process_file, color_rows
 from procesadorJuiciosHelper    import getCompetenciasNoTecnicas, numeroDeOrden, getInstructorEnReporte, getLimite_rap_para_normalizar
-from config                     import COLUMNAS_DATOS, COLUMNAS_HOJA
+from config                     import HOJAS
 
 class ProcesadorJuicios:
     def __init__(self, folder: str, archivo: str, novedades: pd.DataFrame = None, activos: pd.DataFrame = None, instructores: pd.DataFrame = None):
@@ -37,8 +37,8 @@ class ProcesadorJuicios:
             self.df_instructores_ficha  = self.df_instructores[ self.df_instructores["ficha"] == self.ficha] 
 
         # 2. creamos el dataframe self.df_datos a partir del dataframe hoja
-        columnas_a_copiar = list(COLUMNAS_DATOS.values())[:5]
-        nuevas_columnas = {v: None for v in list(COLUMNAS_DATOS.values())[5:25]}
+        columnas_a_copiar = HOJAS['datos']['columnas'][:5]
+        nuevas_columnas = {v: None for v in HOJAS['datos']['columnas'][5:25]}
         self.df_datos = self.df_hoja[columnas_a_copiar].copy() 
         self.df_datos = self.df_datos[12:]
         self.df_datos.drop_duplicates(inplace=True)
@@ -75,7 +75,7 @@ class ProcesadorJuicios:
 
         # Asignar el color a cada fila usando la función color_rows
         for index, row in self.df_datos.iterrows():
-            color_value = color_rows(row, getLimite_rap_para_normalizar(self.df_datos))[0]
+            color_value = color_rows(row, getLimite_rap_para_normalizar(self.df_datos))
             if isinstance(color_value, str) and color_value.startswith("background-color: "):
                 color_value = color_value.replace("background-color: ", "")
             self.df_datos.at[index, "color"] = color_value
@@ -110,9 +110,8 @@ class ProcesadorJuicios:
         self.df_datos = pd.concat([self.df_datos.iloc[:1], df_fechas,       self.df_datos.iloc[1:]], ignore_index=True)
 
     def procesar(self) -> dict:
-        columnas = list(COLUMNAS_HOJA.values())
         try:
-            self.df_hoja = getDataFrame(self.folder, self.archivo, "Hoja", columnas)
+            self.df_hoja = getDataFrame(self.folder, self.archivo, "Hoja")
             try:
                 file_path = os.path.join(self.folder, self.archivo)
                 if os.path.isfile(file_path):
