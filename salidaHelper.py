@@ -19,28 +19,27 @@ def color_rows(row, limite_rap_para_normalizar: int):
                     color = value[1]
                     break
         else:
-            col_aprobado       = next(key for key, value in COLUMNAS_DATOS.items() if value == "aprobado")
-            col_productiva     = next(key for key, value in COLUMNAS_DATOS.items() if value == "PRO")
-            col_en_tramite     = next(key for key, value in COLUMNAS_DATOS.items() if value == "enTramite")  
-            # print(f"col_aprobado: {col_aprobado}  col_productiva {col_productiva} col en tramite {col_en_tramite}")      
-            por_evaluar        = int(pd.to_numeric(row[col_aprobado], errors='coerce'))
-            juicios_productiva = int(pd.to_numeric(row[col_productiva], errors='coerce'))
+            col_aprobado       = next(idx for idx, col_name in enumerate(row.index) if col_name == "aprobado") + 1
+            col_productiva     = next(idx for idx, col_name in enumerate(row.index) if col_name ==  "PRO")
+            col_en_tramite     = next(idx for idx, col_name in enumerate(row.index) if col_name ==  "enTramite")
+            por_evaluar        = int(pd.to_numeric(row.iloc[col_aprobado], errors='coerce'))
+            juicios_productiva = int(pd.to_numeric(row.iloc[col_productiva], errors='coerce'))
             por_evaluar        = por_evaluar if pd.notnull(por_evaluar) else 0
             juicios_productiva = juicios_productiva if pd.notnull(juicios_productiva) else 0
-            se_tramita_novedad = isinstance(row[col_en_tramite], str) and row[col_en_tramite].strip() != ""
+            se_tramita_novedad = isinstance(row.iloc[col_en_tramite], str) and row[col_en_tramite].strip() != ""
+            print(f"por evaluar: {por_evaluar} juicios productiva: {juicios_productiva} novedad {se_tramita_novedad}")
             if   por_evaluar == 1 and juicios_productiva == 1:
                 color = "PaleGreen"
-            elif por_evaluar == 1 and juicios_productiva != 1:
+            elif por_evaluar == 1 and juicios_productiva == 0:
                 color = "Yellow"
             elif por_evaluar in [n for n in range(2, limite_rap_para_normalizar + 1)]:
                 color = "PaleGoldenrod"
             elif se_tramita_novedad:
-                color = "DarkSalmon']                  "
+                color = "DarkSalmon'"
             elif por_evaluar >= limite_rap_para_normalizar and not se_tramita_novedad:
                 color = "Red"
             else:
                 color = "FireBrick"
-            print(f"color : {color} por evaluar: {por_evaluar} juicios productiva: {juicios_productiva} novedad: {se_tramita_novedad}")
         color_final = [f'background-color: {color}']
     else:
         color_final = [f'background-color: White']

@@ -55,32 +55,33 @@ COLUMNAS_HOJA = {
 }
 
 COLUMNAS_DATOS = {
-            1: "tipo",
-            2: "documento",
-            3: "nombres",
-            4: "apellidos",
-            5: "estado",
-            6: "aprobado",
-            7: "porEvaluar",
-            8: "noAprobado",
-            9: "enTramite",
-            10: "activo",
-            11: "IND",
-            12: "BIL",
-            13: "CIE",
-            14: "COM",
-            15: "CUL",
-            16: "DER",
-            17: "EMP",
-            18: "ETI",
-            19: "INV",
-            20: "MAT",
-            21: "SST",
-            22: "TIC",
-            23: "PRO",
-            24: "TEC",
-            25: "color",
-        }
+    0: 'tipo',
+    1: 'documento',
+    2: 'nombres',
+    3: 'apellidos',
+    4: 'estado',
+    5: 'aprobado',
+    6: 'porEvaluar',
+    7: 'noAprobado',
+    8: 'enTramite',
+    9: 'activo',
+    10: 'IND',
+    11: 'BIL',
+    12: 'CIE',
+    13: 'COM',
+    14: 'CUL',
+    15: 'DER',
+    16: 'EMP',
+    17: 'ETI',
+    18: 'INV',
+    19: 'MAT',
+    20: 'SST',
+    21: 'TIC',
+    22: 'PRO',
+    23: 'TEC',
+    24: 'color',
+    25: 'orden',
+    }
 
 COLUMNAS_NOVEDADES = {
     1: "documento",
@@ -97,9 +98,9 @@ COLUMNAS_ACTIVOS = {
 }
 
 COLUMNAS_INSTRUCTOR = {
-    1: "INSTRUCTOR",
-    2: "FICHA",
-    3: "COMPETENCIA",
+    1: "instructor",
+    2: "ficha",
+    3: "competencia",
 }
 
 competencias_no_tecnicas = {

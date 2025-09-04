@@ -30,11 +30,11 @@ class ProcesadorJuicios:
     def build_df_datos(self):
         # 1. creamos los dataframes novedades, acitvos, instructores de la ficha
         if not self.df_novedades is None:
-            self.df_novedades_ficha     = self.df_novedades[self.df_novedades["FICHA"] == self.ficha] 
+            self.df_novedades_ficha     = self.df_novedades[self.df_novedades["ficha"] == self.ficha] 
         if not self.df_activos is None:
-            self.df_activos_ficha       = self.df_activos[ self.df_activos["FICHA"] == self.ficha] 
+            self.df_activos_ficha       = self.df_activos[ self.df_activos["ficha"] == self.ficha] 
         if not self.df_instructores is None:
-            self.df_instructores_ficha  = self.df_instructores[ self.df_instructores["FICHA"] == self.ficha] 
+            self.df_instructores_ficha  = self.df_instructores[ self.df_instructores["ficha"] == self.ficha] 
 
         # 2. creamos el dataframe self.df_datos a partir del dataframe hoja
         columnas_a_copiar = list(COLUMNAS_DATOS.values())[:5]
@@ -55,13 +55,13 @@ class ProcesadorJuicios:
             self.df_datos.loc[i, "noAprobado"] = int(len(df_no_aprobado))
             self.df_datos.loc[i, "orden"]      = numeroDeOrden(self.df_datos["estado"][i], len(df_por_evaluar))
            
-            if not self.df_activos_ficha is None and self.df_datos["documento"][i] in self.df_activos_ficha["DOCUMENTO"].values.astype(int):
+            if not self.df_activos_ficha is None and self.df_datos["documento"][i] in self.df_activos_ficha["documento"].values.astype(int):
                 self.df_datos.loc[i, "activo"] = "ACTIVO"
 
             if not self.df_novedades_ficha is None and self.df_datos["estado"][i] == "EN FORMACION":
                 for j in self.df_novedades_ficha.index:  
-                    if (self.df_datos["documento"][i] == self.df_novedades_ficha["DOCUMENTO"][j]):
-                        self.df_datos.loc[i, "enTramite"] = self.df_novedades_ficha["NOVEDAD"][j]
+                    if (self.df_datos["documento"][i] == self.df_novedades_ficha["documento"][j]):
+                        self.df_datos.loc[i, "enTramite"] = self.df_novedades_ficha["novedad"][j]
                         break  
 
             if self.df_datos["estado"][i] == "EN FORMACION":
@@ -90,9 +90,9 @@ class ProcesadorJuicios:
         for competencia in [c[0] for c in competencias_no_tecnicas] + ['TEC']:
             instructor = None
             if self.df_instructores_ficha is not None:
-                instructor_row = self.df_instructores_ficha[self.df_instructores_ficha['COMPETENCIA'] == competencia]
+                instructor_row = self.df_instructores_ficha[self.df_instructores_ficha['competencia'] == competencia]
                 if not instructor_row.empty:
-                    instructor = instructor_row.iloc[0]['INSTRUCTOR']
+                    instructor = instructor_row.iloc[0]['instructor']
             if instructor is None:
                 instructor = getInstructorEnReporte(self.df_hoja, competencia, competencias_no_tecnicas)
             if instructor:
