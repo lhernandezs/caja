@@ -28,17 +28,17 @@ TITULO_INSTRUCTORES = "Instructor por compentencia"
 TITULO_ULTIMA_FECHA = "Fecha de registro del último RAP"
 
 ESTADOS = { 
-            "induccion"         : "INDUCCION",
-            "en_formacion"      : "EN FORMACION",
-            "trasladado"        : "TRASLADADO",
-            "aplazado"          : "APLAZADO",
-            "condicionado"      : "CONDICIONADO",
-            "por_certificar"    : "POR CERTIFICAR",
-            "certificado"       : "CERTIFICADO",
-            "retiro_voluntario" : "RETIRO VOLUNTARIO",
-            "cancelado"         : "CANCELADO",
-            "reintegrado"       : "REINTEGRADO",
-           }
+            "induccion"         : ("INDUCCION",         "IndianRed"),
+            "en_formacion"      : ("EN FORMACION",      "White"),
+            "trasladado"        : ("TRASLADADO",        "Violet"),
+            "aplazado"          : ("APLAZADO",          "Magenta"),
+            "condicionado"      : ("CONDICIONADO",      "DarkViolet"),
+            "por_certificar"    : ("POR CERTIFICAR",    "Lime"),
+            "certificado"       : ("CERTIFICADO",       "ForestGreen"),
+            "retiro_voluntario" : ("RETIRO VOLUNTARIO", "Aqua"),
+            "cancelado"         : ("CANCELADO",         "SteelBlue"),
+            "reintegrado"       : ("REINTEGRADO",       "DeepSkyBlue"),
+}
 
 COLUMNAS_HOJA = {
             1: "tipo",
@@ -133,17 +133,7 @@ ancho_columnas = {'datos' :     [('A',  6), ('B', 15), ('C', 21), ('D', 21), ('E
                                  ('F', 40), ('G', 40), ('H', 12), ('I',  0), ('J', 16),
                                  ('K', 30),]}
 
-ESTADO_COLORES = {
-    'induccion': "IndianRed",
-    'trasladado': "Violet",
-    'aplazado': "Magenta",
-    'condicionado': "DarkViolet",
-    'por_certificar': "Lime",
-    'certificado': "ForestGreen",
-    'retiro_voluntario': "Aqua",
-    'cancelado': "SteelBlue",
-    'reintegrado': "DeepSkyBlue"
-}
+
 
 class Config:
     SECRET_KEY          = "PorColombia2025"
