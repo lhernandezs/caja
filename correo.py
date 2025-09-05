@@ -1,5 +1,4 @@
 import os.path
-import json
 import smtplib
 
 from email.message          import EmailMessage
@@ -13,28 +12,21 @@ from config                 import TEMPLATES_FOLDER, SMTP_SSL, SENDER_USERNAME, 
 from config                 import Config
 
 class Correo:
+
     UPLOAD_FOLDER = Config.UPLOAD_FOLDER
     ENV = Environment(loader=FileSystemLoader(TEMPLATES_FOLDER), autoescape=select_autoescape()) # entorno para jinja2
 
-    def __init__(self, destination_username: str        = 'lhernandezs', 
-                       destination_domain: str          = 'sena.edu.co', 
-                       destination_display_name: str    = 'LeonardoHS', 
-                       datos_correo: DatosCorreoJuicios =  DatosCorreoJuicios(ficha = '9999999', 
-                                                                              instructores = ['instructor1', 'instructor2'], 
-                                                                              activos      = ['activo1', 'activo2'], 
-                                                                              desertores   = ['desertor1', 'desertor2']),
-                       template: int = 0,                         
-                ):
-        self.sender_username         = SENDER_USERNAME 
-        self.sender_domain           = SENDER_DOMAIN
-        self.sender_display_name     = SENDER_DISPLAY_NAME
-        self.subject                 = SUBJECT
-        self.template                = TEMPLATES[template]
+    def __init__(self, destination_username: str, destination_domain: str, destination_display_name: str, datos_correo: DatosCorreoJuicios,template: int):
+        self.sender_username            = SENDER_USERNAME 
+        self.sender_domain              = SENDER_DOMAIN
+        self.sender_display_name        = SENDER_DISPLAY_NAME
+        self.subject                    = SUBJECT
+        self.template                   = TEMPLATES[template]
 
-        self.destination_username    = destination_username
-        self.destination_domain      = destination_domain
-        self.destination_display_name= destination_display_name
-        self.datos_correo            = datos_correo
+        self.destination_username       = destination_username
+        self.destination_domain         = destination_domain
+        self.destination_display_name   = destination_display_name
+        self.datos_correo               = datos_correo
         
     def render_html(self):
         return Correo.ENV.get_template(self.template).render(datos_correo=self.datos_correo, asunto = self.subject)
@@ -70,5 +62,15 @@ class Correo:
         smtp.quit()
 
 if __name__ == '__main__':
-    correo = Correo()
+    destination_username= 'lhernandezs'
+    destination_domain= 'sena.edu.co'
+    destination_display_name= 'LeonardoHS'
+    datos_correo =  DatosCorreoJuicios(
+                ficha           = '9999999'                         , 
+                instructores    = ['instructor1', 'instructor2']    , 
+                activos         = ['activo1', 'activo2']            , 
+                desertores      = ['desertor1', 'desertor2']
+                )
+    template        = 0
+    correo = Correo(destination_username, destination_domain, destination_display_name, datos_correo, template )
     correo.send_email()

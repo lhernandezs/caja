@@ -1,23 +1,19 @@
-import numpy    as np
-import pandas   as pd
-
 from correo                   import Correo
 from modelo                   import DatosCorreoJuicios
-from entradaHelper            import Entrada
-from filtrosHelper            import FiltrosHelper
+from entradaHelper            import getDataFrame
+from filtrosHelper            import get_listas_datos
 from app                      import UPLOAD_FOLDER
-from config                   import COLUMNAS_DATOS
+from config                   import EXTENSION_EXCEL_365
 
 class Robot:
 
     def sendCorreosJuicios(self, fichas):
         for ficha in fichas: 
-            df_datos : pd.DataFrame = Entrada().getDataFrame(UPLOAD_FOLDER, f"{ficha}.xlsx", "Datos", list(COLUMNAS_DATOS.values()))
-            analizador      = FiltrosHelper()
-            resultados      = analizador.procesar(df_datos)
-            instructores    = resultados['instructores']
-            datos_activos   = resultados['datos_activos']
-            datos_a_desertar= resultados['datos_a_desertar']
+            df_datos        = getDataFrame(UPLOAD_FOLDER, f"{ficha}.{EXTENSION_EXCEL_365}", "datos")
+            listas_datos    = get_listas_datos(df_datos)
+            instructores    = listas_datos['ls_instructores']
+            datos_activos   = listas_datos['ls_para_normalizar']
+            datos_a_desertar= listas_datos['ls_para_desertar']
 
             datos_correo_juicios = DatosCorreoJuicios(
                                         ficha                   = ficha,
@@ -26,8 +22,8 @@ class Robot:
                                         desertores              = datos_a_desertar
                                         )
             
-            correo = Correo('lhernandezs', 'sena.edu.co', 'LeonardoSENA', datos_correo_juicios, 0)   # destino correo Leonardo            
-            # correo = Correo('leo66', 'hotmail.com', 'Leonardo HS', datos_correo_juicios)   # destino correo Leonardo       
+            # correo = Correo('lhernandezs', 'sena.edu.co', 'LeonardoSENA', datos_correo_juicios, 0)   # destino correo lhernandezs@sena.edu.co
+            correo = Correo('leo66', 'hotmail.com', 'Leonardo HS', datos_correo_juicios, 0)   # destino correo leo66@hotmail.com
 
             try:
                 correo.send_email()
@@ -60,27 +56,7 @@ if __name__ == '__main__':
         'prueba' :         [
                             "2879847", "2879848", "2879849",           
                             ],
-        'yuli'  :         [
-                            '2455261', '2455262', '2626895', '2626896', '2626898', '2626899', '2626900', '2626901', '2626902', '2626937',
-                            '2626938', '2626939', '2626940', '2626941', '2626942', '2626943', '2626944', '2626955', '2626956', '2626957',
-                            '2626958', '2627060', '2627061', '2627062', '2627063', '2627064', '2627065', '2627066', '2627067', '2627068',
-                            '2627069', '2627070', '2627071', '2627072', '2627073', '2627201', '2627202', '2627203', '2627204', '2627205',
-                            '2627206', '2674886', '2675717', '2675744', '2675745', '2675746', '2675747', '2675758', '2675759', '2675791',
-                            '2675815', '2675816', '2675817', '2675818', '2675819', '2675820', '2675821', '2675822', '2675823', '2675824',
-                            '2675825', '2675826', '2675827', '2675828', '2675829', '2675830', '2675831', '2675832', '2675877', '2675878',
-                            '2675884', '2675885', '2675911', '2675912', '2694747', '2721602', '2721603', '2721604', '2721605', '2721640',
-                            '2721641', '2721642', '2721643', '2721644', '2721645', '2721646', '2721647', '2721803', '2721804', '2721828',
-                            '2721829', '2721859', '2721860', '2724978', '2724979', '2758190', '2758230', '2758333', '2758425', '2758518',
-                            '2758519', '2758523', '2758524', '2758744', '2820307', '2834355', '2834356', '2834460', '2834461', '2834462',
-                            '2834463', '2834649', '2834650', '2834651', '2834703', '2834704', '2834705', '2834720', '2834721', '2834734',
-                            '2834735', '2834736', '2834838', '2834839', '2834840', '2834841', '2834842', '2834843', '2834844', '2834845',
-                            '2834846', '2834847', '2834848', '2834849', '2834850', '2834851', '2834852', '2834853', '2834854', '2834855',
-                            '2834856', '2837519', '2864589', '2864590', '2879546', '2879572', '2879609', '2879610', '2879689', '2879690',
-                            '2879691', '2879692', '2879693', '2879694', '2879695', '2879696', '2879697', '2879698', '2879699', '2879754',
-                            '2879835', '2879836', '2879837', '2879838', '2879839', '2879840', '2879841', '2879842', '2879843', '2879844',
-                            '2879845', '2879846', '2879847', '2879848', '2879849', '3106275', '3013169', '2989236', '3041902', '3059562',
-                            '3019786', '3059847', '3041909', '3064539', '3069983', '3069982', '3167877', '3167875', '3167876',
-                            ],       
+   
         'juan carlos': [
                             "2879698",
                         ],
@@ -88,4 +64,4 @@ if __name__ == '__main__':
              }    
     
     robot = Robot()
-    robot.sendCorreosJuicios(fichas['juan carlos'])
+    robot.sendCorreosJuicios(fichas['kebin'])

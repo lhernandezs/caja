@@ -2,13 +2,6 @@ from enum       import Enum
 from pydantic   import BaseModel, EmailStr
 from typing     import Optional
 
-class Vinculacion(Enum):
-    PLANTA      = 'Planta'
-    CONTRATO    = 'Contrato'
-
-class TipoCompetencia(Enum):
-    TECNICA     = 'TEC'
-    TRANSVERSAL = 'TRA'
 
 class Instructor(BaseModel):
     cedula                      : str
@@ -39,11 +32,6 @@ class DatosCorreo(BaseModel):
     descripcion_competencia     : str
     fichas                      : list
 
-class TopeAprendices(BaseModel):
-    tipo_competencia            : TipoCompetencia
-    vinculacion                 : Vinculacion
-    tope                        : int
-
 class Juicio(BaseModel):
     tipo                        : str
     documento	                : str
@@ -57,7 +45,7 @@ class Juicio(BaseModel):
     funcionario	                : str
 
 class DatosCorreoJuicios(BaseModel):
-    ficha                         : int
-    instructores                  : list
-    activos                       : list
-    desertores                    : list
+    ficha                       : int
+    instructores                : list
+    activos                     : list
+    desertores                  : list
