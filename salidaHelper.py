@@ -12,37 +12,28 @@ from config                         import ESTADOS, HOJAS, EXTENSION_EXCEL_365
 from procesadorJuiciosHelper        import getLimite_rap_para_normalizar
 
 def color_rows(row, limite_rap_para_normalizar: int):
-    if pd.notnull(row['estado']) and str(row['estado']).strip() != "":
-        color = "White"
-        for value in ESTADOS.values():
-            if value[0] == row["estado"]:
-                color = value[1]
-                break
-        else:
-            col_aprobado       = next(idx for idx, col_name in enumerate(row.index) if col_name == "aprobado") + 1
-            col_productiva     = next(idx for idx, col_name in enumerate(row.index) if col_name ==  "PRO")
-            col_en_tramite     = next(idx for idx, col_name in enumerate(row.index) if col_name ==  "enTramite")
-            por_evaluar        = int(pd.to_numeric(row.iloc[col_aprobado], errors='coerce'))
-            juicios_productiva = int(pd.to_numeric(row.iloc[col_productiva], errors='coerce'))
-            por_evaluar        = por_evaluar if pd.notnull(por_evaluar) else 0
-            juicios_productiva = juicios_productiva if pd.notnull(juicios_productiva) else 0
-            se_tramita_novedad = isinstance(row.iloc[col_en_tramite], str)
-            print(f"por evaluar: {por_evaluar} juicios productiva: {juicios_productiva} novedad {se_tramita_novedad}")
-            if   por_evaluar == 1 and juicios_productiva == 1:
-                color = "PaleGreen"
-            elif por_evaluar == 1 and juicios_productiva == 0:
-                color = "Yellow"
-            elif por_evaluar in [n for n in range(2, limite_rap_para_normalizar + 1)]:
-                color = "PaleGoldenrod"
-            elif se_tramita_novedad:
-                color = "DarkRed"
-            elif por_evaluar >= limite_rap_para_normalizar and not se_tramita_novedad:
-                color = "Red"
-            else:
-                color = "FireBrick"
-        color_final = [f'background-color: {color}']
+    color = "White"
+    if row['estado'] != "EN FORMACION":
+        list_color = [value[1] for value in ESTADOS.values() if value[0] == row['estado']]
+        if list_color:
+            color = list_color[0]
     else:
-        color_final = [f'background-color: White']
+        por_evaluar        = row['porEvaluar']
+        juicios_productiva = row['PRO']
+        se_tramita_novedad = isinstance(row['enTramite'], str)
+        if   por_evaluar == 1 and juicios_productiva == 1:
+            color = "PaleGreen"
+        elif por_evaluar == 1 and juicios_productiva == 0:
+            color = "Yellow"
+        elif por_evaluar in [n for n in range(2, limite_rap_para_normalizar + 1)]:
+            color = "PaleGoldenrod"
+        elif se_tramita_novedad:
+            color = "DarkRed"
+        elif por_evaluar >= limite_rap_para_normalizar and not se_tramita_novedad:
+            color = "Red"
+        else:
+            color = "FireBrick"
+    color_final = [f'background-color: {color}']
     return color_final * len(row) 
 
 def ajustarFormatoCeldas(sheet: Worksheet):
@@ -64,7 +55,7 @@ def write_process_file(folder: str, ficha: str, df_datos: pd.DataFrame, df_noved
             df_datos.sort_values(by="orden").style.apply(lambda row: color_rows(row, limite_rap_para_normalizar), axis=1).to_excel(writer, sheet_name='datos', index=False)  
             workbook = writer.book
             worksheet = workbook['datos']
-            worksheet.delete_cols(25, 2)
+            # worksheet.delete_cols(25, 2)
             ajustarFormatoCeldas(worksheet)
             worksheet.merge_cells(start_row=2, start_column=1, end_row=2, end_column=10)
             worksheet.cell(2, 1).value = TITULO_INSTRUCTORES

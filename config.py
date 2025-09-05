@@ -19,23 +19,24 @@ FONT_DATOS              = "Arial"
 SIZE_FONT_DATOS         = 9
 SIZE_FONT_TITULO        = 20
 
-TITULO              = "Reporte de Juicios"
-TITULO_INSTRUCTORES = "Instructor por compentencia"
-TITULO_ULTIMA_FECHA = "Fecha de registro del último RAP"
+TITULO                  = "Reporte de Juicios"
+TITULO_INSTRUCTORES     = "Instructor por compentencia"
+TITULO_ULTIMA_FECHA     = "Fecha de registro del último RAP"
 
 ESTADOS = { 
-            "induccion"         : ("INDUCCION",         "IndianRed"),
-            "en_formacion"      : ("EN FORMACION",      "White"),
-            "trasladado"        : ("TRASLADADO",        "Violet"),
-            "aplazado"          : ("APLAZADO",          "Magenta"),
-            "condicionado"      : ("CONDICIONADO",      "DarkViolet"),
-            "por_certificar"    : ("POR CERTIFICAR",    "Lime"),
-            "certificado"       : ("CERTIFICADO",       "ForestGreen"),
-            "retiro_voluntario" : ("RETIRO VOLUNTARIO", "Aqua"),
-            "cancelado"         : ("CANCELADO",         "SteelBlue"),
-            "reintegrado"       : ("REINTEGRADO",       "DeepSkyBlue"),
+            "induccion"         : ("INDUCCION",         "IndianRed"     ),
+            "en_formacion"      : ("EN FORMACION",      "White"         ),
+            "trasladado"        : ("TRASLADADO",        "Violet"        ),
+            "aplazado"          : ("APLAZADO",          "Magenta"       ),
+            "condicionado"      : ("CONDICIONADO",      "DarkViolet"    ),
+            "por_certificar"    : ("POR CERTIFICAR",    "Lime"          ),
+            "certificado"       : ("CERTIFICADO",       "ForestGreen"   ),
+            "retiro_voluntario" : ("RETIRO VOLUNTARIO", "Aqua"          ),
+            "cancelado"         : ("CANCELADO",         "SteelBlue"     ),
+            "reintegrado"       : ("REINTEGRADO",       "DeepSkyBlue"   ),
 }
 
+FILTROS = ['activo', 'en_tramite', 'no_aprobado', 'para_productiva', 'error_productiva', 'para_normalizar', 'para_desertar']
 
 COLUMNAS_HOJA           = ["tipo", "documento", "nombres", "apellidos", "estado", "competencia", "resultado", "juicio", "vacio", "fecha", "funcionario"]
 COLUMNAS_DATOS          = ['tipo', 'documento', 'nombres', 'apellidos', 'estado', 'aprobado', 'porEvaluar', 'noAprobado', 'enTramite', 'activo', 
@@ -43,6 +44,9 @@ COLUMNAS_DATOS          = ['tipo', 'documento', 'nombres', 'apellidos', 'estado'
 COLUMNAS_NOVEDADES      = ["documento", "nombre", "ficha", "novedad"]
 COLUMNAS_ACTIVOS        = ["documento", "nombre", "ficha", "instructor"]
 COLUMNAS_INSTRUCTORES   = ["instructor", "ficha", "competencia"]
+
+COLUMNAS_INT_DATOS      = ['aprobado', 'porEvaluar', 'noAprobado', 'IND', 'BIL', 'CIE', 'COM', 'CUL', 'DER', 'EMP', 
+                           'ETI', 'INV', 'MAT', 'SST', 'TIC', 'PRO', 'TEC',]
 
 ANCHOS_HOJA             = [('A',  6), ('B', 15), ('C', 21), ('D', 21), ('E', 16), 
                            ('F', 40), ('G', 40), ('H', 12), ('I',  0), ('J', 16),

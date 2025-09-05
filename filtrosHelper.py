@@ -5,94 +5,81 @@ from app                     import UPLOAD_FOLDER
 from config                  import ESTADOS, HOJAS
 from procesadorJuiciosHelper import getLimite_rap_para_normalizar
 
-class FiltrosHelper():
-    def procesar(self, df_datos: pd.DataFrame) -> dict:
-        columnas_datos = HOJAS['datos']['columnas']
-        limite_rap_para_normalizar = getLimite_rap_para_normalizar(df_datos)
-        columna_tecnico            = next((k for k, v in columnas_datos.items() if v == "TEC"), None)
-        columna_productiva         = next((k for k, v in columnas_datos.items() if v == "PRO"), None) -1
+def get_df_filtrado(df: pd.DataFrame, filtro:str) -> pd.DataFrame:
+    limite_rap_para_normalizar = getLimite_rap_para_normalizar(df)
+    print(f" LIMITE PARA NORMALIZAR {limite_rap_para_normalizar}")
 
-        df_estados = {f"df_{key}": df_datos[df_datos['estado'] == ESTADOS[key][0]].reset_index(drop=True) for key in ESTADOS.keys()}
+    # df['enTramite'].isin([np.nan])
 
-        df_induccion        = df_estados['df_induccion']
-        df_en_formacion     = df_estados['df_en_formacion']
-        df_aplazado         = df_estados['df_aplazado']
-        df_trasladado       = df_estados['df_trasladado']
-        df_condicionado     = df_estados['df_condicionado']
-        df_por_certificar   = df_estados['df_por_certificar']
-        df_certificado      = df_estados['df_certificado']
-        df_retiro_voluntario= df_estados['df_retiro_voluntario']
-        df_cancelado        = df_estados['df_cancelado']
-        df_reintegrado      = df_estados['df_reintegrado']
+    df_filtrado = df.iloc[0:0]
 
-        df_activo           = df_en_formacion[(df_en_formacion['activo'] == "ACTIVO")].reset_index(drop = True)
-        df_por_evaluar      = df_en_formacion[(pd.to_numeric(df_en_formacion['porEvaluar'], errors='coerce') > 1)].reset_index(drop = True)
-        df_en_tramite       = df_en_formacion[(df_en_formacion['enTramite'].notna())].reset_index(drop = True)
-        df_para_productiva  = df_en_formacion[(pd.to_numeric(df_en_formacion['porEvaluar'], errors='coerce') == 1) &
-                                              (df_en_formacion.iloc[:, columna_productiva] == 1)].reset_index(drop=True) 
-        df_error_productiva = df_en_formacion[(pd.to_numeric(df_en_formacion['porEvaluar'], errors='coerce') == 1) &
-                                              (df_en_formacion.iloc[:, columna_productiva] != 1)].reset_index(drop=True) 
-        df_para_normalizar  = df_en_formacion[(pd.to_numeric(df_en_formacion['porEvaluar'], errors='coerce').between(2, limite_rap_para_normalizar - 1))].reset_index(drop=True)
-        df_para_desertar    = df_en_formacion[(pd.to_numeric(df_en_formacion['porEvaluar'], errors='coerce') > limite_rap_para_normalizar) &
-                                              (df_en_formacion['enTramite'].isin([np.nan])) ].reset_index(drop = True)
+    if filtro == 'activo':
+        df_filtrado = df[(df['activo'].notna())]
+    elif filtro == 'en_tramite':
+        df_filtrado = df[(df['enTramite'].notna())]
+    elif filtro == 'no_aprobado':
+        df_filtrado = df[(df['noAprobado'].notna())]
+    elif filtro == 'para_productiva':
+        df_filtrado = df[(df['porEvaluar'] == 1) & (df["PRO"] == 1)]
+    elif filtro == 'error_productiva':
+        df_filtrado = df[(df['porEvaluar'] == 1) & (df["PRO"] != 1)]
+    elif filtro == 'para_normalizar':
+        df_filtrado = df[(df['porEvaluar'] <= limite_rap_para_normalizar) & (~df['enTramite'].notna())]
+    elif filtro == 'para_desertar':
+        df_filtrado = df[(df['porEvaluar'] >  limite_rap_para_normalizar)  & (~df['enTramite'].notna())]
+    elif filtro in ESTADOS.keys():
+        df_filtrado =  df[df['estado'] == ESTADOS[filtro][0]]
 
-        instructores       = [df_datos.iloc[0, columna_tecnico]]
-        para_normalizar = []
-        para_desertar   = []
+    return df_filtrado.reset_index(drop = True)
 
-        for index in df_para_normalizar.index:
-            for col_competencia in range(10, 24):
-                sufijo_competencia  = f"{df_datos.columns[col_competencia]}"
-                if (df_para_normalizar.iloc[index, col_competencia] > 0) and (df_datos.columns[col_competencia] != "PRO"):
-                    instructor          = f"{df_datos.iloc[0, col_competencia]}"
-                    nombres             = f"{df_para_normalizar.iloc[index, 2]}"
-                    apellidos           = f"{df_para_normalizar.iloc[index, 3]}"                    
-                    rap_por_evaluar     = f"{df_para_normalizar.iloc[index, col_competencia]}"
-                    para_normalizar.append([instructor, sufijo_competencia, rap_por_evaluar, nombres, apellidos])
 
-                    if instructor not in instructores:
-                        instructores.append(instructor)
+def get_listas_datos(df_datos: pd.DataFrame) -> dict:
+    df_para_normalizar  = get_df_filtrado(df_datos, 'para_normalizar')
+    df_para_desertar    = get_df_filtrado(df_datos, 'para_desertar')
+    idx_tecnico = df_datos.columns.get_loc("TEC")
 
-        for index in df_para_desertar.index:
-            nombres             = f"{df_para_desertar.iloc[index, 2]}"
-            apellidos           = f"{df_para_desertar.iloc[index, 3]}" 
-            rap_por_evaluar     = f"{df_para_desertar.iloc[index, 6]}"
-            para_desertar.append([nombres, apellidos, rap_por_evaluar])
+    ls_instructores = [df_datos.iloc[0, idx_tecnico]]
+    ls_para_normalizar = []
+    ls_para_desertar   = []
 
-        return {
-            'df_induccion'          : df_induccion,
-            'df_en_formacion'       : df_en_formacion,
-            'df_aplazado'           : df_aplazado,
-            'df_trasladado'         : df_trasladado,
-            'df_condicionado'       : df_condicionado,
-            'df_por_certificar'     : df_por_certificar,
-            'df_certificado'        : df_certificado,
-            'df_retiro_voluntario'  : df_retiro_voluntario,
-            'df_cancelado'          : df_cancelado,
-            'df_reintegrado'        : df_reintegrado,
-            'df_activo'             : df_activo,
-            'df_por_evaluar'        : df_por_evaluar,            
-            'df_en_tramite'         : df_en_tramite,            
-            'df_para_productiva'    : df_para_productiva,
-            'df_error_productiva'   : df_error_productiva,
-            'df_para_normalizar'    : df_para_normalizar,            
-            'df_para_desertar'      : df_para_desertar,
-            'instructores'          : instructores,
-            'para_normalizar'       : para_normalizar,
-            'para_desertar'         : para_desertar,
-        }
+    for index in df_para_normalizar.index:
+        for col_competencia in range(10, 24):
+            sufijo_competencia  = f"{df_datos.columns[col_competencia]}"
+            if (df_para_normalizar.iloc[index, col_competencia] > 0) and (df_datos.columns[col_competencia] != "PRO"):
+                instructor          = f"{df_datos.iloc[0, col_competencia]}"
+                nombres             = f"{df_para_normalizar.iloc[index, 2]}"
+                apellidos           = f"{df_para_normalizar.iloc[index, 3]}"                    
+                rap_por_evaluar     = f"{df_para_normalizar.iloc[index, col_competencia]}"
+                ls_para_normalizar.append([instructor, sufijo_competencia, rap_por_evaluar, nombres, apellidos])
+
+                if instructor not in ls_instructores:
+                    ls_instructores.append(instructor)
+
+    for index in df_para_desertar.index:
+        nombres             = f"{df_para_desertar.iloc[index, 2]}"
+        apellidos           = f"{df_para_desertar.iloc[index, 3]}" 
+        rap_por_evaluar     = f"{df_para_desertar.iloc[index, 6]}"
+        ls_para_desertar.append([nombres, apellidos, rap_por_evaluar])
+
+    return {
+        'ls_instructores'       : ls_instructores,
+        'ls_para_normalizar'    : ls_para_normalizar,
+        'ls_para_desertar'      : ls_para_desertar,
+    }
 
 from config import EXTENSION_EXCEL_365
 from entradaHelper import getDataFrame
 if __name__ == "__main__":
-    ficha = '3106275'
+    ficha = '2879698'
     try:
-        df_datos: pd.DataFrame = getDataFrame(UPLOAD_FOLDER, f"{ficha}.{EXTENSION_EXCEL_365}", 'datos')        
-        FiltrosHelper = FiltrosHelper()
-        resultados = FiltrosHelper.procesar(df_datos)
-        var = 'para_desertar'
-        df_name = f"df_{var.lower().replace(' ', '_')}"
-        print(f"df: {var}  {df_name}  {len(resultados[df_name])}")
-        print(resultados[df_name])
+        df_datos = getDataFrame(UPLOAD_FOLDER, f"{ficha}.{EXTENSION_EXCEL_365}", 'datos')        
+        condiciones = ['activo', 'por_evaluar', 'en_tramite','para_productiva', 'error_productiva', 'para_normalizar', 'para_desertar']
+        # for estado in ESTADOS.keys():
+        #     print(f"\n\n ESTADO: {estado}")
+        #     print(get_df_filtrado(df_datos, estado))
+        for condicion in condiciones:
+            print(f"\n\n CONDICION: {condicion}")
+            print(get_df_filtrado(df_datos, condicion))
+
     except Exception as e:
         raise ValueError(e)

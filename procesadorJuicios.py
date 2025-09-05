@@ -5,7 +5,7 @@ import pandas as pd
 from entradaHelper              import getDataFrame
 from salidaHelper               import write_process_file, color_rows
 from procesadorJuiciosHelper    import getCompetenciasNoTecnicas, numeroDeOrden, getInstructorEnReporte, getLimite_rap_para_normalizar
-from config                     import HOJAS
+from config                     import HOJAS, COLUMNAS_INT_DATOS
 
 class ProcesadorJuicios:
     def __init__(self, folder: str, archivo: str, novedades: pd.DataFrame = None, activos: pd.DataFrame = None, instructores: pd.DataFrame = None):
@@ -29,12 +29,12 @@ class ProcesadorJuicios:
 
     def build_df_datos(self):
         # 1. creamos los dataframes novedades, acitvos, instructores de la ficha
-        if not self.df_novedades is None:
-            self.df_novedades_ficha     = self.df_novedades[self.df_novedades["ficha"] == self.ficha] 
-        if not self.df_activos is None:
-            self.df_activos_ficha       = self.df_activos[ self.df_activos["ficha"] == self.ficha] 
-        if not self.df_instructores is None:
-            self.df_instructores_ficha  = self.df_instructores[ self.df_instructores["ficha"] == self.ficha] 
+        if self.df_novedades is not None:
+            self.df_novedades_ficha     = self.df_novedades.query("ficha == @self.ficha")
+        if self.df_activos is not None:
+            self.df_activos_ficha       = self.df_activos.query("ficha == @self.ficha")
+        if self.df_instructores is not None:
+            self.df_instructores_ficha  = self.df_instructores.query("ficha == @self.ficha")
 
         # 2. creamos el dataframe self.df_datos a partir del dataframe hoja
         columnas_a_copiar = HOJAS['datos']['columnas'][:5]
@@ -43,71 +43,75 @@ class ProcesadorJuicios:
         self.df_datos = self.df_datos[12:]
         self.df_datos.drop_duplicates(inplace=True)
         self.df_datos = self.df_datos.assign( **nuevas_columnas ) 
+        self.df_datos[COLUMNAS_INT_DATOS] = self.df_datos[COLUMNAS_INT_DATOS].astype('Int64')
 
         # 3. recorremos el dataframe df_datos y asignamos los valores de las nuevas columnas
         competencias_no_tecnicas = getCompetenciasNoTecnicas(self.codigo_programa, self.version_programa)
         for i in self.df_datos.index: 
-            df_aprobado    = self.df_hoja[(self.df_hoja["juicio"] == "APROBADO")    & (self.df_hoja["documento"] == self.df_datos["documento"][i])]
-            df_por_evaluar = self.df_hoja[(self.df_hoja["juicio"] == "POR EVALUAR") & (self.df_hoja["documento"] == self.df_datos["documento"][i])]
-            df_no_aprobado = self.df_hoja[(self.df_hoja["juicio"] == "NO APROBADO") & (self.df_hoja["documento"] == self.df_datos["documento"][i])]
-            self.df_datos.loc[i, "aprobado"]   = int(len(df_aprobado))
-            self.df_datos.loc[i, "porEvaluar"] = int(len(df_por_evaluar))
-            self.df_datos.loc[i, "noAprobado"] = int(len(df_no_aprobado))
-            self.df_datos.loc[i, "orden"]      = numeroDeOrden(self.df_datos["estado"][i], len(df_por_evaluar))
-           
-            if not self.df_activos_ficha is None and self.df_datos["documento"][i] in self.df_activos_ficha["documento"].values.astype(int):
-                self.df_datos.loc[i, "activo"] = "ACTIVO"
+            documento = self.df_datos["documento"][i]
+            raps_aprobados      = self.df_hoja.query('documento == @documento and juicio == "APROBADO"').shape[0]
+            raps_por_evaluar    = self.df_hoja.query('documento == @documento and juicio == "POR EVALUAR"').shape[0]
+            raps_no_aprobados   = self.df_hoja.query('documento == @documento and juicio == "NO APROBADO"').shape[0]
 
-            if not self.df_novedades_ficha is None and self.df_datos["estado"][i] == "EN FORMACION":
-                for j in self.df_novedades_ficha.index:  
-                    if (self.df_datos["documento"][i] == self.df_novedades_ficha["documento"][j]):
-                        self.df_datos.loc[i, "enTramite"] = self.df_novedades_ficha["novedad"][j]
-                        break  
+            self.df_datos.loc[i, "aprobado"]    = raps_aprobados
+            self.df_datos.loc[i, "porEvaluar"]  = raps_por_evaluar
+            self.df_datos.loc[i, "noAprobado"]  = raps_no_aprobados
+
+            df_por_evaluar = self.df_hoja.query('juicio == "POR EVALUAR" and documento == @documento')
+            self.df_datos.loc[i, "orden"]       = numeroDeOrden(self.df_datos["estado"][i], len(df_por_evaluar))
+           
+            if self.df_activos_ficha is not None and documento in self.df_activos_ficha["documento"].values:
+                self.df_datos.at[i, "activo"] = "ACTIVO"
+
+            if self.df_novedades_ficha is not None and documento in self.df_novedades_ficha["documento"].values:
+                df_filtrado  = self.df_novedades_ficha [self.df_novedades_ficha["documento"] == documento]
+                self.df_datos.loc[i, "enTramite"] = df_filtrado["novedad"].iloc[-1]
+
 
             if self.df_datos["estado"][i] == "EN FORMACION":
-                contadorTodas = 0
+                contador_todas = 0
                 for competencia in competencias_no_tecnicas:
-                    contador = len(df_por_evaluar[df_por_evaluar["competencia"].str.slice(0,5) == competencia[1]])
-                    if contador != 0:
-                        self.df_datos.loc[i, competencia[0]] = contador
-                        contadorTodas += contador 
-                self.df_datos.loc[i, "TEC"] = len(df_por_evaluar) - contadorTodas
+                    contador = df_por_evaluar["competencia"].str.startswith(competencia[1]).sum()
+                    if contador > 0:
+                        self.df_datos.at[i, competencia[0]] = contador
+                        contador_todas += contador
+                self.df_datos.loc[i, "TEC"] = len(df_por_evaluar) - contador_todas
 
         # Asignar el color a cada fila usando la función color_rows
         for index, row in self.df_datos.iterrows():
-            color_value = color_rows(row, getLimite_rap_para_normalizar(self.df_datos))
-            if isinstance(color_value, str) and color_value.startswith("background-color: "):
-                color_value = color_value.replace("background-color: ", "")
-            self.df_datos.at[index, "color"] = color_value
+            list_color = color_rows(row, getLimite_rap_para_normalizar(self.df_datos))
+            self.df_datos.at[index, "color"] = list_color[0].replace("background-color: ", "")
 
         # 4. creamos un dataframe con los nombres y fecha del ultimo juicio de los instructores de cada competencia sacados de datos o del reporte
         df_instructores         = pd.DataFrame([np.nan] * len(self.df_datos.columns)).transpose()
         df_fechas               = pd.DataFrame([np.nan] * len(self.df_datos.columns)).transpose()
         df_instructores.columns = self.df_datos.columns
         df_fechas.columns       = self.df_datos.columns        
-        df_instructores['orden']= 1
-        df_fechas['orden']      = 2
+        df_instructores['orden']= 1000
+        df_fechas['orden']      = 2000
         for competencia in [c[0] for c in competencias_no_tecnicas] + ['TEC']:
             instructor = None
             if self.df_instructores_ficha is not None:
-                instructor_row = self.df_instructores_ficha[self.df_instructores_ficha['competencia'] == competencia]
-                if not instructor_row.empty:
-                    instructor = instructor_row.iloc[0]['instructor']
+                df_instructor_ficha : pd.DataFrame = self.df_instructores_ficha[self.df_instructores_ficha['competencia'] == competencia]
+                if not df_instructor_ficha.empty:
+                    instructor = df_instructor_ficha.iloc[-1]['instructor']
             if instructor is None:
                 instructor = getInstructorEnReporte(self.df_hoja, competencia, competencias_no_tecnicas)
             if instructor:
-                df_filtrado = self.df_hoja[self.df_hoja['funcionario'].str.upper().str.contains(instructor.upper(), na=False)]
-                if not df_filtrado.empty:
-                    # Escoge el row que tenga la fecha mayor en la columna 'fecha'
-                    fecha_max = df_filtrado['fecha'].max()
-                    fecha_row = df_filtrado[df_filtrado['fecha'] == fecha_max].iloc[0]['fecha']
-                    # Divide la fecha y la hora por un salto de línea si es un string con espacio
+                df_jucios_instructor = self.df_hoja[self.df_hoja['funcionario'].str.upper().str.contains(instructor.upper(), na=False)]
+                if not df_jucios_instructor.empty:
+                    fecha_max = df_jucios_instructor['fecha'].max()
+                    fecha_row = df_jucios_instructor[df_jucios_instructor['fecha'] == fecha_max].iloc[0]['fecha']
                     fecha_str = fecha_row.strftime("%d-%m\n%Y\n%H:%M")
                     df_fechas[competencia] = fecha_str
             df_instructores[competencia] = instructor
 
-        self.df_datos = pd.concat([self.df_datos.iloc[:0], df_instructores, self.df_datos.iloc[0:]], ignore_index=True)
-        self.df_datos = pd.concat([self.df_datos.iloc[:1], df_fechas,       self.df_datos.iloc[1:]], ignore_index=True)
+        empty_df = pd.DataFrame(columns=self.df_datos.columns).astype(self.df_datos.dtypes.to_dict())
+        df_instructores = df_instructores.astype(self.df_datos.dtypes.to_dict(), errors='ignore')
+        df_fechas = df_fechas.astype(self.df_datos.dtypes.to_dict(), errors='ignore')
+        self.df_datos = pd.concat([empty_df, df_instructores, self.df_datos.iloc[0:]], ignore_index=True)
+        self.df_datos = pd.concat([self.df_datos.iloc[:1], df_fechas, self.df_datos.iloc[1:]], ignore_index=True)
+
 
     def procesar(self) -> dict:
         try:
@@ -155,7 +159,7 @@ class ProcesadorJuicios:
                 }
 
 if __name__ == "__main__":
-    ficha = '3106275'        
+    ficha = '2879698'        
     try:
         procesador_jucios = ProcesadorJuicios("upload", f"Reporte de Juicios Evaluativos {ficha}.xls", None, None, None)
         procesador_jucios.procesar()

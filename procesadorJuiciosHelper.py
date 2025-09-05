@@ -3,7 +3,7 @@ import pandas as pd
 from dateutil.relativedelta         import relativedelta
 from datetime                       import datetime
 
-from config                         import competencias_no_tecnicas, competencias_programas_especiales, PORCENTAJE_LIMITE_RAP, HOJAS
+from config                         import competencias_no_tecnicas, competencias_programas_especiales, PORCENTAJE_LIMITE_RAP, HOJAS, ESTADOS
 
 def getLimite_rap_para_normalizar(df_datos: pd.DataFrame) -> int:
     columnas_datos      = HOJAS['datos']['columnas']
@@ -21,14 +21,8 @@ def getLimite_rap_para_normalizar(df_datos: pd.DataFrame) -> int:
     return int(total_raps * PORCENTAJE_LIMITE_RAP)
 
 def numeroDeOrden(estado: str, porEvaluar: int) -> int:
-    if estado == 'EN FORMACION':
-        return 1000 + porEvaluar
-    elif estado == 'CANCELADO':
-        return 2000 + porEvaluar
-    elif estado == 'RETIRO VOLUNTARIO':
-        return 3000 + porEvaluar
-    else:
-        return 4000 + porEvaluar
+    indice_estado = next((i for i, value in enumerate(ESTADOS.values()) if value[0] == estado), None)
+    return (indice_estado + 2) * 1000 + porEvaluar
 
 def getInstructorEnReporte(df_hoja: pd.DataFrame, competencia, competencias_no_tecnicas_ajustadas) -> str:
     if competencia == 'TEC':

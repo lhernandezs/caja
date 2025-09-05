@@ -52,6 +52,10 @@ if __name__ == "__main__":
         'kebin': [
             "3106275",
         ],
+        'juan carlos': [
+            "2879698",
+        ],
+
     }
     
     cargadorDatos = CargadorDatos()
