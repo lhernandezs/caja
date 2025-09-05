@@ -7,7 +7,7 @@ from openpyxl.styles                import Font
 from openpyxl.styles                import Alignment
 from openpyxl.worksheet.worksheet   import Worksheet
 
-from config                         import FONT_DATOS, SIZE_FONT_DATOS, SIZE_FONT_TITULO, TITULO, TITULO_INSTRUCTORES, TITULO_ULTIMA_FECHA
+from config                         import FONT_DATOS, SIZE_FONT_DATOS, SIZE_FONT_TITULO, TITULO, TITULO_INSTRUCTORES, TITULO_ULTIMA_FECHA, ALTO_FILA_INSTRUCTORES, ALTO_FILA_FEC_JUICIOS
 from config                         import ESTADOS, HOJAS, EXTENSION_EXCEL_365
 from procesadorJuiciosHelper        import getLimite_rap_para_normalizar
 
@@ -55,16 +55,16 @@ def write_process_file(folder: str, ficha: str, df_datos: pd.DataFrame, df_noved
             df_datos.sort_values(by="orden").style.apply(lambda row: color_rows(row, limite_rap_para_normalizar), axis=1).to_excel(writer, sheet_name='datos', index=False)  
             workbook = writer.book
             worksheet = workbook['datos']
-            # worksheet.delete_cols(25, 2)
+            worksheet.delete_cols(25, 2)
             ajustarFormatoCeldas(worksheet)
             worksheet.merge_cells(start_row=2, start_column=1, end_row=2, end_column=10)
-            worksheet.cell(2, 1).value = TITULO_INSTRUCTORES
-            worksheet.cell(2, 1).alignment = Alignment(horizontal='right', vertical='center')
             worksheet.merge_cells(start_row=3, start_column=1, end_row=3, end_column=10)
+            worksheet.cell(2, 1).value = TITULO_INSTRUCTORES
             worksheet.cell(3, 1).value = TITULO_ULTIMA_FECHA            
             worksheet.cell(3, 1).alignment = Alignment(horizontal='right', vertical='center')
-            worksheet.row_dimensions[2].height = 60
-            worksheet.row_dimensions[3].height = 45
+            worksheet.cell(2, 1).alignment = Alignment(horizontal='right', vertical='center')
+            worksheet.row_dimensions[2].height = ALTO_FILA_INSTRUCTORES
+            worksheet.row_dimensions[3].height = ALTO_FILA_FEC_JUICIOS
             for cell in worksheet[2]:
                 cell.fill = openpyxl.styles.PatternFill(start_color="BFEFFF", end_color="BFEFFF", fill_type="solid")  
             for cell in worksheet[3]:
@@ -99,6 +99,6 @@ def write_process_file(folder: str, ficha: str, df_datos: pd.DataFrame, df_noved
                 worksheet.cell(1, col).value = None
             worksheet.merge_cells(start_row=1, start_column=1, end_row=1, end_column=11)
             worksheet.cell(1, 1).value = TITULO
-            worksheet.cell(1, 1).font = Font(name=FONT_DATOS, size=SIZE_FONT_TITULO)
+            worksheet.cell(1, 1).font  = Font(name=FONT_DATOS, size=SIZE_FONT_TITULO)
     except Exception as e:
         raise Exception(f"Error: no es posible guardar el archivo: {e}")

@@ -4,7 +4,7 @@ import pandas as pd
 def getDataFrame(folder: str, file: str, sheet: str) -> pd.DataFrame:
     try:
         df : pd.DataFrame = pd.read_excel(os.path.join(folder, file), sheet_name=sheet)
-        df.columns = HOJAS[sheet]['columnas']
+        df.columns = HOJAS[sheet]['columnas'][:df.shape[1]]
         return df
     except Exception as e:
         raise ValueError(f"Error: imposible leer el archivo {file}. {e}")

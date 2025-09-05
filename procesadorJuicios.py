@@ -4,8 +4,8 @@ import pandas as pd
 
 from entradaHelper              import getDataFrame
 from salidaHelper               import write_process_file, color_rows
-from procesadorJuiciosHelper    import getCompetenciasNoTecnicas, numeroDeOrden, getInstructorEnReporte, getLimite_rap_para_normalizar
-from config                     import HOJAS, COLUMNAS_INT_DATOS
+from procesadorJuiciosHelper    import getCompetenciasNoTecnicas, getInstructorEnReporte, getLimite_rap_para_normalizar
+from config                     import ESTADOS, HOJAS, COLUMNAS_INT_DATOS
 
 class ProcesadorJuicios:
     def __init__(self, folder: str, archivo: str, novedades: pd.DataFrame = None, activos: pd.DataFrame = None, instructores: pd.DataFrame = None):
@@ -28,7 +28,7 @@ class ProcesadorJuicios:
         self.df_instructores_ficha  : pd.DataFrame = None
 
     def build_df_datos(self):
-        # 1. creamos los dataframes novedades, acitvos, instructores de la ficha
+        # 1. creamos los dataframes novedades, activos, instructores de la ficha
         if self.df_novedades is not None:
             self.df_novedades_ficha     = self.df_novedades.query("ficha == @self.ficha")
         if self.df_activos is not None:
@@ -38,11 +38,11 @@ class ProcesadorJuicios:
 
         # 2. creamos el dataframe self.df_datos a partir del dataframe hoja
         columnas_a_copiar = HOJAS['datos']['columnas'][:5]
-        nuevas_columnas = {v: None for v in HOJAS['datos']['columnas'][5:25]}
-        self.df_datos = self.df_hoja[columnas_a_copiar].copy() 
-        self.df_datos = self.df_datos[12:]
+        nuevas_columnas   = {v: None for v in HOJAS['datos']['columnas'][5:25]}
+        self.df_datos     = self.df_hoja[columnas_a_copiar].copy() 
+        self.df_datos     = self.df_datos[12:]
         self.df_datos.drop_duplicates(inplace=True)
-        self.df_datos = self.df_datos.assign( **nuevas_columnas ) 
+        self.df_datos     = self.df_datos.assign( **nuevas_columnas ) 
         self.df_datos[COLUMNAS_INT_DATOS] = self.df_datos[COLUMNAS_INT_DATOS].astype('Int64')
 
         # 3. recorremos el dataframe df_datos y asignamos los valores de las nuevas columnas
@@ -52,13 +52,17 @@ class ProcesadorJuicios:
             raps_aprobados      = self.df_hoja.query('documento == @documento and juicio == "APROBADO"').shape[0]
             raps_por_evaluar    = self.df_hoja.query('documento == @documento and juicio == "POR EVALUAR"').shape[0]
             raps_no_aprobados   = self.df_hoja.query('documento == @documento and juicio == "NO APROBADO"').shape[0]
-
-            self.df_datos.loc[i, "aprobado"]    = raps_aprobados
-            self.df_datos.loc[i, "porEvaluar"]  = raps_por_evaluar
-            self.df_datos.loc[i, "noAprobado"]  = raps_no_aprobados
+            if raps_aprobados > 0:
+                self.df_datos.loc[i, "aprobado"]    = raps_aprobados
+            if raps_por_evaluar > 0:
+                self.df_datos.loc[i, "porEvaluar"]  = raps_por_evaluar
+            if raps_no_aprobados > 0:
+                self.df_datos.loc[i, "noAprobado"]  = raps_no_aprobados
 
             df_por_evaluar = self.df_hoja.query('juicio == "POR EVALUAR" and documento == @documento')
-            self.df_datos.loc[i, "orden"]       = numeroDeOrden(self.df_datos["estado"][i], len(df_por_evaluar))
+            estado = self.df_datos["estado"][i]
+            indice_estado = next((i for i, value in enumerate(ESTADOS.values()) if value[0] == estado), None)
+            self.df_datos.loc[i, "orden"]     = (indice_estado + 2) * 1000 +  len(df_por_evaluar)
            
             if self.df_activos_ficha is not None and documento in self.df_activos_ficha["documento"].values:
                 self.df_datos.at[i, "activo"] = "ACTIVO"
@@ -67,7 +71,6 @@ class ProcesadorJuicios:
                 df_filtrado  = self.df_novedades_ficha [self.df_novedades_ficha["documento"] == documento]
                 self.df_datos.loc[i, "enTramite"] = df_filtrado["novedad"].iloc[-1]
 
-
             if self.df_datos["estado"][i] == "EN FORMACION":
                 contador_todas = 0
                 for competencia in competencias_no_tecnicas:
@@ -75,7 +78,9 @@ class ProcesadorJuicios:
                     if contador > 0:
                         self.df_datos.at[i, competencia[0]] = contador
                         contador_todas += contador
-                self.df_datos.loc[i, "TEC"] = len(df_por_evaluar) - contador_todas
+                raps_tecnicos = len(df_por_evaluar) - contador_todas
+                if raps_tecnicos > 0:
+                    self.df_datos.loc[i, "TEC"] = len(df_por_evaluar) - contador_todas
 
         # Asignar el color a cada fila usando la función color_rows
         for index, row in self.df_datos.iterrows():
@@ -159,7 +164,7 @@ class ProcesadorJuicios:
                 }
 
 if __name__ == "__main__":
-    ficha = '2879698'        
+    ficha = '3106275'        
     try:
         procesador_jucios = ProcesadorJuicios("upload", f"Reporte de Juicios Evaluativos {ficha}.xls", None, None, None)
         procesador_jucios.procesar()

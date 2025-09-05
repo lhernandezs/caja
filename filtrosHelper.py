@@ -1,18 +1,12 @@
-import numpy as np
 import pandas as pd
 
 from app                     import UPLOAD_FOLDER
-from config                  import ESTADOS, HOJAS
+from config                  import ESTADOS
 from procesadorJuiciosHelper import getLimite_rap_para_normalizar
 
 def get_df_filtrado(df: pd.DataFrame, filtro:str) -> pd.DataFrame:
     limite_rap_para_normalizar = getLimite_rap_para_normalizar(df)
-    print(f" LIMITE PARA NORMALIZAR {limite_rap_para_normalizar}")
-
-    # df['enTramite'].isin([np.nan])
-
     df_filtrado = df.iloc[0:0]
-
     if filtro == 'activo':
         df_filtrado = df[(df['activo'].notna())]
     elif filtro == 'en_tramite':
@@ -26,21 +20,20 @@ def get_df_filtrado(df: pd.DataFrame, filtro:str) -> pd.DataFrame:
     elif filtro == 'para_normalizar':
         df_filtrado = df[(df['porEvaluar'] <= limite_rap_para_normalizar) & (~df['enTramite'].notna())]
     elif filtro == 'para_desertar':
-        df_filtrado = df[(df['porEvaluar'] >  limite_rap_para_normalizar)  & (~df['enTramite'].notna())]
+        df_filtrado = df[(df['porEvaluar'] >  limite_rap_para_normalizar) & (~df['enTramite'].notna())]
     elif filtro in ESTADOS.keys():
         df_filtrado =  df[df['estado'] == ESTADOS[filtro][0]]
-
     return df_filtrado.reset_index(drop = True)
 
 
 def get_listas_datos(df_datos: pd.DataFrame) -> dict:
     df_para_normalizar  = get_df_filtrado(df_datos, 'para_normalizar')
     df_para_desertar    = get_df_filtrado(df_datos, 'para_desertar')
-    idx_tecnico = df_datos.columns.get_loc("TEC")
+    idx_tecnico         = df_datos.columns.get_loc("TEC")
 
-    ls_instructores = [df_datos.iloc[0, idx_tecnico]]
-    ls_para_normalizar = []
-    ls_para_desertar   = []
+    ls_instructores     = [df_datos.iloc[0, idx_tecnico]]
+    ls_para_normalizar  = []
+    ls_para_desertar    = []
 
     for index in df_para_normalizar.index:
         for col_competencia in range(10, 24):
@@ -67,17 +60,16 @@ def get_listas_datos(df_datos: pd.DataFrame) -> dict:
         'ls_para_desertar'      : ls_para_desertar,
     }
 
-from config import EXTENSION_EXCEL_365
+from config import EXTENSION_EXCEL_365, FILTROS
 from entradaHelper import getDataFrame
 if __name__ == "__main__":
-    ficha = '2879698'
+    ficha = '3106275'
     try:
         df_datos = getDataFrame(UPLOAD_FOLDER, f"{ficha}.{EXTENSION_EXCEL_365}", 'datos')        
-        condiciones = ['activo', 'por_evaluar', 'en_tramite','para_productiva', 'error_productiva', 'para_normalizar', 'para_desertar']
-        # for estado in ESTADOS.keys():
-        #     print(f"\n\n ESTADO: {estado}")
-        #     print(get_df_filtrado(df_datos, estado))
-        for condicion in condiciones:
+        for estado in ESTADOS.keys():
+            print(f"\n\n ESTADO: {estado}")
+            print(get_df_filtrado(df_datos, estado))
+        for condicion in FILTROS:
             print(f"\n\n CONDICION: {condicion}")
             print(get_df_filtrado(df_datos, condicion))
 

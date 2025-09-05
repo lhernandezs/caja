@@ -11,7 +11,7 @@ SENDER_DISPLAY_NAME     = "formacionvirtualcsf@sena.edu.co"
 SUBJECT                 = "normalizar ficha  "
 TEMPLATES               = ['correoJuicios.html']
 
-PORCENTAJE_LIMITE_RAP   = 0.25
+PORCENTAJE_LIMITE_RAP   = 0.30
 
 ARCHIVO_DE_DATOS        = "datos.xlsx"
 EXTENSION_EXCEL_365     = "xlsx"
@@ -22,6 +22,8 @@ SIZE_FONT_TITULO        = 20
 TITULO                  = "Reporte de Juicios"
 TITULO_INSTRUCTORES     = "Instructor por compentencia"
 TITULO_ULTIMA_FECHA     = "Fecha de registro del último RAP"
+ALTO_FILA_INSTRUCTORES  = 60
+ALTO_FILA_FEC_JUICIOS   = 45
 
 ESTADOS = { 
             "induccion"         : ("INDUCCION",         "IndianRed"     ),
@@ -40,7 +42,7 @@ FILTROS = ['activo', 'en_tramite', 'no_aprobado', 'para_productiva', 'error_prod
 
 COLUMNAS_HOJA           = ["tipo", "documento", "nombres", "apellidos", "estado", "competencia", "resultado", "juicio", "vacio", "fecha", "funcionario"]
 COLUMNAS_DATOS          = ['tipo', 'documento', 'nombres', 'apellidos', 'estado', 'aprobado', 'porEvaluar', 'noAprobado', 'enTramite', 'activo', 
-                           'IND', 'BIL', 'CIE', 'COM', 'CUL', 'DER', 'EMP', 'ETI', 'INV', 'MAT', 'SST', 'TIC', 'PRO', 'TEC', 'color', 'orden']
+                           'IND', 'BIL', 'CIE', 'COM', 'CUL', 'DER', 'EMP', 'ETI', 'INV', 'MAT', 'SST', 'TIC', 'TEC', 'PRO', 'color', 'orden']
 COLUMNAS_NOVEDADES      = ["documento", "nombre", "ficha", "novedad"]
 COLUMNAS_ACTIVOS        = ["documento", "nombre", "ficha", "instructor"]
 COLUMNAS_INSTRUCTORES   = ["instructor", "ficha", "competencia"]

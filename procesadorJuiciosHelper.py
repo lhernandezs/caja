@@ -3,7 +3,7 @@ import pandas as pd
 from dateutil.relativedelta         import relativedelta
 from datetime                       import datetime
 
-from config                         import competencias_no_tecnicas, competencias_programas_especiales, PORCENTAJE_LIMITE_RAP, HOJAS, ESTADOS
+from config                         import competencias_no_tecnicas, competencias_programas_especiales, PORCENTAJE_LIMITE_RAP, HOJAS
 
 def getLimite_rap_para_normalizar(df_datos: pd.DataFrame) -> int:
     columnas_datos      = HOJAS['datos']['columnas']
@@ -20,9 +20,6 @@ def getLimite_rap_para_normalizar(df_datos: pd.DataFrame) -> int:
     total_raps          = raps_aprobados + raps_por_evaluar + raps_no_aprobados
     return int(total_raps * PORCENTAJE_LIMITE_RAP)
 
-def numeroDeOrden(estado: str, porEvaluar: int) -> int:
-    indice_estado = next((i for i, value in enumerate(ESTADOS.values()) if value[0] == estado), None)
-    return (indice_estado + 2) * 1000 + porEvaluar
 
 def getInstructorEnReporte(df_hoja: pd.DataFrame, competencia, competencias_no_tecnicas_ajustadas) -> str:
     if competencia == 'TEC':
@@ -41,7 +38,7 @@ def getInstructorEnReporte(df_hoja: pd.DataFrame, competencia, competencias_no_t
     return f"{' '.join([w.capitalize() for w in nombre.strip().split()])}"
 
 
-def calcular_raps_tecnicos(fecha_inicio: datetime, fecha_fin: datetime, df_hoja: pd.DataFrame, competencias_no_tecnicas_ajustadas) -> int:
+def calcular_avance_raps_tecnicos(fecha_inicio: datetime, fecha_fin: datetime, df_hoja: pd.DataFrame, competencias_no_tecnicas_ajustadas) -> int:
     if fecha_fin is None or fecha_inicio is None:
         return 0
     meses_etapa_lectiva = 21 if ((fecha_fin.year - fecha_inicio.year) * 12 + (fecha_fin.month - fecha_inicio.month)) > 21 else 9
