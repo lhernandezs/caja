@@ -20,7 +20,7 @@ SIZE_FONT_DATOS         = 9
 SIZE_FONT_TITULO        = 20
 
 TITULO                  = "Reporte de Juicios"
-TITULO_INSTRUCTORES     = "Instructor por compentencia"
+TITULO_INSTRUCTORES     = "Instructor competencia"
 TITULO_ULTIMA_FECHA     = "Fecha de registro del último RAP"
 ALTO_FILA_INSTRUCTORES  = 60
 ALTO_FILA_FEC_JUICIOS   = 45

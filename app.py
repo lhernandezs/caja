@@ -4,12 +4,12 @@ import pandas as pd
 from flask   import ( request, session, Flask, render_template, redirect, url_for, jsonify)
 
 from config               import Config, TEMPLATES_FOLDER
-from cargadorDatos        import CargadorDatos
-from procesadorJuicios    import ProcesadorJuicios
+from procesadorJuicios1   import ProcesadorJuicios1
 from entradaHelper        import getDataFrame
 from correo               import Correo
 
 app = Flask(__name__, template_folder=TEMPLATES_FOLDER)
+
 app.config.from_object(Config)
 app.secret_key = app.config["SECRET_KEY"]
 
@@ -35,7 +35,7 @@ def index():
     if 'error' not in session:
         session['error'] = []
     if 'datos' not in session:
-        session['datos'] = False
+        session['datos'] = None
     if 'subio_fichas' not in session:
         session['subio_fichas'] = False        
     return render_template("index.html", variables = session)
@@ -47,8 +47,11 @@ def upload_datos():
         return redirect(url_for("index"))
     file = request.files.get('datos')
     if file.filename == "datos.xlsx":
-        file.save(os.path.join(UPLOAD_FOLDER_DATA, file.filename))
-        session['datos'] = True
+        # file.save(os.path.join(UPLOAD_FOLDER_DATA, file.filename))
+        df_novedades = pd.read_excel(file, sheet_name='novedades').drop_duplicates()
+        df_activos = pd.read_excel(file, sheet_name='activos').drop_duplicates()
+        df_instructores = pd.read_excel(file, sheet_name='instructores').drop_duplicates()
+        session['datos'] =  {'df_novedades': df_novedades.to_json(orient='records'), 'df_activos': df_activos.to_json(orient='records'), 'df_instructores': df_instructores.to_json(orient='records')}
     else:
         session['error'] =f"el archivo elegido {file.filename} debe nombrarse 'datos.xlsx'"
     return redirect(url_for("index"))
@@ -63,11 +66,13 @@ def upload_files():
         if file and file.filename != "" and allowed_file(file.filename):
             try:
                 file.save(os.path.join(UPLOAD_FOLDER, file.filename))
-                if session['datos']:
-                    datos = CargadorDatos(UPLOAD_FOLDER_DATA, "datos.xlsx").getDatos()
-                    juiciosFicha = ProcesadorJuicios(UPLOAD_FOLDER, file.filename, datos['df_novedades'], datos['df_activos'], datos['df_instructores'])
+                if session['datos'] is not None:
+                    try:
+                        juiciosFicha = ProcesadorJuicios1(UPLOAD_FOLDER, file.filename, session['datos'])
+                    except Exception as e:
+                        print(f"ERROR {e}")
                 else:
-                    juiciosFicha = ProcesadorJuicios(UPLOAD_FOLDER, file.filename)
+                    juiciosFicha = ProcesadorJuicios1(UPLOAD_FOLDER, file.filename)
                 diccionario = juiciosFicha.procesar()
                 ficha = diccionario['ficha']
                 session['fichas'][ficha] = {
@@ -87,22 +92,27 @@ def upload_files():
 @app.route("/delete_multiple", methods=["POST"])
 def delete_multiple_files():
     fichas = request.form.getlist("selectedFichasDelete")
-    if len(fichas) == 1 and "," in fichas[0]:
-        fichas = fichas[0].split(",")
-        for ficha in fichas:
+    fichas = fichas[0].split(",")
+    for ficha in fichas:
+        try: 
             delete_file_disk(ficha)
-            if ficha in session['fichas'].keys():
-                fichas = session['fichas']
-                fichas.pop(ficha, None)
-                session.pop('fichas', None)
-                session['fichas'] = fichas
+        except Exception as e:
+            session['error'] = e
+        if ficha in session['fichas'].keys():
+            fichas = session['fichas']
+            fichas.pop(ficha, None)
+            session.pop('fichas', None)
+            session['fichas'] = fichas
     if len(session['fichas']) == 0:
         session['subio_fichas'] = False                
     return render_template("index.html", variables = session)
 
 @app.route("/delete/<ficha>", methods=["POST"])
 def delete_file(ficha):
-    delete_file_disk(ficha)
+    try: 
+        delete_file_disk(ficha)
+    except Exception as e:
+        session['error'] = e
     if ficha in session['fichas'].keys():
         fichas = session['fichas']
         fichas.pop(ficha, None)
@@ -126,13 +136,9 @@ def view_datos(ficha):
             session['error'].append(f"Error: no fue posible abrir la hoja 'Datos' del archivo {e}")
     return render_template("datos.html", dataFrame=df_datos, variables = session['fichas'][ficha], ficha= ficha)
 
-@app.route('/mail', methods=["POST"])
-def mail():
-    form_data = request.form.to_dict(flat=True)
-    variables = form_data['variables']
-    ficha = form_data['ficha']
-    body = form_data['body']
-    return render_template("correo.html", variables = variables, ficha = ficha, body = body)    
+@app.route('/mail/<ficha>', methods=["POST"])
+def prepare_mail(ficha):
+    return render_template("correo.html", variables = session['fichas'][ficha], ficha = ficha)    
 
 @app.route('/send_mail', methods=["POST"])
 def send_mail():
@@ -146,6 +152,15 @@ def send_mail():
         return jsonify({'message': 'Correo enviado exitosamente!'})
     except Exception as e:
         return jsonify({'message': f'Error al enviar el correo: {str(e)}'}), 500
+
+@app.route('/dowmload/<ficha>', methods=["POST"])
+def download(ficha):
+    form_data = request.form.to_dict(flat=True)
+    variables = form_data['variables']
+    ficha = form_data['ficha']
+    body = form_data['body']
+    return render_template("correo.html", variables = variables, ficha = ficha, body = body)    
+
 
 if __name__ == "__main__":
     app.run(debug=True)

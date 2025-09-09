@@ -55,7 +55,8 @@ def write_process_file(folder: str, ficha: str, df_datos: pd.DataFrame, df_noved
             df_datos.sort_values(by="orden").style.apply(lambda row: color_rows(row, limite_rap_para_normalizar), axis=1).to_excel(writer, sheet_name='datos', index=False)  
             workbook = writer.book
             worksheet = workbook['datos']
-            worksheet.delete_cols(25, 2)
+            worksheet.column_dimensions[openpyxl.utils.get_column_letter(25)].hidden = True
+            worksheet.column_dimensions[openpyxl.utils.get_column_letter(26)].hidden = True
             ajustarFormatoCeldas(worksheet)
             worksheet.merge_cells(start_row=2, start_column=1, end_row=2, end_column=10)
             worksheet.merge_cells(start_row=3, start_column=1, end_row=3, end_column=10)

@@ -1,7 +1,7 @@
 import os
 
-from entradaHelper      import getDataFrame
-from config             import Config, ARCHIVO_DE_DATOS
+from entradaHelper    import getDataFrame
+from config                import Config, ARCHIVO_DE_DATOS
 
 class CargadorDatos:
     def getDatos(self) -> dict:
@@ -28,7 +28,7 @@ class CargadorDatos:
             except ValueError as e:
                 print("error act")
                 raise ValueError(f"Error: algunos documentos no se pueden convertir a número en la hoja 'activos'.")
-            
+
         return {'df_novedades': df_novedades, 'df_activos': df_activos, 'df_instructores': df_instructores}
 
 from procesadorJuicios import ProcesadorJuicios
@@ -53,17 +53,18 @@ if __name__ == "__main__":
             "3106275",
         ],
         'juan carlos': [
-            "2879698",
+            "3041902",
         ],
 
     }
     
     cargadorDatos = CargadorDatos()
     datos = cargadorDatos.getDatos()
+    # datos= pd.read_pickle('diccionario_dataframes.pkl')
     df_novedades = datos['df_novedades']
     df_activos = datos['df_activos']
     df_instructores = datos['df_instructores']
-    for ficha in fichas['kebin']: 
+    for ficha in fichas['juan carlos']: 
         try:
             juiciosFicha = ProcesadorJuicios(Config.UPLOAD_FOLDER, f"Reporte de Juicios Evaluativos {ficha}.xls", df_novedades, df_activos, df_instructores)
             juiciosFicha.procesar()

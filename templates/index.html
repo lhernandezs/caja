@@ -15,7 +15,7 @@
             </form>
         </div>
         <div class="d-flex align-items-center gap-3 flex-wrap">
-            {% if variables.datos %}
+            {% if variables.datos is not none %}
             <b>Se ha subido un archivo de datos</b>
             {% else %}
             <span class="text-danger"><b>No se ha subido un archivo de datos!!</b></span>
@@ -53,6 +53,8 @@
                 <th class="text-center">Finaliza</th>
                 <th class="text-center"></th>                                                                                                
                 <th class="text-center"></th>
+                <th class="text-center"></th>                                                                                                
+                <th class="text-center"></th>
             </tr>
         </thead>
         <tbody>
@@ -80,6 +82,20 @@
                                 </button>
                             </form>
                         </td>
+                        <td>
+                            <form method="post" action="{{ url_for('prepare_mail', ficha=ficha) }}" style="display:inline;">
+                                <button type="submit" title="Ver datos" class="btn btn-outline-dark text-dark btn-sm d-flex align-items-center justify-content-center p-1">
+                                    Correo
+                                </button>
+                            </form>
+                        </td>                        
+                        <td>
+                            <form method="post" action="{{ url_for('download', ficha=ficha) }}" style="display:inline;">
+                                <button type="submit" title="Ver datos" class="btn btn-outline-dark text-dark btn-sm d-flex align-items-center justify-content-center p-1">
+                                    Descargar
+                                </button>
+                            </form>
+                        </td>                        
                     </tr>
                 {% endfor %}
             {% else %}
