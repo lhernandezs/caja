@@ -34,10 +34,12 @@ def index():
         session['fichas'] = {}
     if 'error' not in session:
         session['error'] = []
-    if 'datos' not in session:
-        session['datos'] = None
-    if 'subio_fichas' not in session:
-        session['subio_fichas'] = False        
+    if 'novedades' not in session:
+        session['novedades'] = None
+    if 'activos' not in session:
+        session['activos'] = None
+    if 'instructores' not in session:
+        session['instructores'] = None
     return render_template("index.html", variables = session)
 
 @app.route("/upload_datos", methods=["POST"])
@@ -47,16 +49,17 @@ def upload_datos():
         return redirect(url_for("index"))
     file = request.files.get('datos')
     if file.filename == "datos.xlsx":
-        # file.save(os.path.join(UPLOAD_FOLDER_DATA, file.filename))
-        df_novedades = pd.read_excel(file, sheet_name='novedades').drop_duplicates()
-        df_activos = pd.read_excel(file, sheet_name='activos').drop_duplicates()
-        df_instructores = pd.read_excel(file, sheet_name='instructores').drop_duplicates()
-        session['datos'] =  {'df_novedades': df_novedades.to_json(orient='records'), 'df_activos': df_activos.to_json(orient='records'), 'df_instructores': df_instructores.to_json(orient='records')}
+        df_novedades            = pd.read_excel(file, sheet_name='novedades').drop_duplicates()
+        df_activos              = pd.read_excel(file, sheet_name='activos').drop_duplicates()
+        df_instructores         = pd.read_excel(file, sheet_name='instructores').drop_duplicates()        
+        session['novedades']    = df_novedades.to_dict(orient='records')
+        session['activos']      = df_activos.to_dict(orient='records')
+        session['instructores'] = df_instructores.to_dict(orient='records')        
     else:
-        session['error'] =f"el archivo elegido {file.filename} debe nombrarse 'datos.xlsx'"
-    return redirect(url_for("index"))
+        session['error'] =f"el archivo elegido {file.filename} debe llamarse 'datos.xlsx'"
+    return render_template("index.html", variables = session)
 
-@app.route("/upload", methods=["POST"])
+@app.route("/upload_files", methods=["POST"])
 def upload_files():
     session.pop('error', None)
     if "files" not in request.files:
@@ -66,13 +69,7 @@ def upload_files():
         if file and file.filename != "" and allowed_file(file.filename):
             try:
                 file.save(os.path.join(UPLOAD_FOLDER, file.filename))
-                if session['datos'] is not None:
-                    try:
-                        juiciosFicha = ProcesadorJuicios1(UPLOAD_FOLDER, file.filename, session['datos'])
-                    except Exception as e:
-                        print(f"ERROR {e}")
-                else:
-                    juiciosFicha = ProcesadorJuicios1(UPLOAD_FOLDER, file.filename)
+                juiciosFicha = ProcesadorJuicios1(UPLOAD_FOLDER, file.filename, session['novedades'], session['activos'], session['instructores'])
                 diccionario = juiciosFicha.procesar()
                 ficha = diccionario['ficha']
                 session['fichas'][ficha] = {

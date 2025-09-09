@@ -15,12 +15,13 @@
             </form>
         </div>
         <div class="d-flex align-items-center gap-3 flex-wrap">
-            {% if variables.datos is not none %}
-            <b>Se ha subido un archivo de datos</b>
+            {% if variables.novedades is not none and variables.activos is not none and variables.instructores is not none%}
+                <b>hay: {{ variables.novedades|length }} novedades, {{ variables.activos|length }} activos, {{ variables.instructores|length }} instructores</b>
             {% else %}
-            <span class="text-danger"><b>No se ha subido un archivo de datos!!</b></span>
+                <span class="text-danger"><b>No se ha subido un archivo de datos!!</b></span>
             {% endif %}
             <form class="d-flex align-items-center" method="post" enctype="multipart/form-data" action="{{ url_for('upload_datos') }}">
+
             <label for="fileUpload" class="form-control btn btn-primary mb-0 me-2" style="width:auto;">buscar datos</label>
             <input class="form-control visually-hidden" type="file" name="datos" id="fileUpload" required>
             <button class="btn btn-warning" type="submit">Subir</button>

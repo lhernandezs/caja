@@ -43,9 +43,9 @@ FILTROS = ['activo', 'en_tramite', 'no_aprobado', 'para_productiva', 'error_prod
 COLUMNAS_HOJA           = ["tipo", "documento", "nombres", "apellidos", "estado", "competencia", "resultado", "juicio", "vacio", "fecha", "funcionario"]
 COLUMNAS_DATOS          = ['tipo', 'documento', 'nombres', 'apellidos', 'estado', 'aprobado', 'porEvaluar', 'noAprobado', 'enTramite', 'activo', 
                            'IND', 'BIL', 'CIE', 'COM', 'CUL', 'DER', 'EMP', 'ETI', 'INV', 'MAT', 'SST', 'TIC', 'TEC', 'PRO', 'color', 'orden']
-COLUMNAS_NOVEDADES      = ["documento", "nombre", "ficha", "novedad"]
-COLUMNAS_ACTIVOS        = ["documento", "nombre", "ficha", "instructor"]
-COLUMNAS_INSTRUCTORES   = ["instructor", "ficha", "competencia"]
+COLUMNAS_NOVEDADES      = ["ficha", "documento", "novedad"]
+COLUMNAS_ACTIVOS        = ["ficha", "documento"]
+COLUMNAS_INSTRUCTORES   = ["ficha", "instructor", "competencia"]
 
 COLUMNAS_INT_DATOS      = ['aprobado', 'porEvaluar', 'noAprobado', 'IND', 'BIL', 'CIE', 'COM', 'CUL', 'DER', 'EMP', 
                            'ETI', 'INV', 'MAT', 'SST', 'TIC', 'PRO', 'TEC',]
@@ -58,9 +58,9 @@ ANCHOS_DATOS            = [('A',  6), ('B', 15), ('C', 21), ('D', 21), ('E', 16)
                            ('K',  6), ('L',  6), ('M',  6), ('N',  6), ('O',  6), 
                            ('P',  6), ('Q',  6), ('R',  6), ('S',  6), ('T',  6), 
                            ('U',  6), ('V',  6), ('W',  6), ('X',  6),]
-ANCHOS_NOVEDADES        = [('A', 16), ('B', 42), ('C', 12), ('D', 30),]
-ANCHOS_ACTIVOS          = [('A', 16), ('B', 42), ('C', 12), ('D', 30),]
-ANCHOS_INSTRUCTORES     = [('A', 30), ('B', 12), ('C', 12),]
+ANCHOS_NOVEDADES        = [('A', 16), ('B', 12), ('C', 12),]
+ANCHOS_ACTIVOS          = [('A', 16), ('B', 12),]
+ANCHOS_INSTRUCTORES     = [('A', 16), ('B', 42), ('C', 12),]
 
 HOJAS = {
     'Hoja'          : {'columnas': COLUMNAS_HOJA          , 'ancho_columnas' : ANCHOS_HOJA},

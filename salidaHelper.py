@@ -77,7 +77,7 @@ def write_process_file(folder: str, ficha: str, df_datos: pd.DataFrame, df_noved
 
             if not df_novedades_ficha is None:
                 sheet = 'novedades'
-                df_novedades_ficha.to_excel( writer, sheet_name=sheet, index=False)
+                df_novedades_ficha.to_excel(writer, sheet_name=sheet, index=False)
                 ajustarFormatoCeldas(workbook[sheet])
 
             if not df_activos_ficha is None:
