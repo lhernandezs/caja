@@ -21,10 +21,12 @@
                 <span class="text-danger"><b>No se ha subido un archivo de datos!!</b></span>
             {% endif %}
             <form class="d-flex align-items-center" method="post" enctype="multipart/form-data" action="{{ url_for('upload_datos') }}">
-
-            <label for="fileUpload" class="form-control btn btn-primary mb-0 me-2" style="width:auto;">buscar datos</label>
-            <input class="form-control visually-hidden" type="file" name="datos" id="fileUpload" required>
-            <button class="btn btn-warning" type="submit">Subir</button>
+                <label for="fileUpload" class="form-control btn btn-primary mb-0 me-2" style="width:auto;">buscar datos</label>
+                <input class="form-control visually-hidden" type="file" name="datos" id="fileUpload" required>
+                <button class="btn btn-warning" type="submit">Subir</button>
+            </form>
+            <form class="d-flex align-items-center" method="post" enctype="multipart/form-data" action="{{ url_for('delete_datos') }}">
+                <button class="btn btn-warning" type="submit" {% if variables.novedades is none %}disabled{% endif %}>Borrar Datos</button>
             </form>
             <div class="btn-group" role="group" aria-label="Borrar fichas">
                 <form class="d-flex" method="post" action="{{ url_for('delete_multiple_files') }}" id="deleteMultipleForm" onsubmit="return confirm('¿Está seguro de que desea eliminar los archivos seleccionados?');">

@@ -35,12 +35,11 @@ class ProcesadorJuicios1:
         df_activos_ficha        = None
         df_instructores_ficha   = None
         if self.df_novedades is not None:
-            df_novedades_ficha = self.df_novedades[self.df_novedades['FICHA'] == ficha]
+            df_novedades_ficha  = self.df_novedades[self.df_novedades['ficha'] == ficha]
         if self.df_activos is not None:
-            df_activos_ficha = self.df_activos[self.df_activos['FICHA'] == ficha]
-        # if self.df_novedades is not None:
-        #     df_instructores_ficha = self.df_instructores.query("FICHA == @ficha").copy()
-
+            df_activos_ficha    = self.df_activos[self.df_activos['ficha'] == ficha]
+        if self.df_instructores is not None:
+            df_instructores_ficha = self.df_instructores[self.df_instructores['ficha'] == ficha]
 
         # 2. creamos el dataframe df_datos a partir del dataframe hoja
         columnas_a_copiar = HOJAS['datos']['columnas'][:5]
@@ -70,17 +69,12 @@ class ProcesadorJuicios1:
             indice_estado = next((i for i, value in enumerate(ESTADOS.values()) if value[0] == estado), None)
             df_datos.loc[i, "orden"]     = (indice_estado + 2) * 1000 +  len(df_por_evaluar)
            
-            # if df_activos_ficha is not None and documento in df_activos_ficha["documento"].values:
-            if df_activos_ficha is not None and documento in df_activos_ficha["DOCUMENTO"].values:
+            if df_activos_ficha is not None and documento in df_activos_ficha["documento"].values:
                 df_datos.at[i, "activo"] = "ACTIVO"
 
-            # if df_novedades_ficha is not None and documento in df_novedades_ficha["documento"].values:
-            if df_novedades_ficha is not None and documento in df_novedades_ficha["DOCUMENTO"].values:                
-                # df_filtrado  = df_novedades_ficha [df_novedades_ficha["documento"] == documento]
-                df_filtrado  = df_novedades_ficha [df_novedades_ficha["DOCUMENTO"] == documento]
-
-                # df_datos.loc[i, "enTramite"] = df_filtrado["novedad"].iloc[-1]
-                df_datos.loc[i, "enTramite"] = df_filtrado["NOVEDAD"].iloc[-1]
+            if df_novedades_ficha is not None and documento in df_novedades_ficha["documento"].values:
+                df_filtrado  = df_novedades_ficha [df_novedades_ficha["documento"] == documento]
+                df_datos.loc[i, "enTramite"] = df_filtrado["novedad"].iloc[-1]
 
             if df_datos["estado"][i] == "EN FORMACION":
                 contador_todas = 0
@@ -108,11 +102,9 @@ class ProcesadorJuicios1:
         for competencia in [c[0] for c in competencias_no_tecnicas] + ['TEC']:
             instructor = None
             if df_instructores_ficha is not None:
-                # df_instructor_ficha : pd.DataFrame = df_instructores_ficha[df_instructores_ficha['competencia'] == competencia]
-                df_instructor_ficha : pd.DataFrame = df_instructores_ficha[df_instructores_ficha['COMPETENCIA'] == competencia]
+                df_instructor_ficha : pd.DataFrame = df_instructores_ficha[df_instructores_ficha['competencia'] == competencia]
                 if not df_instructor_ficha.empty:
-                    # instructor = df_instructor_ficha.iloc[-1]['instructor']
-                    instructor = df_instructor_ficha.iloc[-1]['INSTRUCTOR']                    
+                    instructor = df_instructor_ficha.iloc[-1]['instructor']
             if instructor is None:
                 instructor = getInstructorEnReporte(df_hoja, competencia, competencias_no_tecnicas)
             if instructor:
@@ -190,16 +182,16 @@ if __name__ == "__main__":
         df_novedades     = pd.read_excel(os.path.join("upload", 'datos.xlsx'), sheet_name='novedades').drop_duplicates()
         df_activos       = pd.read_excel(os.path.join("upload", 'datos.xlsx'), sheet_name='activos').drop_duplicates()
         df_instructores  = pd.read_excel(os.path.join("upload", 'datos.xlsx'), sheet_name='instructores').drop_duplicates()
+        
+        df_novedades.columns    = COLUMNAS_NOVEDADES
+        df_activos.columns      = COLUMNAS_ACTIVOS
+        df_instructores.columns = COLUMNAS_INSTRUCTORES
 
-        # dic = {
-        #     'df_novedades': df_novedades.to_json(orient='records'),
-        #     'df_activos': df_activos.to_json(orient='records'),
-        #     'df_instructores': df_instructores.to_json(orient='records')
-        # }
-        novedades       = df_novedades.to_dict(orient='records')
-        activos         = df_activos.to_dict(orient='records')
-        instructores    = df_instructores.to_dict(orient='records')                
-        procesador_jucios = ProcesadorJuicios1("upload", f"Reporte de Juicios Evaluativos {ficha}.xls", novedades, activos, None)
+        novedades        = df_novedades.to_dict(orient='records')
+        activos          = df_activos.to_dict(orient='records')
+        instructores     = df_instructores.to_dict(orient='records')  
+
+        procesador_jucios = ProcesadorJuicios1("upload", f"Reporte de Juicios Evaluativos {ficha}.xls", novedades, activos, instructores)
         procesador_jucios.procesar()
         print(f"Archivo transformado a XLSX exitosamente para la ficha {ficha}.")
     except Exception as e:

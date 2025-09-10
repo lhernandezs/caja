@@ -28,7 +28,7 @@ ALTO_FILA_FEC_JUICIOS   = 45
 ESTADOS = { 
             "induccion"         : ("INDUCCION",         "IndianRed"     ),
             "en_formacion"      : ("EN FORMACION",      "White"         ),
-            "trasladado"        : ("TRASLADADO",        "Violet"        ),
+            "trasladado"        : ("TRASLADADO",        "RosyBrown"     ),
             "aplazado"          : ("APLAZADO",          "Magenta"       ),
             "condicionado"      : ("CONDICIONADO",      "DarkViolet"    ),
             "por_certificar"    : ("POR CERTIFICAR",    "Lime"          ),

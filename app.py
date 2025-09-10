@@ -3,7 +3,7 @@ import pandas as pd
 
 from flask   import ( request, session, Flask, render_template, redirect, url_for, jsonify)
 
-from config               import Config, TEMPLATES_FOLDER
+from config               import COLUMNAS_ACTIVOS, COLUMNAS_INSTRUCTORES, COLUMNAS_NOVEDADES, Config, TEMPLATES_FOLDER
 from procesadorJuicios1   import ProcesadorJuicios1
 from entradaHelper        import getDataFrame
 from correo               import Correo
@@ -49,15 +49,30 @@ def upload_datos():
         return redirect(url_for("index"))
     file = request.files.get('datos')
     if file.filename == "datos.xlsx":
-        df_novedades            = pd.read_excel(file, sheet_name='novedades').drop_duplicates()
-        df_activos              = pd.read_excel(file, sheet_name='activos').drop_duplicates()
-        df_instructores         = pd.read_excel(file, sheet_name='instructores').drop_duplicates()        
-        session['novedades']    = df_novedades.to_dict(orient='records')
-        session['activos']      = df_activos.to_dict(orient='records')
-        session['instructores'] = df_instructores.to_dict(orient='records')        
+        try:
+            df_novedades            = pd.read_excel(file, sheet_name='novedades').drop_duplicates()
+            df_activos              = pd.read_excel(file, sheet_name='activos').drop_duplicates()
+            df_instructores         = pd.read_excel(file, sheet_name='instructores').drop_duplicates()    
+            df_novedades.columns    = COLUMNAS_NOVEDADES
+            df_activos.columns      = COLUMNAS_ACTIVOS
+            df_instructores.columns = COLUMNAS_INSTRUCTORES
+            df_novedades['documento'] = pd.to_numeric(df_novedades['documento'], errors='coerce').astype('Int64')
+            df_activos['documento'] = pd.to_numeric(df_activos['documento'], errors='coerce').astype('Int64')
+            session['novedades']    = df_novedades.to_dict(orient='records')
+            session['activos']      = df_activos.to_dict(orient='records')
+            session['instructores'] = df_instructores.to_dict(orient='records')
+        except:
+            session['error'] =f"no fue posible leer las hojas del archivo de 'datos.xlsx'"
     else:
         session['error'] =f"el archivo elegido {file.filename} debe llamarse 'datos.xlsx'"
     return render_template("index.html", variables = session)
+
+@app.route("/delete_datos", methods=["POST"])
+def delete_datos():
+    session['novedades']    = None
+    session['activos']      = None
+    session['instructores'] = None
+    return render_template("index.html", variables=session)
 
 @app.route("/upload_files", methods=["POST"])
 def upload_files():
