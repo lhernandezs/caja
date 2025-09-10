@@ -70,6 +70,11 @@ HOJAS = {
     'instructores'  : {'columnas': COLUMNAS_INSTRUCTORES  , 'ancho_columnas' : ANCHOS_INSTRUCTORES}, 
 }
 
+REGLAMENTOS = [
+    'Acuerdo 7 de 2012',
+    'Acuerdo 9 de 2024'
+]
+
 competencias_no_tecnicas = {
             "IND": "36182",
             "BIL": "37714",

@@ -5,7 +5,7 @@ import pandas as pd
 from entradaHelper              import getDataFrame
 from salidaHelper               import write_process_file, color_rows
 from procesadorJuiciosHelper    import getCompetenciasNoTecnicas, getInstructorEnReporte, getLimite_rap_para_normalizar
-from config                     import ESTADOS, HOJAS, COLUMNAS_INT_DATOS, COLUMNAS_NOVEDADES, COLUMNAS_ACTIVOS, COLUMNAS_INSTRUCTORES
+from config                     import ESTADOS, HOJAS, COLUMNAS_INT_DATOS, COLUMNAS_NOVEDADES, COLUMNAS_ACTIVOS, COLUMNAS_INSTRUCTORES, REGLAMENTOS
 
 class ProcesadorJuicios1:
     def __init__(self, folder: str, archivo: str, novedades: dict = None, activos: dict = None, instructores: dict = None, ):
@@ -79,7 +79,7 @@ class ProcesadorJuicios1:
                 else:
                     novedad = "Deserción"                    
                 df_datos.loc[i, "enTramite"] = novedad                    
-                # df_datos.loc[i, "enTramite"] = df_filtrado["novedad"].iloc[-1]
+                # df_datos.loc[i, "enTramite"] = df_filt    rado["novedad"].iloc[-1]
 
             if df_datos["estado"][i] == "EN FORMACION":
                 contador_todas = 0
@@ -155,6 +155,10 @@ class ProcesadorJuicios1:
         version_programa   = df_hoja.iloc[3, 2] 
         fecha_inicio       = df_hoja.iloc[6, 2] 
         fecha_fin          = df_hoja.iloc[7, 2] 
+        fin_etapa_lectiva  = fecha_fin - pd.DateOffset(months=6)
+        reglamento         = REGLAMENTOS[0] if fecha_inicio < pd.Timestamp('2024-11-21') else REGLAMENTOS[1]
+        vencimiento        = fin_etapa_lectiva + pd.DateOffset(months=24)
+        limite             = fin_etapa_lectiva + pd.DateOffset(months=18)
 
         print(f"Ficha: {ficha} - Programa: {programa}")
 
@@ -167,13 +171,17 @@ class ProcesadorJuicios1:
         result = self.build_df_datos(codigo_programa, version_programa, ficha, df_hoja)
         write_process_file(self.folder, ficha,  result['df_datos'], result['df_novedades_ficha'], result['df_activos_ficha'], result['df_hoja'])
 
-        return {'fecha_reporte'         : fecha_reporte,
-                'ficha'                 : ficha,
-                'programa'              : programa,
-                'codigo_programa'       : codigo_programa,
-                'version_programa'      : version_programa,
-                'fecha_inicio'          : fecha_inicio.strftime("%d-%m-%Y"),
-                'fecha_fin'             : fecha_fin.strftime("%d-%m-%Y"),
+        return {'fecha_reporte'         : fecha_reporte                             ,
+                'ficha'                 : ficha                                     ,
+                'programa'              : programa                                  ,
+                'codigo_programa'       : codigo_programa                           ,
+                'version_programa'      : version_programa                          ,
+                'fecha_inicio'          : fecha_inicio.strftime("%d-%m-%Y")         ,
+                'fecha_fin'             : fecha_fin.strftime("%d-%m-%Y")            ,
+                'fin_etapa_lectiva'     : fin_etapa_lectiva.strftime("%d-%m-%Y")    ,
+                'reglamento'            : reglamento                                ,
+                'vencimiento'           : vencimiento.strftime("%d-%m-%Y")          ,
+                'limite'                : limite.strftime("%d-%m-%Y")               ,                
                 'df_hoja'               : result['df_hoja']                         ,
                 'df_datos'              : result['df_datos']                        ,
                 'df_novedades_ficha'    : result['df_novedades_ficha']              ,

@@ -49,18 +49,28 @@ def upload_datos():
         return redirect(url_for("index"))
     file = request.files.get('datos')
     if file.filename == "datos.xlsx":
+        if file.content_length is not None and file.content_length > 32786:
+            session['error'] = f"el archivo que seleccionó no puede tener mas de 32K"
+            return render_template("index.html", variables=session)
+        file.seek(0, os.SEEK_END)
+        size = file.tell()
+        file.seek(0)
+        if size > 32786:
+            session['error'] = f"el archivo que seleccionó no puede tener mas de 32K"
+            return render_template("index.html", variables=session)
         try:
-            df_novedades            = pd.read_excel(file, sheet_name='novedades').drop_duplicates()
-            df_activos              = pd.read_excel(file, sheet_name='activos').drop_duplicates()
-            df_instructores         = pd.read_excel(file, sheet_name='instructores').drop_duplicates()    
-            df_novedades.columns    = COLUMNAS_NOVEDADES
-            df_activos.columns      = COLUMNAS_ACTIVOS
-            df_instructores.columns = COLUMNAS_INSTRUCTORES
-            df_novedades['documento'] = pd.to_numeric(df_novedades['documento'], errors='coerce').astype('Int64')
-            df_activos['documento'] = pd.to_numeric(df_activos['documento'], errors='coerce').astype('Int64')
-            session['novedades']    = df_novedades.to_dict(orient='records')
-            session['activos']      = df_activos.to_dict(orient='records')
-            session['instructores'] = df_instructores.to_dict(orient='records')
+            df_novedades                = pd.read_excel(file, sheet_name='novedades').drop_duplicates()
+            df_activos                  = pd.read_excel(file, sheet_name='activos').drop_duplicates()
+            df_instructores             = pd.read_excel(file, sheet_name='instructores').drop_duplicates()    
+            df_novedades.columns        = COLUMNAS_NOVEDADES
+            df_activos.columns          = COLUMNAS_ACTIVOS
+            df_instructores.columns     = COLUMNAS_INSTRUCTORES
+            df_novedades['documento']   = pd.to_numeric(df_novedades['documento'], errors='coerce').astype('Int64')
+            df_activos['documento']     = pd.to_numeric(df_activos['documento'], errors='coerce').astype('Int64')
+            session['novedades']        = df_novedades.to_dict(orient='records')
+            session['activos']          = df_activos.to_dict(orient='records')
+            session['instructores']     = df_instructores.to_dict(orient='records')
+            print(f"Tamaño de la session : {len(str(session).encode('utf-8'))}")
         except:
             session['error'] =f"no fue posible leer las hojas del archivo de 'datos.xlsx'"
     else:
@@ -69,6 +79,7 @@ def upload_datos():
 
 @app.route("/delete_datos", methods=["POST"])
 def delete_datos():
+    session.pop('error', None)
     session['novedades']    = None
     session['activos']      = None
     session['instructores'] = None
@@ -88,21 +99,27 @@ def upload_files():
                 diccionario = juiciosFicha.procesar()
                 ficha = diccionario['ficha']
                 session['fichas'][ficha] = {
-                                        'fecha_reporte'    : diccionario['fecha_reporte'],
-                                        'programa'         : diccionario['programa'],
-                                        'codigo_programa'  : diccionario['codigo_programa'],
-                                        'version_programa' : diccionario['version_programa'],
-                                        'fecha_inicio'     : diccionario['fecha_inicio'],
-                                        'fecha_fin'        : diccionario['fecha_fin'],
-                                        }
+                    'fecha_reporte'         : diccionario['fecha_reporte'],
+                    'programa'              : diccionario['programa'],
+                    'codigo_programa'       : diccionario['codigo_programa'],
+                    'version_programa'      : diccionario['version_programa'],
+                    'fecha_inicio'          : diccionario['fecha_inicio'],
+                    'fecha_fin'             : diccionario['fecha_fin'],
+                    'fin_etapa_lectiva'     : diccionario['fin_etapa_lectiva'],
+                    'reglamento'            : diccionario['reglamento'],
+                    'vencimiento'           : diccionario['vencimiento'],
+                    'limite'                : diccionario['limite']
+                }
             except Exception as e:
                 session['error'] = e
         if len(session['fichas']) > 0:
             session['subio_fichas'] = True
+        print(f"Tamaño de la session : {len(str(session).encode('utf-8'))}")
     return render_template("index.html", variables = session)
 
 @app.route("/delete_multiple", methods=["POST"])
 def delete_multiple_files():
+    session.pop('error', None)    
     fichas = request.form.getlist("selectedFichasDelete")
     fichas = fichas[0].split(",")
     for ficha in fichas:
@@ -121,6 +138,7 @@ def delete_multiple_files():
 
 @app.route("/delete/<ficha>", methods=["POST"])
 def delete_file(ficha):
+    session.pop('error', None)    
     try: 
         delete_file_disk(ficha)
     except Exception as e:
@@ -136,6 +154,7 @@ def delete_file(ficha):
 
 @app.route("/datos/<ficha>", methods=["POST"])
 def view_datos(ficha):
+    session.pop('error', None)    
     try:
         df_datos: pd.DataFrame = getDataFrame(UPLOAD_FOLDER, f"{ficha}.xlsx", "datos")
         for col in df_datos.columns:

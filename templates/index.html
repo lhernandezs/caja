@@ -1,112 +1,119 @@
 {% extends "base.html" %}
 
 {% block body %}
-<div class="container mb-3 col-12">
-    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-        <div class="btn-group me-2" role="group" aria-label="Subir archivos">
-            <form class="d-flex" method="post" enctype="multipart/form-data" action="{{ url_for('upload_files') }}">
-                <label for="filesUpload" class="form-control btn btn-primary mb-0 me-2" style="width:auto; {% if variables.subio_fichas %}pointer-events: none; opacity: 0.6;{% endif %}">
-                    Elegir reportes
-                </label>
-                <input class="form-control me-2 visually-hidden" type="file" name="files" id="filesUpload" multiple required {% if variables.subio_fichas %}disabled{% endif %}>
-                <button class="btn btn-light" type="submit" {% if variables.subio_fichas %}disabled{% endif %}>
-                    Cargar y procesar reportes
-                </button>
-            </form>
-        </div>
-        <div class="d-flex align-items-center gap-3 flex-wrap">
-            {% if variables.novedades is not none and variables.activos is not none and variables.instructores is not none%}
-                <b>hay: {{ variables.novedades|length }} novedades, {{ variables.activos|length }} activos, {{ variables.instructores|length }} instructores</b>
-            {% else %}
-                <span class="text-danger"><b>No se ha subido un archivo de datos!!</b></span>
-            {% endif %}
-            <form class="d-flex align-items-center" method="post" enctype="multipart/form-data" action="{{ url_for('upload_datos') }}">
-                <label for="fileUpload" class="form-control btn btn-primary mb-0 me-2" style="width:auto;">buscar datos</label>
-                <input class="form-control visually-hidden" type="file" name="datos" id="fileUpload" required>
-                <button class="btn btn-warning" type="submit">Subir</button>
-            </form>
-            <form class="d-flex align-items-center" method="post" enctype="multipart/form-data" action="{{ url_for('delete_datos') }}">
-                <button class="btn btn-warning" type="submit" {% if variables.novedades is none %}disabled{% endif %}>Borrar Datos</button>
-            </form>
-            <div class="btn-group" role="group" aria-label="Borrar fichas">
-                <form class="d-flex" method="post" action="{{ url_for('delete_multiple_files') }}" id="deleteMultipleForm" onsubmit="return confirm('¿Está seguro de que desea eliminar los archivos seleccionados?');">
-                    <input type="hidden" name="selectedFichasDelete" id="selectedFichasDelete">
-                    <button class="btn btn-danger" type="submit" id="deleteMultipleBtn" disabled>Eliminar</button>
+<div class="d-flex justify-content-center">
+    <div class="mi-contenedor-ancho">
+    <div class="container mb-3 col-12">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <div class="btn-group me-2" role="group" aria-label="Subir archivos">
+                <form class="d-flex" method="post" enctype="multipart/form-data" action="{{ url_for('upload_files') }}">
+                    <label for="filesUpload" class="form-control btn btn-primary mb-0 me-2" style="width:auto; {% if variables.subio_fichas %}pointer-events: none; opacity: 0.6;{% endif %}">
+                        Elegir reportes
+                    </label>
+                    <input class="form-control me-2 visually-hidden" type="file" name="files" id="filesUpload" multiple required {% if variables.subio_fichas %}disabled{% endif %}>
+                    <button class="btn btn-light" type="submit" {% if variables.subio_fichas %}disabled{% endif %}>
+                        Cargar y procesar reportes
+                    </button>
+                </form>
+            </div>
+            <div class="d-flex align-items-center gap-3 flex-wrap border border-primary rounded p-3" style="border-width: 2px !important;">
+                {% if variables.novedades is not none and variables.activos is not none and variables.instructores is not none %}
+                    <b>hay: {{ variables.novedades|length }} novedades, {{ variables.activos|length }} activos, {{ variables.instructores|length }} instructores</b>
+                {% else %}
+                    <span class="text-danger"><b>No se ha subido un archivo de datos!!</b></span>
+                {% endif %}
+                <form class="d-flex align-items-center" method="post" enctype="multipart/form-data" action="{{ url_for('upload_datos') }}">
+                    <label for="fileUpload" class="form-control btn btn-primary mb-0 me-2" style="width:auto;">buscar datos</label>
+                    <input class="form-control visually-hidden" type="file" name="datos" id="fileUpload" required>
+                    <button class="btn btn-warning" type="submit">Subir</button>
+                </form>
+                <form class="d-flex align-items-center" method="post" enctype="multipart/form-data" action="{{ url_for('delete_datos') }}">
+                    <button class="btn btn-warning" type="submit" {% if variables.novedades is none %}disabled{% endif %}>Borrar Datos</button>
                 </form>
             </div>
         </div>
     </div>
-</div>
-<div class="container">
-    {% if variables.error %}
-        <div class="alert alert-danger" role="alert">
-            {{ variables.error }}
+    <div class="container">
+        {% if variables.error %}
+            <div class="alert alert-danger" role="alert">
+                {{ variables.error }}
+            </div>
+        {% endif %}
+        <div>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="mb-0 text-start">Fichas cargadas</h2>
+                <div class="btn-group" role="group" aria-label="Borrar fichas"></div>
+                    <form class="d-flex" method="post" action="{{ url_for('delete_multiple_files') }}" id="deleteMultipleForm" onsubmit="return confirm('¿Está seguro de que desea eliminar los archivos seleccionados?');">
+                        <input type="hidden" name="selectedFichasDelete" id="selectedFichasDelete">
+                        <button class="btn btn-danger" type="submit" id="deleteMultipleBtn" disabled>Eliminar</button>
+                    </form>
+                </div>
+            </div>
         </div>
-    {% endif %}
-    <h2>Fichas cargadas</h2>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th><input type="checkbox" id="selectAll" title="Seleccionar todos"></th>
-                <th class="text-center">Ficha</th>
-                <th class="text-start">Programa</th>
-                <th class="text-center">Código</th>
-                <th class="text-center">Versión</th>
-                <th class="text-center">Inicio</th>
-                <th class="text-center">Finaliza</th>
-                <th class="text-center"></th>                                                                                                
-                <th class="text-center"></th>
-                <th class="text-center"></th>                                                                                                
-                <th class="text-center"></th>
-            </tr>
-        </thead>
-        <tbody>
-            {% if variables.fichas %}
-                {% for ficha in variables.fichas %}
-                    <tr>
-                        <td><input type="checkbox" class="file-checkbox" name="selected_files" value="{{ archivo }}"></td>
-                        <td>{{ ficha }}</td>
-                        <td style="width: 350px;">{{ variables.fichas[ficha]['programa'] }}</td>
-                        <td class="text-center">{{ variables.fichas[ficha]['codigo_programa'] }}</td>
-                        <td class="text-center">{{ variables.fichas[ficha]['version_programa'] }}</td>
-                        <td class="text-center">{{ variables.fichas[ficha]['fecha_inicio'] }}</td>
-                        <td class="text-center">{{ variables.fichas[ficha]['fecha_fin'] }}</td>
-                        <td>
-                            <form method="post" action="{{ url_for('delete_file', ficha=ficha) }}" style="display:inline;">
-                                <button type="submit" title="Eliminar" class="btn btn-outline-danger btn-sm d-flex align-items-center justify-content-center p-1">
-                                    Eliminar
-                                </button>
-                            </form>
-                        </td>
-                        <td>
-                            <form method="post" action="{{ url_for('view_datos', ficha=ficha) }}" style="display:inline;">
-                                <button type="submit" title="Ver datos" class="btn btn-outline-dark text-dark btn-sm d-flex align-items-center justify-content-center p-1">
-                                    Ver datos
-                                </button>
-                            </form>
-                        </td>
-                        <td>
-                            <form method="post" action="{{ url_for('prepare_mail', ficha=ficha) }}" style="display:inline;">
-                                <button type="submit" title="Ver datos" class="btn btn-outline-dark text-dark btn-sm d-flex align-items-center justify-content-center p-1">
-                                    Correo
-                                </button>
-                            </form>
-                        </td>                        
-                        <td>
-                            <form method="post" action="{{ url_for('download', ficha=ficha) }}" style="display:inline;">
-                                <button type="submit" title="Ver datos" class="btn btn-outline-dark text-dark btn-sm d-flex align-items-center justify-content-center p-1">
-                                    Descargar
-                                </button>
-                            </form>
-                        </td>                        
-                    </tr>
-                {% endfor %}
-            {% else %}
+        <table class="table table-striped">
+            <thead>
                 <tr>
-                    <td colspan="9">No hay fichas cargadas.</td>
+                    <th><input type="checkbox" id="selectAll" title="Seleccionar todos"></th>
+                    <th class="text-center">Ficha</th>
+                    <th class="text-start">Programa</th>
+                    <th class="text-center">Código</th>
+                    <th class="text-center">Versión</th>
+                    <th class="text-center">Inicio</th>
+                    <th class="text-center">Finaliza</th>
+                    <th class="text-center"></th>                                                                                                
+                    <th class="text-center"></th>
+                    <th class="text-center"></th>                                                                                                
+                    <th class="text-center"></th>
                 </tr>
-            {% endif %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% if variables.fichas %}
+                    {% for ficha in variables.fichas %}
+                        <tr>
+                            <td><input type="checkbox" class="file-checkbox" name="selected_files" value="{{ archivo }}"></td>
+                            <td>{{ ficha }}</td>
+                            <td style="width: 350px;">{{ variables.fichas[ficha]['programa'] }}</td>
+                            <td class="text-center">{{ variables.fichas[ficha]['codigo_programa'] }}</td>
+                            <td class="text-center">{{ variables.fichas[ficha]['version_programa'] }}</td>
+                            <td class="text-center">{{ variables.fichas[ficha]['fecha_inicio'] }}</td>
+                            <td class="text-center">{{ variables.fichas[ficha]['fecha_fin'] }}</td>
+                            <td>
+                                <form method="post" action="{{ url_for('delete_file', ficha=ficha) }}" style="display:inline;">
+                                    <button type="submit" title="Eliminar" class="btn btn-outline-danger btn-sm d-flex align-items-center justify-content-center p-1">
+                                        Eliminar
+                                    </button>
+                                </form>
+                            </td>
+                            <td>
+                                <form method="post" action="{{ url_for('view_datos', ficha=ficha) }}" style="display:inline;">
+                                    <button type="submit" title="Ver datos" class="btn btn-outline-dark text-dark btn-sm d-flex align-items-center justify-content-center p-1">
+                                        Ver datos
+                                    </button>
+                                </form>
+                            </td>
+                            <td>
+                                <form method="post" action="{{ url_for('prepare_mail', ficha=ficha) }}" style="display:inline;">
+                                    <button type="submit" title="Ver datos" class="btn btn-outline-dark text-dark btn-sm d-flex align-items-center justify-content-center p-1">
+                                        Correo
+                                    </button>
+                                </form>
+                            </td>                        
+                            <td>
+                                <form method="post" action="{{ url_for('download', ficha=ficha) }}" style="display:inline;">
+                                    <button type="submit" title="Ver datos" class="btn btn-outline-dark text-dark btn-sm d-flex align-items-center justify-content-center p-1">
+                                        Descargar
+                                    </button>
+                                </form>
+                            </td>                        
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="11">No hay fichas cargadas.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endblock %}

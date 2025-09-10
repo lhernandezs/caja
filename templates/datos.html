@@ -17,6 +17,16 @@
                                     <span class="mb-0" style="font-size: 0.75rem;"><b>Inicio: </b>{{ variables.fecha_inicio }}</span>
                                     <div style="width:0.45rem;"></div>
                                     <span class="mb-0" style="font-size: 0.75rem;"><b>Finaliza: </b>{{ variables.fecha_fin }}</span>
+                                    <div style="width:0.45rem;"></div>
+                                    <span class="mb-0" style="font-size: 0.75rem;"><b>Fin Etapa Lectiva: </b>{{ variables.fin_etapa_lectiva }}</span>                                    
+                                    <div style="width:0.45rem;"></div>
+                                    <span class="mb-0" style="font-size: 0.75rem;"><b>Reglamento aplicable: </b>{{ variables.reglamento }}</span>
+                                    {% if variables.reglamento == "Acuerdo 7 de 2012" %}
+                                        <div style="width:0.45rem;"></div>
+                                        <span class="mb-0" style="font-size: 0.75rem;"><b>Vencimiento dos años (Articulo 22.): </b>{{ variables.vencimiento }}</span>
+                                        <div style="width:0.45rem;"></div>
+                                        <span class="mb-0" style="font-size: 0.75rem;"><b>Límite para iniciar Etapa Productiva (18 meses): </b>{{ variables.limite }}</span>
+                                    {% endif %}
                                 </div>
                                 <div style="height:2.5em;"></div>
                             </div>
