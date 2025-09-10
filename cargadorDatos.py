@@ -1,7 +1,7 @@
 import os
 
 from entradaHelper    import getDataFrame
-from config                import Config, ARCHIVO_DE_DATOS
+from config           import Config, ARCHIVO_DE_DATOS
 
 class CargadorDatos:
     def getDatos(self) -> dict:
@@ -31,7 +31,8 @@ class CargadorDatos:
 
         return {'df_novedades': df_novedades, 'df_activos': df_activos, 'df_instructores': df_instructores}
 
-from procesadorJuicios import ProcesadorJuicios
+import pandas as pd
+from procesadorJuicios1 import ProcesadorJuicios1
 from config import Config
 if __name__ == "__main__":
     fichas = {
@@ -60,13 +61,18 @@ if __name__ == "__main__":
     
     cargadorDatos = CargadorDatos()
     datos = cargadorDatos.getDatos()
-    # datos= pd.read_pickle('diccionario_dataframes.pkl')
-    df_novedades = datos['df_novedades']
-    df_activos = datos['df_activos']
-    df_instructores = datos['df_instructores']
+    df_novedades    : pd.DataFrame = datos['df_novedades']
+    df_activos      : pd.DataFrame = datos['df_activos']
+    df_instructores : pd.DataFrame = datos['df_instructores']
     for ficha in fichas['juan carlos']: 
         try:
-            juiciosFicha = ProcesadorJuicios(Config.UPLOAD_FOLDER, f"Reporte de Juicios Evaluativos {ficha}.xls", df_novedades, df_activos, df_instructores)
+            juiciosFicha = ProcesadorJuicios1(
+                Config.UPLOAD_FOLDER,
+                f"Reporte de Juicios Evaluativos {ficha}.xls",
+                df_novedades.to_dict(orient="records"),
+                df_activos.to_dict(orient="records"),
+                df_instructores.to_dict(orient="records")
+            )
             juiciosFicha.procesar()
             print(f"Archivo transformado a XLSX exitosamente para la ficha {ficha}.")
         except Exception as e:

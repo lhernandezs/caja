@@ -74,7 +74,12 @@ class ProcesadorJuicios1:
 
             if df_novedades_ficha is not None and documento in df_novedades_ficha["documento"].values:
                 df_filtrado  = df_novedades_ficha [df_novedades_ficha["documento"] == documento]
-                df_datos.loc[i, "enTramite"] = df_filtrado["novedad"].iloc[-1]
+                if df_filtrado["novedad"].iloc[-1] == "R":
+                    novedad = "Retiro"
+                else:
+                    novedad = "Deserción"                    
+                df_datos.loc[i, "enTramite"] = novedad                    
+                # df_datos.loc[i, "enTramite"] = df_filtrado["novedad"].iloc[-1]
 
             if df_datos["estado"][i] == "EN FORMACION":
                 contador_todas = 0
@@ -177,7 +182,7 @@ class ProcesadorJuicios1:
                 }
 
 if __name__ == "__main__":
-    ficha = '3106275'        
+    ficha = '2758744'        
     try:
         df_novedades     = pd.read_excel(os.path.join("upload", 'datos.xlsx'), sheet_name='novedades').drop_duplicates()
         df_activos       = pd.read_excel(os.path.join("upload", 'datos.xlsx'), sheet_name='activos').drop_duplicates()

@@ -13,6 +13,7 @@ from procesadorJuiciosHelper        import getLimite_rap_para_normalizar
 
 def color_rows(row, limite_rap_para_normalizar: int):
     color = "White"
+    row = row.fillna(False)
     if row['estado'] != "EN FORMACION":
         list_color = [value[1] for value in ESTADOS.values() if value[0] == row['estado']]
         if list_color:
@@ -21,14 +22,14 @@ def color_rows(row, limite_rap_para_normalizar: int):
         por_evaluar        = row['porEvaluar']
         juicios_productiva = row['PRO']
         se_tramita_novedad = isinstance(row['enTramite'], str)
-        if   por_evaluar == 1 and juicios_productiva == 1:
+        if   (por_evaluar == 1) and (juicios_productiva == 1):
             color = "PaleGreen"
-        elif por_evaluar == 1 and juicios_productiva == 0:
+        elif (por_evaluar == 1) and (juicios_productiva == 0):
             color = "Yellow"
         elif por_evaluar in [n for n in range(2, limite_rap_para_normalizar + 1)]:
             color = "PaleGoldenrod"
         elif se_tramita_novedad:
-            color = "DarkRed"
+            color = "LightCoral"
         elif por_evaluar >= limite_rap_para_normalizar and not se_tramita_novedad:
             color = "Red"
         else:
