@@ -155,11 +155,17 @@ class ProcesadorJuicios1:
         version_programa   = df_hoja.iloc[3, 2] 
         fecha_inicio       = df_hoja.iloc[6, 2] 
         fecha_fin          = df_hoja.iloc[7, 2] 
-        fin_etapa_lectiva  = fecha_fin - pd.DateOffset(months=6)
+        # fin_etapa_lectiva  = fecha_fin - pd.DateOffset(months=6)
+        meses_diferencia = (fecha_fin.year - fecha_inicio.year) * 12 + (fecha_fin.month - fecha_inicio.month) + (fecha_fin.day - fecha_inicio.day)/30
+        print(f"meses diferencia {meses_diferencia}")
+        if (8.8 <= meses_diferencia <= 9.2) or (14.8 <= meses_diferencia <= 15.2) or (26.8 <= meses_diferencia <= 27.2):
+            fin_etapa_lectiva  = fecha_fin - pd.DateOffset(months=6)    
+        else:
+            fin_etapa_lectiva  = fecha_fin - pd.DateOffset(months=3)
         reglamento         = REGLAMENTOS[0] if fecha_inicio < pd.Timestamp('2024-11-21') else REGLAMENTOS[1]
         vencimiento        = fin_etapa_lectiva + pd.DateOffset(months=24)
-        limite             = fin_etapa_lectiva + pd.DateOffset(months=18)
-
+        limite = fin_etapa_lectiva + pd.DateOffset(months=18)
+        
         print(f"Ficha: {ficha} - Programa: {programa}")
 
         try:

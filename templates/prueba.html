@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block body %}
+    <div style="col-1 min-width:10rem;">
+        <a class="btn btn-light mb-2" href="/" style="border: 1px solid #000; width: 100%; font-size: 0.85rem;">Inicio</a>
+    </div>    
+    <div class="d-flex flex-column justify-content-center align-items-center" style="background-color: red; min-height: 100vh;">
+        <div class="row flex-fill mb-4 mi-contenedor-ancho d-flex justify-content-center align-items-center" style="background-color: blue; min-height: 100px;">1 row</div>
+        <div class="row flex-fill mb-4 mi-contenedor-ancho d-flex justify-content-between align-items-center" style="background-color: orange; min-height: 100px;">
+            <div style="background-color: brown; width: 15%; height: 80px;"></div>
+            <div style="background-color: beige; width: 45%; height: 80px;"></div>
+        </div>
+        <div class="row flex-fill mb-4 mi-contenedor-ancho d-flex justify-content-center align-items-center" style="background-color: yellow; min-height: 100px;">2 row</div>
+        <div class="row flex-fill mb-4 mi-contenedor-ancho d-flex justify-content-center align-items-center" style="background-color: green; min-height: 100px;">3 row</div>
+    </div>
+
+{% endblock %}

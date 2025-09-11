@@ -192,6 +192,12 @@ def download(ficha):
     body = form_data['body']
     return render_template("correo.html", variables = variables, ficha = ficha, body = body)    
 
+@app.route('/prueba', methods=["GET"])
+def preuba():
+    return render_template("prueba.html")    
+
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
