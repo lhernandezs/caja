@@ -1,9 +1,10 @@
 import os
 import pandas as pd
 
-from flask   import ( request, session, Flask, render_template, redirect, url_for, jsonify)
+from flask   import ( request, session, Flask, render_template, redirect, url_for, jsonify, send_from_directory)
 
 from config               import COLUMNAS_ACTIVOS, COLUMNAS_INSTRUCTORES, COLUMNAS_NOVEDADES, Config, TEMPLATES_FOLDER
+from modelo import DatosCorreoJuicios
 from procesadorJuicios1   import ProcesadorJuicios1
 from entradaHelper        import getDataFrame
 from correo               import Correo
@@ -99,16 +100,18 @@ def upload_files():
                 diccionario = juiciosFicha.procesar()
                 ficha = diccionario['ficha']
                 session['fichas'][ficha] = {
-                    'fecha_reporte'         : diccionario['fecha_reporte'],
-                    'programa'              : diccionario['programa'],
-                    'codigo_programa'       : diccionario['codigo_programa'],
-                    'version_programa'      : diccionario['version_programa'],
-                    'fecha_inicio'          : diccionario['fecha_inicio'],
-                    'fecha_fin'             : diccionario['fecha_fin'],
-                    'fin_etapa_lectiva'     : diccionario['fin_etapa_lectiva'],
-                    'reglamento'            : diccionario['reglamento'],
-                    'vencimiento'           : diccionario['vencimiento'],
-                    'limite'                : diccionario['limite']
+                    'fecha_reporte'             : diccionario['fecha_reporte']              ,
+                    'programa'                  : diccionario['programa']                   ,
+                    'codigo_programa'           : diccionario['codigo_programa']            ,
+                    'version_programa'          : diccionario['version_programa']           ,
+                    'fecha_inicio'              : diccionario['fecha_inicio']               ,
+                    'fecha_fin'                 : diccionario['fecha_fin']                  ,
+                    'duracion_meses'            : diccionario['duracion_meses']             ,
+                    'fin_etapa_lectiva'         : diccionario['fin_etapa_lectiva']          ,
+                    'inicio_etapa_productiva'   : diccionario['inicio_etapa_productiva']    ,
+                    'reglamento'                : diccionario['reglamento']                 ,
+                    'vencimiento'               : diccionario['vencimiento']                ,
+                    'limite'                    : diccionario['limite']
                 }
             except Exception as e:
                 session['error'] = e
@@ -173,11 +176,17 @@ def prepare_mail(ficha):
 
 @app.route('/send_mail', methods=["POST"])
 def send_mail():
-    form_data = request.form.to_dict(flat=True)
-    datos_correo = form_data['datos_correo']
-    print(datos_correo)
+    # form_data = request.form.to_dict(flat=True)  ---- Se recogen los datos del formulario y se arman el correo
     destination_username, destination_domain = "lhernandezs@sena.edu.co".split('@')
-    correo = Correo(destination_username, destination_domain, destination_username, datos_correo)
+    datos_correo =  DatosCorreoJuicios(
+                ficha           = '9999999'                         , 
+                instructores    = ['instructor1', 'instructor2']    , 
+                activos         = ['activo1', 'activo2']            , 
+                desertores      = ['desertor1', 'desertor2']
+                )
+    template        = 0
+    correo = Correo(destination_username, destination_domain, destination_username, datos_correo, template )
+    correo.send_email()
     try:
         correo.send_email()
         return jsonify({'message': 'Correo enviado exitosamente!'})
@@ -186,11 +195,11 @@ def send_mail():
 
 @app.route('/dowmload/<ficha>', methods=["POST"])
 def download(ficha):
-    form_data = request.form.to_dict(flat=True)
-    variables = form_data['variables']
-    ficha = form_data['ficha']
-    body = form_data['body']
-    return render_template("correo.html", variables = variables, ficha = ficha, body = body)    
+    try:
+        return send_from_directory(UPLOAD_FOLDER, f"{ficha}.xlsx", as_attachment=True)
+    except Exception as e:
+        session['error'] = f"No se pudo descargar el archivo: {e}"
+        return render_template("index.html", variables=session)
 
 @app.route('/prueba', methods=["GET"])
 def preuba():

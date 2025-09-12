@@ -8,7 +8,6 @@ Sacar los Helper a un directorio
 Crear la funcionalidad del correo para los aprendices que deben ser evaluados.
 En caso de Juicios NO APROBADO indicar la fecha y el instructor que lo registró
 Colocar el manejo de la página NOT FOUND (404)
-Recalcular la fecha de inicio para la Etapa Lectiva cuando son TECNICOS de 9 o 12 meses.
 Crear el DashBoard con:
 
 El mejor instructor TRANSVERSAL

@@ -75,7 +75,7 @@ REGLAMENTOS = [
     'Acuerdo 9 de 2024'
 ]
 
-competencias_no_tecnicas = {
+COMPETENCIAS_NO_TECNICAS = {
             "IND": "36182",
             "BIL": "37714",
             "CIE": "37801",
@@ -92,9 +92,20 @@ competencias_no_tecnicas = {
         }
 
 #la clave es codigo del programa ", " version
-competencias_programas_especiales = {
+COMPETENCIAS_PROGRAMAS_ESPECIALES = {
             '631101, 2' : [('EMP', '39811'), ],
         }
+
+MESES_ESPANOL = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
+
+TOLERANCIA_MESES = 0.1
+
+DURACION_PROGRAMAS = {
+    'tecnologo'         : 27,
+    'tecnico'           : 15,
+    'tecnico_corto'     : 12,
+    'tecnico_express'   : 9,
+}
 
 class Config:
     SECRET_KEY          = "PorColombia2025"

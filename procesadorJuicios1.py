@@ -4,8 +4,8 @@ import pandas as pd
 
 from entradaHelper              import getDataFrame
 from salidaHelper               import write_process_file, color_rows
-from procesadorJuiciosHelper    import getCompetenciasNoTecnicas, getInstructorEnReporte, getLimite_rap_para_normalizar
-from config                     import ESTADOS, HOJAS, COLUMNAS_INT_DATOS, COLUMNAS_NOVEDADES, COLUMNAS_ACTIVOS, COLUMNAS_INSTRUCTORES, REGLAMENTOS
+from procesadorJuiciosHelper    import getCompetenciasNoTecnicas, getInstructorEnReporte, getLimite_rap_para_normalizar, fecha_formato_espanol
+from config                     import TOLERANCIA_MESES, DURACION_PROGRAMAS, ESTADOS, HOJAS, COLUMNAS_INT_DATOS, COLUMNAS_NOVEDADES, COLUMNAS_ACTIVOS, COLUMNAS_INSTRUCTORES, REGLAMENTOS
 
 class ProcesadorJuicios1:
     def __init__(self, folder: str, archivo: str, novedades: dict = None, activos: dict = None, instructores: dict = None, ):
@@ -155,13 +155,20 @@ class ProcesadorJuicios1:
         version_programa   = df_hoja.iloc[3, 2] 
         fecha_inicio       = df_hoja.iloc[6, 2] 
         fecha_fin          = df_hoja.iloc[7, 2] 
-        # fin_etapa_lectiva  = fecha_fin - pd.DateOffset(months=6)
-        meses_diferencia = (fecha_fin.year - fecha_inicio.year) * 12 + (fecha_fin.month - fecha_inicio.month) + (fecha_fin.day - fecha_inicio.day)/30
-        print(f"meses diferencia {meses_diferencia}")
-        if (8.8 <= meses_diferencia <= 9.2) or (14.8 <= meses_diferencia <= 15.2) or (26.8 <= meses_diferencia <= 27.2):
-            fin_etapa_lectiva  = fecha_fin - pd.DateOffset(months=6)    
+
+        duracion_meses = round((fecha_fin.year - fecha_inicio.year) * 12 + (fecha_fin.month - fecha_inicio.month) + (fecha_fin.day - fecha_inicio.day)/30)
+        print(f"Duracion en meses: {duracion_meses}")
+        if   duracion_meses == DURACION_PROGRAMAS['tecnologo'] or duracion_meses == DURACION_PROGRAMAS['tecnico']:
+            meses_restar = 6
+        elif duracion_meses == DURACION_PROGRAMAS['tecnico_corto']:
+            meses_restar = 3
+        elif duracion_meses == DURACION_PROGRAMAS['tecnico_express']:
+            meses_restar = 0
         else:
-            fin_etapa_lectiva  = fecha_fin - pd.DateOffset(months=3)
+            meses_restar = 0
+        fin_etapa_lectiva = fecha_fin - pd.DateOffset(months=meses_restar)
+        inicio_etapa_productiva = fecha_fin - pd.DateOffset(months=6) + pd.Timedelta(days=1)
+        
         reglamento         = REGLAMENTOS[0] if fecha_inicio < pd.Timestamp('2024-11-21') else REGLAMENTOS[1]
         vencimiento        = fin_etapa_lectiva + pd.DateOffset(months=24)
         limite = fin_etapa_lectiva + pd.DateOffset(months=18)
@@ -173,45 +180,52 @@ class ProcesadorJuicios1:
         except ValueError:
             raise ValueError(f"Error: Hay 'documentos' del reporte de Juicios {ficha} no convertibles a número")
 
-
         result = self.build_df_datos(codigo_programa, version_programa, ficha, df_hoja)
         write_process_file(self.folder, ficha,  result['df_datos'], result['df_novedades_ficha'], result['df_activos_ficha'], result['df_hoja'])
 
-        return {'fecha_reporte'         : fecha_reporte                             ,
-                'ficha'                 : ficha                                     ,
-                'programa'              : programa                                  ,
-                'codigo_programa'       : codigo_programa                           ,
-                'version_programa'      : version_programa                          ,
-                'fecha_inicio'          : fecha_inicio.strftime("%d-%m-%Y")         ,
-                'fecha_fin'             : fecha_fin.strftime("%d-%m-%Y")            ,
-                'fin_etapa_lectiva'     : fin_etapa_lectiva.strftime("%d-%m-%Y")    ,
-                'reglamento'            : reglamento                                ,
-                'vencimiento'           : vencimiento.strftime("%d-%m-%Y")          ,
-                'limite'                : limite.strftime("%d-%m-%Y")               ,                
-                'df_hoja'               : result['df_hoja']                         ,
-                'df_datos'              : result['df_datos']                        ,
-                'df_novedades_ficha'    : result['df_novedades_ficha']              ,
-                'df_activos_ficha'      : result['df_activos_ficha']                ,
-                'df_instructores_ficha' : result['df_instructores_ficha']           ,
-                }
+        return {
+            'fecha_reporte'          : fecha_reporte                                    ,
+            'ficha'                  : ficha                                            ,
+            'programa'               : programa                                         ,
+            'codigo_programa'        : codigo_programa                                  ,
+            'version_programa'       : version_programa                                 ,
+            'fecha_inicio'           : fecha_formato_espanol(fecha_inicio)              ,
+            'fecha_fin'              : fecha_formato_espanol(fecha_fin)                 ,
+            'duracion_meses'         : duracion_meses                                   ,
+            'fin_etapa_lectiva'      : fecha_formato_espanol(fin_etapa_lectiva)         ,
+            'inicio_etapa_productiva': fecha_formato_espanol(inicio_etapa_productiva)   ,                 
+            'reglamento'             : reglamento                                       ,
+            'vencimiento'            : fecha_formato_espanol(vencimiento)               ,
+            'limite'                 : fecha_formato_espanol(limite)                    ,                
+            'df_hoja'                : result['df_hoja']                                ,
+            'df_datos'               : result['df_datos']                               ,
+            'df_novedades_ficha'     : result['df_novedades_ficha']                     ,
+            'df_activos_ficha'       : result['df_activos_ficha']                       ,
+            'df_instructores_ficha'  : result['df_instructores_ficha']                  ,
+            }
 
+from config import Config
 if __name__ == "__main__":
-    ficha = '2758744'        
+    novedades = activos = instructores = None
+    ficha = '2675744'        
     try:
-        df_novedades     = pd.read_excel(os.path.join("upload", 'datos.xlsx'), sheet_name='novedades').drop_duplicates()
-        df_activos       = pd.read_excel(os.path.join("upload", 'datos.xlsx'), sheet_name='activos').drop_duplicates()
-        df_instructores  = pd.read_excel(os.path.join("upload", 'datos.xlsx'), sheet_name='instructores').drop_duplicates()
+        df_novedades            = pd.read_excel(os.path.join(Config.UPLOAD_FOLDER_DATA, 'datos.xlsx'), sheet_name='novedades').drop_duplicates()
+        df_activos              = pd.read_excel(os.path.join(Config.UPLOAD_FOLDER_DATA, 'datos.xlsx'), sheet_name='activos').drop_duplicates()
+        df_instructores         = pd.read_excel(os.path.join(Config.UPLOAD_FOLDER_DATA, 'datos.xlsx'), sheet_name='instructores').drop_duplicates()
         
         df_novedades.columns    = COLUMNAS_NOVEDADES
         df_activos.columns      = COLUMNAS_ACTIVOS
         df_instructores.columns = COLUMNAS_INSTRUCTORES
 
-        novedades        = df_novedades.to_dict(orient='records')
-        activos          = df_activos.to_dict(orient='records')
-        instructores     = df_instructores.to_dict(orient='records')  
+        novedades               = df_novedades.to_dict(orient='records')
+        activos                 = df_activos.to_dict(orient='records')
+        instructores            = df_instructores.to_dict(orient='records')  
 
-        procesador_jucios = ProcesadorJuicios1("upload", f"Reporte de Juicios Evaluativos {ficha}.xls", novedades, activos, instructores)
+        procesador_jucios = ProcesadorJuicios1(Config.UPLOAD_FOLDER, f"Reporte de Juicios Evaluativos {ficha}.xls", novedades, activos, instructores)
         procesador_jucios.procesar()
         print(f"Archivo transformado a XLSX exitosamente para la ficha {ficha}.")
+
+
     except Exception as e:
-        raise e
+        print(f"no es posible leer el archivo de datos. {e} ")
+

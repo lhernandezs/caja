@@ -3,7 +3,7 @@ import pandas as pd
 from dateutil.relativedelta         import relativedelta
 from datetime                       import datetime
 
-from config                         import competencias_no_tecnicas, competencias_programas_especiales, PORCENTAJE_LIMITE_RAP, HOJAS
+from config                         import COMPETENCIAS_NO_TECNICAS, COMPETENCIAS_PROGRAMAS_ESPECIALES, MESES_ESPANOL, PORCENTAJE_LIMITE_RAP, HOJAS
 
 def getLimite_rap_para_normalizar(df_datos: pd.DataFrame) -> int:
     columnas_datos      = HOJAS['datos']['columnas']
@@ -56,12 +56,15 @@ def calcular_avance_raps_tecnicos(fecha_inicio: datetime, fecha_fin: datetime, d
     return int(total_raps_tecnicos * porcentaje_avance)
 
 def getCompetenciasNoTecnicas(programa: str, version: str) -> list:
-    competencias = competencias_no_tecnicas
+    competencias = COMPETENCIAS_NO_TECNICAS
     clave = f"{programa}, {version}"
-    if clave in competencias_programas_especiales:
-        for competencia, codigo in competencias_programas_especiales[clave]:
+    if clave in COMPETENCIAS_PROGRAMAS_ESPECIALES:
+        for competencia, codigo in COMPETENCIAS_PROGRAMAS_ESPECIALES[clave]:
             competencias[competencia] = codigo
     return list(competencias.items())
+
+def fecha_formato_espanol(fecha):
+    return f"{fecha.day:02d}-{MESES_ESPANOL[fecha.month-1]}-{fecha.year}"
 
 if __name__ == "__main__":
     print(getCompetenciasNoTecnicas('631101', '2'))

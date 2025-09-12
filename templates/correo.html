@@ -1,86 +1,98 @@
 {% extends "base.html" %}
 
 {% block body %}
-    <div class="d-flex justify-content-center">
-        <div class="mi-contenedor-ancho">
-            <div>
-                <div class="d-flex align-items-center mb-3">
-                    <div class="d-flex align-items-end">
-                        <div class="d-flex flex-column me-3">
-                            <h2 class="mb-0">{{ variables.programa }}</h2>
-                            <div class="d-flex align-items-center">
-                                <span class="mb-0" style="font-size: 0.75rem;"><b>Cod: </b>{{ variables.codigo_programa }} Ver: {{ variables.version_programa }}</span>
-                                <div style="width:0.55rem;"></div>
-                                <span class="mb-0" style="font-size: 0.75rem;"><b>Ficha: </b>{{ ficha }}</span>
-                                <div style="width:0.55rem;"></div>
-                                <span class="mb-0" style="font-size: 0.75rem;"><b>Inicio: </b>{{ variables.fecha_inicio }}</span>
-                                <div style="width:0.45rem;"></div>
-                                <span class="mb-0" style="font-size: 0.75rem;"><b>Finaliza: </b>{{ variables.fecha_fin }}</span>
-                            </div>
-                            <div style="height:2.5em;"></div>
-                        </div>
-                        <div style="width:60px;"></div>
-                        <form id="emailForm" method="POST">
-                            <div class="d-flex">
-                                <div style="flex:1; min-width:3rem;">
-                                    <input type="hidden" name="datos_correo" value="{{ body }}">
-                                    <div>
-                                        <label for="to" class="form-label" style="font-size: 0.75rem">Destinatario</label>
-                                    </div>
-                                    <div>
-                                        <label for="subject" class="form-label" style="font-size: 0.75rem;">Asunto</label>
-                                    </div>
-                                </div>
-                                <div style="flex:1; min-width:15rem">
-                                    <div class="mb-2">
-                                        <input type="email" id="to" name="to" class="form-control mb-2" style="font-size: 0.75rem;" placeholder="Destinatario" value="lhernandezs@sena.edu.co"  required>
-                                    </div>
-                                    <div class="mb-2">
-                                        <input type="text" id="subject" name="subject" class="form-control mb-2" style="font-size: 0.75rem;" placeholder="Asunto" value="normalizar ficha {{ ficha }}" required>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div style="flex:1; min-width:40rem; margin-left:10px;">
-                                        <textarea name="body" id="bodyTextarea" class="form-control mb-2" placeholder="Mensaje" required rows="4" style="font-size: 0.75rem;" disabled>
-                                            {{ body }}
-                                        </textarea>
-                                    </div>
-                                    <div id="mensaje" class="mt-2" style="font-size: 0.75rem;"></div> 
-                                </div>
-                                <div style="width:20px;"></div>
-                                <div style="flex:1; min-width:10rem;">
-                                    <input type="hidden" name="ficha" value="{{ ficha }}">
-                                    <div class="mb-2 d-flex flex-column align-items-end">
-                                        <button type="submit" class="btn btn-success mb-2" style="font-size: 0.85rem; width: 100%;">Enviar Correo</button>
-                                        <a class="btn btn-light mb-2" href="/" style="border: 1px solid #000; width: 100%; font-size: 0.85rem;">Inicio</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                        <script>
-                            $(document).ready(function() {
-                                $('#emailForm').submit(function(event) {
-                                    event.preventDefault(); 
-                                    var formData = $(this).serialize(); // Obtener los datos del formulario
-                                    $.ajax({
-                                        type: 'POST',
-                                        url: '/send_mail',
-                                        data: formData,
-                                        success: function(response) {
-                                            $('#mensaje').html(response.message).css('color', 'green');
-                                            $('#emailForm')[0].reset();
-                                        },
-                                        error: function(xhr, status, error) {
-                                            $('#mensaje').html('Error al enviar el correo: ' + error).css('color', 'red');
-                                        }
-                                    });
-                                });
-                            });
-                        </script>
+<div class="d-flex flex-column justify-content-center align-items-center">
+    <div class="row flex-fill mb-3 mi-contenedor-ancho d-flex justify-content-center align-items-center">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2 class="mb-0">{{ variables.programa }}</h2>
+            <div style="col-1 min-width:10rem;">
+                <a class="btn btn-light mb-2" href="/" style="border: 1px solid #000; width: 100%; font-size: 0.85rem;">Inicio</a>
+            </div>
+        </div>
+    </div>
+    <div class="row flex-fill mb-3 mi-contenedor-ancho d-flex justify-content-center align-items-center">
+        <div class="d-flex align-items-center">
+            <table class="table table-sm mb-0 table-bordered text-center" style="font-size: 0.75rem; width: auto; margin: 0 auto;">
+                <tr>
+                    <th class="border text-center align-middle"><b>Código</b></th>
+                    <th class="border text-center align-middle"><b>Versión</b></th>
+                    <th class="border text-center align-middle"><b>Ficha</b></th>
+                    <th class="border text-center align-middle"><b>Fecha de inicio</b></th>
+                    <th class="border text-center align-middle"><b>Fecha de finalización</b></th>
+                    <th class="border text-center align-middle"><b>Duración</b></th>
+                    <th class="border text-center align-middle"><b>Fin Etapa Lectiva</b></th>
+                    <th class="border text-center align-middle"><b>Inicio Etapa Productiva</b></th>                    
+                    <th class="border text-center align-middle"><b>Reglamento aplicable</b></th>
+                    {% if variables.reglamento == "Acuerdo 7 de 2012" %}
+                        <th class="border text-center align-middle"><b>Vencimiento de términos <br> (Artículo 22)</b></th>
+                        <th class="border text-center align-middle"><b>Fecha límite para iniciar <br> Etapa Productiva (18 meses)</b></th>
+                    {% endif %}
+                </tr>
+                <tr>
+                    <td class="text-center border">{{ variables.codigo_programa }}</td>
+                    <td class="text-center border">{{ variables.version_programa }}</td>
+                    <td class="text-center border">{{ ficha }}</td>
+                    <td class="text-center border">{{ variables.fecha_inicio }}</td>
+                    <td class="text-center border">{{ variables.fecha_fin }}</td>
+                    <td class="text-center border">{{ variables.duracion_meses }} meses</td>                    
+                    <td class="text-center border">{{ variables.fin_etapa_lectiva }}</td>
+                    <td class="text-center border">{{ variables.inicio_etapa_productiva }}</td>                    
+                    <td class="text-center border">{{ variables.reglamento }}</td>
+                    {% if variables.reglamento == "Acuerdo 7 de 2012" %}
+                        <td class="text-center border">{{ variables.vencimiento }}</td>
+                        <td class="text-center border">{{ variables.limite }}</td>
+                    {% endif %}
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="row flex-fill mb-3 mi-contenedor-ancho d-flex justify-content-center align-items-center">
+        <form id="emailForm" method="POST" action="{{ url_for('send_mail') }}>
+            <div class="flex-column">
+                <div class="d-flex align-items-center mb-2" style="gap: 10px;">
+                    <label for="to" class="form-label mb-0" style="font-size: 0.75rem; min-width: 90px;">Destinatario</label>
+                    <input type="email" id="to" name="to" class="form-control" style="font-size: 0.75rem; flex: 1;" placeholder="Destinatario" value="lhernandezs@sena.edu.co" required>
+                </div>
+                <div class="d-flex align-items-center mb-2" style="gap: 10px;">
+                        <label for="subject" class="form-label" style="font-size: 0.75rem;">Asunto</label>
+                        <input type="text" id="subject" name="subject" class="form-control mb-2" style="font-size: 0.75rem;" placeholder="Asunto" value="normalizar ficha {{ ficha }}" required>
+                </div>
+                <div>
+                    <div style="flex:1; min-width:40rem; margin-left:10px;">
+                        <textarea name="body" id="bodyTextarea" class="form-control mb-2" placeholder="Mensaje" required rows="4" style="font-size: 0.75rem;">
+                        </textarea>
+                    </div>
+                    <div id="mensaje" class="mt-2" style="font-size: 0.75rem;"></div> 
+                </div>
+                <div style="flex:1; min-width:10rem;">
+                    <input type="hidden" name="ficha" value="{{ ficha }}">
+                    <div class="mb-2 d-flex flex-column align-items-end">
+                        <button type="submit" class="btn btn-success mb-2" style="font-size: 0.85rem; width: 100%;">Enviar Correo</button>
+                        <a class="btn btn-light mb-2" href="/" style="border: 1px solid #000; width: 100%; font-size: 0.85rem;">Inicio</a>
                     </div>
                 </div>
             </div>
-
-        </div>
+        </form>
+        <script>
+            $(document).ready(function() {
+                $('#emailForm').submit(function(event) {
+                    event.preventDefault(); 
+                    var formData = $(this).serialize(); // Obtener los datos del formulario
+                    $.ajax({
+                        type: 'POST',
+                        url: '/send_mail',
+                        data: formData,
+                        success: function(response) {
+                            $('#mensaje').html(response.message).css('color', 'green');
+                            $('#emailForm')[0].reset();
+                        },
+                        error: function(xhr, status, error) {
+                            $('#mensaje').html('Error al enviar el correo: ' + error).css('color', 'red');
+                        }
+                    });
+                });
+            });
+        </script>
     </div>
+</div>
 {% endblock %}

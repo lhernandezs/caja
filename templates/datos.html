@@ -19,7 +19,9 @@
                     <th class="border text-center align-middle"><b>Ficha</b></th>
                     <th class="border text-center align-middle"><b>Fecha de inicio</b></th>
                     <th class="border text-center align-middle"><b>Fecha de finalización</b></th>
+                    <th class="border text-center align-middle"><b>Duración</b></th>
                     <th class="border text-center align-middle"><b>Fin Etapa Lectiva</b></th>
+                    <th class="border text-center align-middle"><b>Inicio Etapa Productiva</b></th>                    
                     <th class="border text-center align-middle"><b>Reglamento aplicable</b></th>
                     {% if variables.reglamento == "Acuerdo 7 de 2012" %}
                         <th class="border text-center align-middle"><b>Vencimiento de términos <br> (Artículo 22)</b></th>
@@ -32,7 +34,9 @@
                     <td class="text-center border">{{ ficha }}</td>
                     <td class="text-center border">{{ variables.fecha_inicio }}</td>
                     <td class="text-center border">{{ variables.fecha_fin }}</td>
+                    <td class="text-center border">{{ variables.duracion_meses }} meses</td>                    
                     <td class="text-center border">{{ variables.fin_etapa_lectiva }}</td>
+                    <td class="text-center border">{{ variables.inicio_etapa_productiva }}</td>                    
                     <td class="text-center border">{{ variables.reglamento }}</td>
                     {% if variables.reglamento == "Acuerdo 7 de 2012" %}
                         <td class="text-center border">{{ variables.vencimiento }}</td>
