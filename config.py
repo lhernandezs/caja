@@ -4,12 +4,15 @@ TEMPLATES_FOLDER        = os.path.join("templates")
 JSON_FOLDER             = os.path.join("json")
 
 SMTP_SSL                = "smtp.gmail.com"
-SENDER_USERNAME         = "formacionvirtualcsf"
 SENDER_DOMAIN           = "gmail.com"
-EMAIL_PASSWORD          = "ddycjigkgqrtsray"
-SENDER_DISPLAY_NAME     = "formacionvirtualcsf@sena.edu.co"
 SUBJECT                 = "normalizar ficha  "
 TEMPLATES               = ['correoJuicios.html']
+# SENDER_USERNAME         = "formacionvirtualcsf"
+# EMAIL_PASSWORD          = "ddycjigkgqrtsray"
+# SENDER_DISPLAY_NAME     = "formacionvirtualcsf@sena.edu.co"
+SENDER_USERNAME         = "creamos.porcolombia"
+EMAIL_PASSWORD          = "qhjkzhhqeywqsasq"
+SENDER_DISPLAY_NAME     = "porcolombia"
 
 PORCENTAJE_LIMITE_RAP   = 0.30
 
@@ -93,7 +96,31 @@ COMPETENCIAS_NO_TECNICAS = {
 
 #la clave es codigo del programa ", " version
 COMPETENCIAS_PROGRAMAS_ESPECIALES = {
-            '631101, 2' : [('EMP', '39811'), ],
+            '621201, 102'   :[('ETI', '1 - P'),],
+            '121202, 101'   :[('ETI', '1 - P'),],
+            '123111, 100'   :[('ETI', '1 - P'),],
+            '135319, 1'     :[('ETI', '1 - P'),],
+            '123303, 101'   :[('ETI', '1 - P'),],
+            '621201, 102'   :[('BIL', '3226 '),],
+            '121202, 101'   :[('BIL', '3226 '),],
+            '123111, 100'   :[('BIL', '3226 '),],
+            '135319, 1'     :[('BIL', '3226 '),],
+            '123303, 101'   :[('BIL', '3226 '),],
+            '621201, 102'   :[('COM', '3227 '),],
+            '121202, 101'   :[('COM', '3227 '),],
+            '123111, 100'   :[('COM', '3227 '),],
+            '123303, 101'   :[('COM', '3227 '),],
+            '632223, 2'     :[('EMP', '39811'),],
+            '631101, 2'     :[('EMP', '39811'),],
+            '134101, 2'     :[('EMP', '39811'),],
+            '133303, 1'     :[('EMP', '39811'),],
+            '233104, 2'     :[('EMP', '39811'),],
+            '134200, 2'     :[('EMP', '39811'),],
+            '233108, 1'     :[('EMP', '39811'),],
+            '233105, 2'     :[('EMP', '39811'),],
+            '133305, 1'     :[('EMP', '39811'),],
+            '134104, 1'     :[('EMP', '39811'),],
+            '134600, 1'     :[('EMP', '39811'),],
         }
 
 MESES_ESPANOL = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']

@@ -19,11 +19,15 @@
                     </div>
                 </div>
                 <div>
-                    <div class="col-md-4 d-flex align-items-center justify-content-end">
+                    <div class="col-md-6 d-flex align-items-center justify-content-end">
                         <span style="width: 1rem; display: inline-block;"></span>
-                        <img src="{{ url_for('static', filename='images/porcolombia.jpg') }}" alt="Por Colombia" class="img-fluid rounded me-3" style="width: 10rem; height:3rem;">
+                        <a href="{{ url_for('porcolombia') }}">
+                            <img src="{{ url_for('static', filename='images/porcolombia.jpg') }}" alt="Por Colombia" class="img-fluid rounded me-3" style="width: 10rem; height:3rem;">
+                        </a>
                         <span style="width: 1rem; display: inline-block;"></span>
-                        <img src="{{ url_for('static', filename='images/spe20.jpg') }}" alt="Empleo" class="img-fluid rounded me-3" style="width: 10rem; height:3rem;">
+                        <a href="{{ url_for('spe') }}">
+                            <img src="{{ url_for('static', filename='images/spe20.jpg') }}" alt="Empleo" class="img-fluid rounded me-3" style="width: 10rem; height:3rem;">
+                        </a>                            
                         <span style="width: 1rem; display: inline-block;"></span>
                         <button id="darkModeToggle" class="btn btn-secondary position-fixed top-0 end-0 m-3" title="Toggle dark mode">
                             <svg id="darkModeIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-moon" viewBox="0 0 16 16">

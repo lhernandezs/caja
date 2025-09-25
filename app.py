@@ -192,7 +192,6 @@ def send_mail():
         return jsonify({'message': 'Correo enviado exitosamente!'})
     except Exception as e:
         return jsonify({'message': f'Error al enviar el correo: {str(e)}'}), 500
-
 @app.route('/dowmload/<ficha>', methods=["POST"])
 def download(ficha):
     try:
@@ -201,12 +200,13 @@ def download(ficha):
         session['error'] = f"No se pudo descargar el archivo: {e}"
         return render_template("index.html", variables=session)
 
-@app.route('/prueba', methods=["GET"])
-def preuba():
-    return render_template("prueba.html")    
+@app.route('/porcolombia', methods=["GET"])
+def porcolombia():
+    return render_template("porcolombia.html")    
 
-
-
+@app.route('/spe', methods=["GET"])
+def spe():
+    return render_template("spe.html")    
 
 if __name__ == "__main__":
     app.run(debug=True)

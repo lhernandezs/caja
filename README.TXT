@@ -8,9 +8,9 @@ Sacar los Helper a un directorio
 Crear la funcionalidad del correo para los aprendices que deben ser evaluados.
 En caso de Juicios NO APROBADO indicar la fecha y el instructor que lo registró
 Colocar el manejo de la página NOT FOUND (404)
-Crear el DashBoard con:
 
-El mejor instructor TRANSVERSAL
-El mejor aprendiz   - lista de clasificación
-El comportamiento de los juicios de todas las competencias
-El comportamiento de los instructores
+Crear el DashBoard con:
+    El mejor instructor TRANSVERSAL
+    El mejor aprendiz   - lista de clasificación
+    El comportamiento de los juicios de todas las competencias
+    El comportamiento de los instructores
