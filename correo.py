@@ -10,12 +10,11 @@ from jinja2                 import Environment, select_autoescape, FileSystemLoa
 from modelo                 import DatosCorreoJuicios
 from config                 import TEMPLATES_FOLDER, SMTP_SSL, SENDER_USERNAME, EMAIL_PASSWORD, SENDER_DOMAIN, SENDER_DISPLAY_NAME, SUBJECT, TEMPLATES, EXTENSION_EXCEL_365
 from config                 import Config
-from bs4                    import BeautifulSoup
 
 class Correo:
 
     UPLOAD_FOLDER = Config.UPLOAD_FOLDER
-    ENV = Environment(loader=FileSystemLoader(TEMPLATES_FOLDER), autoescape=select_autoescape()) # entorno para jinja2
+    ENV = Environment(loader=FileSystemLoader(TEMPLATES_FOLDER), autoescape=select_autoescape())
 
     def __init__(self, destination_username: str, destination_domain: str, destination_display_name: str, datos_correo: DatosCorreoJuicios, template: int):
         self.sender_username            = SENDER_USERNAME 
@@ -31,7 +30,7 @@ class Correo:
         
     def render_html(self):
         return Correo.ENV.get_template(self.template).render(datos_correo=self.datos_correo, asunto = self.subject)
-
+    
     def get_email_message(self, file_adjunto) -> EmailMessage:
         email_message            = EmailMessage()         
         email_message["Subject"] = f"{self.subject} {self.datos_correo.ficha}"
@@ -73,6 +72,7 @@ if __name__ == '__main__':
                 activos         = ['activo1', 'activo2']            , 
                 desertores      = ['desertor1', 'desertor2']
                 )
-    template        = 0
+    template        = 1
     correo = Correo(destination_username, destination_domain, destination_display_name, datos_correo, template)
-    correo.send_email(False)
+    print(correo.render_html())
+    # correo.send_email(False)

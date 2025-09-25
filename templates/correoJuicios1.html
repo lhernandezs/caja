@@ -1,0 +1,58 @@
+Estimados instructores
+{%for nombre in datos_correo.instructores%}<b>{{ nombre }}</b><br>{% endfor %}
+
+
+Cordial saludo, esperamos se encuentren muy bien,
+
+Teniendo en cuenta que el Procedimiento de Ejecución de la Formación establece que TODOS los Juicios de la Etapa Lectiva de los Aprendices ACTIVOS deben estar evaluados al finalizar dicha etapa, nos preocupa profundamente el incumplimiento de esta normativa.
+
+{% if datos_correo.activos or datos_correo.desertores %}
+    {% if datos_correo.activos %}
+        <p>
+         Por lo tanto, les solicitamos revisar la información de los JUICIOS de EVALUACIÓN en SOFIA de los siguientes aprendices (se detallan las competencias en las que hay RAPs pendientes de evaluar) y proporcionarnos la información correspondiente, acompañada del soporte necesario, para que podamos adelantar el debido proceso ante el presunto INCUMPLIMIENTO ACADÉMICO:
+        </p>
+        <br>
+        <div align=center>
+            <table border="1" bordercolor="666633" cellpadding="1" cellspacing="0">
+                <tr style="height: 30px; min-height: 20px;">
+                    {% for (nombre_col, ancho_col) in [('Aprendiz', 400),('Competencia', 60), ('RAPs x Evaluar', 140),('Instructor', 400)] %}
+                        <th width={{ancho_col}}><p><b>{{nombre_col}}</b></p></th>
+                    {% endfor %}
+                </tr>
+
+                {% for activo in datos_correo.activos %}
+                    <tr style="height: 30px; min-height: 20px; background-color: rgba(233, 236, 40, 0.815);">
+                        {% for (dato, ancho_col) in [(activo[0], 400),(activo[1], 60),(activo[2], 140), (activo[3], 400)] %}
+                            <td width={{ancho_col}}><p align=center>{{dato}}</p></td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <br>
+    {% endif %}
+    {% if datos_correo.desertores %}
+        <p>Igualmente solicitamos al Instructor Técnico <b>{{datos_correo.instructores[0]|upper}}</B> nos indique si a los siguientes aprendices (estan EN FORMACION, no son aprendices ACTIVOS, ni tienen novedad EN TRAMITE) se indique a la Coordinación si se adelantó el proceso de DESERCION enviándonos los soportes correspondientes (incluir la ficha en la matríz del SharePoint).
+        </p>
+        <div align=center>
+            <table border="1" bordercolor="666633" cellpadding="1" cellspacing="0">
+                <tr style="min-height: 20px;">
+                    {% for (nombre_col, ancho_col) in [('Aprendiz', 400), ('RAPs x Evaluar', 140)] %}
+                        <th width={{ancho_col}}><p><b>{{nombre_col}}</b></p></th>
+                    {% endfor %}
+                </tr>
+
+                {% for desertor in datos_correo.desertores %}
+                    <tr style="min-height: 20px;  background-color: rgba(235, 73, 33, 0.925);">
+                        {% for (dato, ancho_col) in [(desertor[0], 400), (desertor[1], 140)] %}
+                            <td width={{ancho_col}}><p align=center>{{dato}}</p></td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    {% endif %}
+    Favor enviar su respuesta al correo de la coordinacion de formación virtual lo antes posible.
+{% else %}
+    Queremos informar que la ficha {{ datos_correo.ficha }} se encuentra NORMALIZADA, es decir los aprendices que pasaron a Etapa Productiva solo tienen el Jucio POR EVALUAr que corresponde a la Etapa Práctica. Agradecemos su colaboración, desde la Coordinación seguiremos sumando esfuerzos para mejorar la calidad de la formación del SENA
+{% endif %}

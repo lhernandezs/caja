@@ -1,6 +1,5 @@
 import pandas as pd
 
-from app                     import UPLOAD_FOLDER
 from config                  import ESTADOS
 from procesadorJuiciosHelper import getLimite_rap_para_normalizar
 
@@ -60,8 +59,9 @@ def get_listas_datos(df_datos: pd.DataFrame) -> dict:
         'ls_para_desertar'      : ls_para_desertar,
     }
 
-from config import EXTENSION_EXCEL_365, FILTROS
-from entradaHelper import getDataFrame
+from app            import UPLOAD_FOLDER
+from config         import EXTENSION_EXCEL_365, FILTROS
+from entradaHelper  import getDataFrame
 if __name__ == "__main__":
     ficha = '3106275'
     try:
