@@ -176,22 +176,30 @@ def prepare_mail(ficha):
 
 @app.route('/send_mail', methods=["POST"])
 def send_mail():
-    # form_data = request.form.to_dict(flat=True)  ---- Se recogen los datos del formulario y se arman el correo
-    destination_username, destination_domain = "lhernandezs@sena.edu.co".split('@')
+    form_data = request.form.to_dict(flat=True)
+    print(f"form_data: {form_data}")
+    # destination_username, destination_domain = "lhernandezs@sena.edu.co".split('@')
+    destination_username, destination_domain = form_data['to'].split('@')  
     datos_correo =  DatosCorreoJuicios(
-                ficha           = '9999999'                         , 
+                # ficha           = '9999999'                         , 
+                # instructores    = ['instructor1', 'instructor2']    , 
+                # activos         = ['activo1', 'activo2']            , 
+                # desertores      = ['desertor1', 'desertor2']        ,
+                ficha           = form_data['ficha']                        , 
                 instructores    = ['instructor1', 'instructor2']    , 
                 activos         = ['activo1', 'activo2']            , 
-                desertores      = ['desertor1', 'desertor2']
+                desertores      = ['desertor1', 'desertor2']        ,
+
                 )
     template        = 0
+    adjuntar_archivo = True if 'adjuntarArchivo' in form_data  else False
     correo = Correo(destination_username, destination_domain, destination_username, datos_correo, template )
-    correo.send_email()
     try:
-        correo.send_email()
+        correo.send_email(adjuntar_archivo)
         return jsonify({'message': 'Correo enviado exitosamente!'})
     except Exception as e:
         return jsonify({'message': f'Error al enviar el correo: {str(e)}'}), 500
+
 @app.route('/dowmload/<ficha>', methods=["POST"])
 def download(ficha):
     try:
