@@ -16,36 +16,46 @@ class Correo:
     UPLOAD_FOLDER = Config.UPLOAD_FOLDER
     ENV = Environment(loader=FileSystemLoader(TEMPLATES_FOLDER), autoescape=select_autoescape())
 
-    def __init__(self, destination_username     : str, 
+    def __init__(self, 
+                 destination_username           : str, 
                  destination_domain             : str, 
                  destination_display_name       : str, 
-                 datos_correo                   : DatosCorreoJuicios    = [], 
-                 template                       : int                   = -1,
-                 body                           : str                   = "",
-                 ficha                          : str                   = "",
-                 subject                        : str  ):
-                 
-        
-        self.sender_username            = SENDER_USERNAME 
-        self.sender_domain              = SENDER_DOMAIN
-        self.sender_display_name        = SENDER_DISPLAY_NAME
-        self.subject                    = SUBJECT
-
+                 **kawargs):
+                        
         self.destination_username       = destination_username
         self.destination_domain         = destination_domain
         self.destination_display_name   = destination_display_name
 
+        self.attach                     = kawargs.get("attach", False)
+        self.ficha                      = kawargs.get("ficha", "")
 
-        self.datos_correo               = datos_correo
-        self.template                   = TEMPLATES[template]
-        self.body                       = body
-        self.ficha                      = ficha
+        self.body                       = kawargs.get("body", "")
+        template                        = kawargs.get("template", -1)      
+
+        self.subject                    = kawargs.get("subject", SUBJECT)
+
+        if template == -1 and self.body == "":
+            raise Exception("Debe especificar un template o un body para el correo")
+        if template != -1 and self.body != "":
+            raise Exception("No puede especificar un template y un body para el correo")
+        if template != -1 and not template in TEMPLATES:
+            raise Exception(f"El template {template} no existe")    
+        
+        if self.attach and self.ficha == "":
+            raise Exception("Si attach es True, debe especificar la ficha para adjuntar el archivo")
+        
+        self.template                   = TEMPLATES.get(template, "")
+        self.datos_correo               = kawargs.get("datos_correo", DatosCorreoJuicios()) 
+
 
     def render_html(self):
         return Correo.ENV.get_template(self.template).render(datos_correo=self.datos_correo, asunto = self.subject)
     
     def create_email_message(self) -> EmailMessage:
         email_message            = EmailMessage()
+        email_message["From"]    = Address(username=SENDER_USERNAME, domain=SENDER_DOMAIN, display_name=SENDER_DISPLAY_NAME)
+        email_message["To"]      = Address(username=self.destination_username, domain=self.destination_domain, display_name=self.destination_display_name)
+
         if not self.body == "":
             html_body = """
                     <html>
@@ -60,10 +70,9 @@ class Correo:
         else:
             email_message.add_alternative(self.render_html(), subtype="html")
 
-       
+       if self.attach:
+
         email_message["Subject"] = f"{self.subject} {self.datos_correo.ficha}"
-        email_message["From"]    = Address(username=self.sender_username, domain=self.sender_domain, display_name=self.sender_display_name)
-        email_message["To"]      = Address(username=self.destination_username, domain=self.destination_domain, display_name=self.destination_display_name)
 
         if not self.ficha == "":
             filename = f"{self.datos_correo.ficha}.{EXTENSION_EXCEL_365}"
@@ -81,7 +90,7 @@ class Correo:
         return email_message.as_string()
 
     def send_email(self):
-        remitente       = self.sender_username + "@" + self.sender_domain
+        remitente       = SENDER_USERNAME + "@" + SENDER_DOMAIN
         destinatario    = self.destination_username + "@" + self.destination_domain
         email_message   = self.create_email_message()
         smtp            = smtplib.SMTP_SSL(SMTP_SSL)

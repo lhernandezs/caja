@@ -5,7 +5,7 @@ JSON_FOLDER             = os.path.join("json")
 
 SMTP_SSL                = "smtp.gmail.com"
 SENDER_DOMAIN           = "gmail.com"
-SUBJECT                 = "normalizar ficha  "
+SUBJECT                 = "analizar estado ficha"
 TEMPLATES               = ['correoJuicios.html','correoJuicios1.html']
 # SENDER_USERNAME         = "formacionvirtualcsf"
 # EMAIL_PASSWORD          = "ddycjigkgqrtsray"
