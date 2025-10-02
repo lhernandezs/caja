@@ -207,7 +207,7 @@ class ProcesadorJuicios1:
 from config import Config
 if __name__ == "__main__":
     novedades = activos = instructores = None
-    ficha = '2675744'        
+    ficha = '2879836'        
     try:
         df_novedades            = pd.read_excel(os.path.join(Config.UPLOAD_FOLDER_DATA, 'datos.xlsx'), sheet_name='novedades').drop_duplicates()
         df_activos              = pd.read_excel(os.path.join(Config.UPLOAD_FOLDER_DATA, 'datos.xlsx'), sheet_name='activos').drop_duplicates()

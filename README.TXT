@@ -1,4 +1,4 @@
-✅ Crear cuentas de correo gmail y hotmail: porcolombia
+✅ Crear cuentas de correo gmail: porcolombia
 Los correos para el aprendiz y el instructor deben contener la competencia y los RAPs
 Colocar el indicador de "procesando" al cargar
 Chequear el archivo de Reportes de juicios que se sube y el de datos

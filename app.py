@@ -196,7 +196,7 @@ def send_mail():
     destination_username, destination_domain = form_data['to'].split('@')  
     adjuntar_archivo = True if 'adjuntarArchivo' in form_data  else False
     datos_correo =  DatosCorreoJuicios(
-            ficha           = '2675911'                         , 
+            ficha           = '2879836'                         , 
             instructores    = ['instructor1', 'instructor2']    , 
             activos         = ['activo1', 'activo2']            , 
             desertores      = ['desertor1', 'desertor2']

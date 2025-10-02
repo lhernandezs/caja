@@ -59,13 +59,13 @@ def get_listas_datos(df_datos: pd.DataFrame) -> dict:
         'ls_para_desertar'      : ls_para_desertar,
     }
 
-from app            import UPLOAD_FOLDER
+from config         import Config
 from config         import EXTENSION_EXCEL_365, FILTROS
 from entradaHelper  import getDataFrame
 if __name__ == "__main__":
-    ficha = '3106275'
+    ficha = '2879836'
     try:
-        df_datos = getDataFrame(UPLOAD_FOLDER, f"{ficha}.{EXTENSION_EXCEL_365}", 'datos')        
+        df_datos = getDataFrame(Config.UPLOAD_FOLDER, f"{ficha}.{EXTENSION_EXCEL_365}", 'datos')        
         for estado in ESTADOS.keys():
             print(f"\n\n ESTADO: {estado}")
             print(get_df_filtrado(df_datos, estado))
