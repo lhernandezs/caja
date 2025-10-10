@@ -27,8 +27,8 @@ class Correo:
         self.body                               = kawargs.get("body", "No se especificó el cuerpo del mensaje ni template")
         self.datos_correo : DatosCorreoJuicios  = kawargs.get("datos_correo", False) 
 
-        indice_template                         = kawargs.get("template", False)      
-        if isinstance(indice_template, int):
+        indice_template                         = kawargs.get("template", -1)      
+        if indice_template >= 0:
             if indice_template in range(len(TEMPLATES)):
                 self.template                   = TEMPLATES[indice_template]
                 if self.datos_correo:
@@ -39,6 +39,8 @@ class Correo:
             else:
                 self.body                       = "El TEMPLATE indicado para el cuerpo del mensaje no existe"
         else:
+            print("paso ... ")
+            self.template                       = False
             self.subject                        = kawargs.get("subject","No se espeficó ASUNTO para el correo")
             self.ficha                          = kawargs.get("ficha", False)
             if self.ficha:
@@ -87,11 +89,18 @@ if __name__ == '__main__':
     destination_username        = 'lhernandezs'
     destination_domain          = 'sena.edu.co'
     destination_display_name    = 'LeonardoHS'
-    datos_correo =  DatosCorreoJuicios(
-                ficha           = '2879699'                         , 
-                instructores    = ['instructor1', 'instructor2']    , 
-                activos         = ['activo1', 'activo2']            , 
-                desertores      = ['desertor1', 'desertor2']
-                )
-    correo = Correo(destination_username, destination_domain, destination_display_name, **{"datos_correo": datos_correo, "template": 0})
+
+    # datos_correo =  DatosCorreoJuicios(
+    #             ficha           = '2879699'                         , 
+    #             instructores    = ['instructor1', 'instructor2']    , 
+    #             activos         = ['activo1', 'activo2']            , 
+    #             desertores      = ['desertor1', 'desertor2']
+    #             )
+    # correo = Correo(destination_username, destination_domain, destination_display_name, **{"datos_correo": datos_correo, "template": 0})
+
+    body    = "este es el texto del correo"
+    subject = "este es el asunto del correo"
+    ficha   = "2879690"
+    correo = Correo(destination_username, destination_domain, destination_display_name, **{"body": body, "subject": subject, "ficha": ficha})
+
     correo.send_email()
