@@ -184,7 +184,6 @@ def prepare_mail(ficha):
                                 activos                 = datos_activos,
                                 desertores              = datos_a_desertar
                                 )
-    template        = 0
     correo = Correo('lhernandezs', 'sena.edu.co','leonardo',  **{"datos_correo": datos_correo_juicios, "template": 0} )
     body = correo.render_html()
     return render_template("correo.html", variables = session['fichas'][ficha], ficha = ficha, body = body)    
@@ -196,14 +195,14 @@ def send_mail():
     destination_username, destination_domain = form_data['to'].split('@')  
     adjuntar_archivo = True if 'adjuntarArchivo' in form_data  else False
     datos_correo =  DatosCorreoJuicios(
-            ficha           = '2675911'                         , 
+            ficha           = '2879690'                         , 
             instructores    = ['instructor1', 'instructor2']    , 
             activos         = ['activo1', 'activo2']            , 
             desertores      = ['desertor1', 'desertor2']
             )
     correo = Correo(destination_username, destination_domain, destination_username,  **{"datos_correo": datos_correo, "template": 0} )
     try:
-        correo.send_email(adjuntar_archivo)
+        correo.send_email()
         return jsonify({'message': 'Correo enviado exitosamente!'})
     except Exception as e:
         return jsonify({'message': f'Error al enviar el correo: {str(e)}'}), 500
