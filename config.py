@@ -12,7 +12,7 @@ TEMPLATES               = ['correoJuicios.html','correoJuicios1.html']
 # SENDER_DISPLAY_NAME     = "formacionvirtualcsf@sena.edu.co"
 SENDER_USERNAME         = "creamos.porcolombia"
 EMAIL_PASSWORD          = "qhjkzhhqeywqsasq"
-SENDER_DISPLAY_NAME     = "porcolombia"
+SENDER_DISPLAY_NAME     = "porColombia"
 
 PORCENTAJE_LIMITE_RAP   = 0.30
 

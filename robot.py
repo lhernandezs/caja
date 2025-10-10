@@ -21,9 +21,9 @@ class Robot:
                                         activos                 = datos_activos,
                                         desertores              = datos_a_desertar
                                         )
-            
-            # correo = Correo('lhernandezs', 'sena.edu.co', 'LeonardoSENA', datos_correo_juicios, 0)   # destino correo lhernandezs@sena.edu.co
-            correo = Correo('leo66', 'hotmail.com', 'Leonardo HS', datos_correo_juicios, 0)   # destino correo leo66@hotmail.com
+
+            correo = Correo('lhernandezs', 'sena.edu.co', 'LeonardoSENA', **{"datos_correo": datos_correo_juicios, "template": 0})   # destino correo lhernandezs@sena.edu.co
+            # correo = Correo('leo66'      , 'hotmail.com' , 'Leonardo HS' , **{"datos_correo": datos_correo_juicios, "template": 0})   # destino correo leo66@hotmail.com
 
             try:
                 correo.send_email()
@@ -58,10 +58,10 @@ if __name__ == '__main__':
                             ],
    
         'juan carlos': [
-                            "2879698",
+                            "2879699",
                         ],
                        
              }    
     
     robot = Robot()
-    robot.sendCorreosJuicios(fichas['kebin'])
+    robot.sendCorreosJuicios(fichas['juan carlos'])

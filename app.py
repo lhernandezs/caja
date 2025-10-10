@@ -1,12 +1,12 @@
 import os
 import pandas as pd
 
-from flask   import ( request, session, Flask, render_template, redirect, url_for, jsonify, send_from_directory)
+from flask                import ( request, session, Flask, render_template, redirect, url_for, jsonify, send_from_directory)
 
 from config               import COLUMNAS_ACTIVOS, COLUMNAS_INSTRUCTORES, COLUMNAS_NOVEDADES, Config, TEMPLATES_FOLDER, EXTENSION_EXCEL_365
 from filtrosHelper        import get_listas_datos
 from modelo               import DatosCorreoJuicios
-from procesadorJuicios1   import ProcesadorJuicios1
+from procesadorJuicios    import ProcesadorJuicios
 from entradaHelper        import getDataFrame
 from correo               import Correo
 
@@ -97,7 +97,7 @@ def upload_files():
         if file and file.filename != "" and allowed_file(file.filename):
             try:
                 file.save(os.path.join(UPLOAD_FOLDER, file.filename))
-                juiciosFicha = ProcesadorJuicios1(UPLOAD_FOLDER, file.filename, session['novedades'], session['activos'], session['instructores'])
+                juiciosFicha = ProcesadorJuicios(UPLOAD_FOLDER, file.filename, session['novedades'], session['activos'], session['instructores'])
                 diccionario = juiciosFicha.procesar()
                 ficha = diccionario['ficha']
                 session['fichas'][ficha] = {
@@ -185,7 +185,7 @@ def prepare_mail(ficha):
                                 desertores              = datos_a_desertar
                                 )
     template        = 0
-    correo = Correo('lhernandezs', 'sena.edu.co','leonardo', datos_correo_juicios, template )
+    correo = Correo('lhernandezs', 'sena.edu.co','leonardo',  **{"datos_correo": datos_correo_juicios, "template": 0} )
     body = correo.render_html()
     return render_template("correo.html", variables = session['fichas'][ficha], ficha = ficha, body = body)    
 
@@ -196,12 +196,12 @@ def send_mail():
     destination_username, destination_domain = form_data['to'].split('@')  
     adjuntar_archivo = True if 'adjuntarArchivo' in form_data  else False
     datos_correo =  DatosCorreoJuicios(
-            ficha           = '2879836'                         , 
+            ficha           = '2675911'                         , 
             instructores    = ['instructor1', 'instructor2']    , 
             activos         = ['activo1', 'activo2']            , 
             desertores      = ['desertor1', 'desertor2']
             )
-    correo = Correo(destination_username, destination_domain, destination_username, datos_correo, 0 )
+    correo = Correo(destination_username, destination_domain, destination_username,  **{"datos_correo": datos_correo, "template": 0} )
     try:
         correo.send_email(adjuntar_archivo)
         return jsonify({'message': 'Correo enviado exitosamente!'})

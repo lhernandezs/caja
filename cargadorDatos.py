@@ -32,7 +32,7 @@ class CargadorDatos:
         return {'df_novedades': df_novedades, 'df_activos': df_activos, 'df_instructores': df_instructores}
 
 import pandas as pd
-from procesadorJuicios1 import ProcesadorJuicios1
+from procesadorJuicios import ProcesadorJuicios
 from config import Config
 if __name__ == "__main__":
     fichas = {
@@ -54,7 +54,7 @@ if __name__ == "__main__":
             "3106275",
         ],
         'juan carlos': [
-            "2879836",
+            "2879699",
         ],
 
     }
@@ -66,7 +66,7 @@ if __name__ == "__main__":
     df_instructores : pd.DataFrame = datos['df_instructores']
     for ficha in fichas['juan carlos']: 
         try:
-            juiciosFicha = ProcesadorJuicios1(
+            juiciosFicha = ProcesadorJuicios(
                 Config.UPLOAD_FOLDER,
                 f"Reporte de Juicios Evaluativos {ficha}.xls",
                 df_novedades.to_dict(orient="records"),
