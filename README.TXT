@@ -1,3 +1,5 @@
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
 ✅ Crear cuentas de correo gmail: porcolombia
 Los correos para el aprendiz y el instructor deben contener la competencia y los RAPs
 Colocar el indicador de "procesando" al cargar
