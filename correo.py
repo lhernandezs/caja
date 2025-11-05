@@ -11,8 +11,8 @@ from modelo                 import DatosCorreoJuicios
 from config                 import Config, TEMPLATES_FOLDER, SMTP_SSL, SENDER_USERNAME, EMAIL_PASSWORD, SENDER_DOMAIN, SENDER_DISPLAY_NAME, SUBJECT, TEMPLATES, EXTENSION_EXCEL_365
 
 class Correo:
-    UPLOAD_FOLDER = Config.UPLOAD_FOLDER
-    ENV = Environment(loader=FileSystemLoader(TEMPLATES_FOLDER), autoescape=select_autoescape())
+    UPLOAD_FOLDER           = Config.UPLOAD_FOLDER
+    ENV                     = Environment(loader=FileSystemLoader(TEMPLATES_FOLDER), autoescape=select_autoescape())
 
     def __init__(self                                , 
                  destination_username           : str, 
@@ -32,14 +32,13 @@ class Correo:
             if indice_template in range(len(TEMPLATES)):
                 self.template                   = TEMPLATES[indice_template]
                 if self.datos_correo:
-                    self.subject                = f"{SUBJECT} {self.datos_correo.ficha}"
+                    self.subject                = SUBJECT
                     self.filename               = f"{self.datos_correo.ficha}.{EXTENSION_EXCEL_365}"
                 else:
                     self.body                   = "No se enviaron los Datos del Correo"
             else:
                 self.body                       = "El TEMPLATE indicado para el cuerpo del mensaje no existe"
         else:
-            print("paso ... ")
             self.template                       = False
             self.subject                        = kawargs.get("subject","No se espeficó ASUNTO para el correo")
             self.ficha                          = kawargs.get("ficha", False)
@@ -55,7 +54,7 @@ class Correo:
         email_message            = EmailMessage()
         email_message["From"]    = Address(username=SENDER_USERNAME, domain=SENDER_DOMAIN, display_name=SENDER_DISPLAY_NAME)
         email_message["To"]      = Address(username=self.destination_username, domain=self.destination_domain, display_name=self.destination_display_name)
-        email_message["Subject"] = f"{self.subject}"
+        email_message["Subject"] = self.subject
 
         if self.template:
             email_message.add_alternative(self.render_html(), subtype="html")
@@ -90,17 +89,21 @@ if __name__ == '__main__':
     destination_domain          = 'sena.edu.co'
     destination_display_name    = 'LeonardoHS'
 
-    # datos_correo =  DatosCorreoJuicios(
-    #             ficha           = '2879699'                         , 
-    #             instructores    = ['instructor1', 'instructor2']    , 
-    #             activos         = ['activo1', 'activo2']            , 
-    #             desertores      = ['desertor1', 'desertor2']
-    #             )
-    # correo = Correo(destination_username, destination_domain, destination_display_name, **{"datos_correo": datos_correo, "template": 0})
+    ficha                       = "2977746"
 
-    body    = "este es el texto del correo"
-    subject = "este es el asunto del correo"
-    ficha   = "2879690"
-    correo = Correo(destination_username, destination_domain, destination_display_name, **{"body": body, "subject": subject, "ficha": ficha})
+    con_template = False
+    if con_template:
+        datos_correo =  DatosCorreoJuicios(
+                    ficha           = ficha                             ,
+                    instructores    = ['instructor1', 'instructor2']    , 
+                    activos         = ['activo1', 'activo2']            , 
+                    desertores      = ['desertor1', 'desertor2']
+                    )
+        correo = Correo(destination_username, destination_domain, destination_display_name, **{"datos_correo": datos_correo, "template": 0})
+    else:
+        body    = "este es el texto del correo"
+        subject = "este es el asunto del correo"
+
+        correo = Correo(destination_username, destination_domain, destination_display_name, **{"body": body, "subject": subject, "ficha": ficha})
 
     correo.send_email()

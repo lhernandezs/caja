@@ -24,7 +24,6 @@ def get_df_filtrado(df: pd.DataFrame, filtro:str) -> pd.DataFrame:
         df_filtrado =  df[df['estado'] == ESTADOS[filtro][0]]
     return df_filtrado.reset_index(drop = True)
 
-
 def get_listas_datos(df_datos: pd.DataFrame) -> dict:
     df_para_normalizar  = get_df_filtrado(df_datos, 'para_normalizar')
     df_para_desertar    = get_df_filtrado(df_datos, 'para_desertar')
@@ -63,7 +62,7 @@ from config         import Config
 from config         import EXTENSION_EXCEL_365, FILTROS
 from entradaHelper  import getDataFrame
 if __name__ == "__main__":
-    ficha = '2879836'
+    ficha = '2977746'
     try:
         df_datos = getDataFrame(Config.UPLOAD_FOLDER, f"{ficha}.{EXTENSION_EXCEL_365}", 'datos')        
         for estado in ESTADOS.keys():

@@ -5,7 +5,7 @@ import pandas as pd
 from entradaHelper              import getDataFrame
 from salidaHelper               import write_process_file, color_rows
 from procesadorJuiciosHelper    import getCompetenciasNoTecnicas, getInstructorEnReporte, getLimite_rap_para_normalizar, fecha_formato_espanol
-from config                     import TOLERANCIA_MESES, DURACION_PROGRAMAS, ESTADOS, HOJAS, COLUMNAS_INT_DATOS, COLUMNAS_NOVEDADES, COLUMNAS_ACTIVOS, COLUMNAS_INSTRUCTORES, REGLAMENTOS
+from config                     import DURACION_PROGRAMAS, ESTADOS, HOJAS, COLUMNAS_INT_DATOS, COLUMNAS_NOVEDADES, COLUMNAS_ACTIVOS, COLUMNAS_INSTRUCTORES, REGLAMENTOS
 
 class ProcesadorJuicios:
     def __init__(self, folder: str, archivo: str, novedades: dict = None, activos: dict = None, instructores: dict = None, ):
@@ -15,19 +15,11 @@ class ProcesadorJuicios:
         self.df_activos             = None
         self.df_instructores        = None
         if novedades:
-            self.df_novedades           = pd.DataFrame(novedades)
+            self.df_novedades       = pd.DataFrame(novedades)
         if activos:    
-            self.df_activos             = pd.DataFrame(activos)
+            self.df_activos         = pd.DataFrame(activos)
         if instructores:            
-            self.df_instructores        = pd.DataFrame(instructores)
-
-    def load_datos(self, df: pd.DataFrame, columnas: list) -> pd.DataFrame:
-        dic = {col: [] for col in columnas}
-        for _, serie in df.iterrows():
-            if serie.iloc[0] == ficha:
-                for idx, col in enumerate(columnas):
-                    dic[col].append(serie.iloc[idx])
-        return pd.DataFrame(dic)
+            self.df_instructores    = pd.DataFrame(instructores)
 
     def build_df_datos(self, codigo_programa, version_programa, ficha, df_hoja):
         # 1. creamos los dataframes novedades, activos, instructores de la ficha
@@ -207,7 +199,7 @@ class ProcesadorJuicios:
 from config import Config
 if __name__ == "__main__":
     novedades = activos = instructores = None
-    ficha = '2879836'        
+    ficha = '2977746'        
     try:
         df_novedades            = pd.read_excel(os.path.join(Config.UPLOAD_FOLDER_DATA, 'datos.xlsx'), sheet_name='novedades').drop_duplicates()
         df_activos              = pd.read_excel(os.path.join(Config.UPLOAD_FOLDER_DATA, 'datos.xlsx'), sheet_name='activos').drop_duplicates()
